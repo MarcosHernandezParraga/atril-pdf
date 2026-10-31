@@ -17,9 +17,11 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { RADIUS, SPACING, TOUCH, useTheme } from '../theme';
+import { cardShadow, RADIUS, SPACING, TOUCH, useTheme } from '../theme';
+import { Pressable3D } from './Pressable3D';
 
 export type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -31,7 +33,7 @@ export function Icon({ name, size = 24, color }: { name: IconName; size?: number
 type TextVariant = 'title' | 'heading' | 'body' | 'caption' | 'label';
 
 const TEXT_STYLES: Record<TextVariant, TextStyle> = {
-  title: { fontSize: 26, fontWeight: '700', letterSpacing: -0.3 },
+  title: { fontSize: 30, fontWeight: '800', letterSpacing: -0.6 },
   heading: { fontSize: 18, fontWeight: '700' },
   body: { fontSize: 16 },
   caption: { fontSize: 13 },
@@ -89,9 +91,9 @@ export function Button({
   const t = useTheme();
   const bg =
     variant === 'primary' ? t.primary : variant === 'secondary' ? t.surfaceAlt : variant === 'danger' ? t.danger : 'transparent';
-  const fg = variant === 'primary' ? t.onPrimary : variant === 'danger' ? t.surface : t.text;
+  const fg = variant === 'primary' ? t.onPrimary : variant === 'danger' ? '#FFFFFF' : t.text;
   return (
-    <Pressable
+    <Pressable3D
       testID={testID}
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -99,18 +101,29 @@ export function Button({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: bg, opacity: disabled ? 0.45 : pressed ? 0.8 : 1 },
-        variant === 'ghost' && { paddingHorizontal: SPACING.sm },
+      tilt={4}
+      depth={0.97}
+      style={[
+        styles.buttonOuter,
+        { backgroundColor: bg, opacity: disabled ? 0.45 : 1 },
+        variant === 'primary' && cardShadow(t, 2),
         style,
       ]}
+      contentStyle={[styles.button, variant === 'ghost' && { paddingHorizontal: SPACING.sm }]}
     >
+      {variant === 'primary' ? (
+        <LinearGradient
+          colors={[t.primary, t.primaryDeep]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.pill }]}
+        />
+      ) : null}
       {icon ? <Icon name={icon} size={22} color={fg} /> : null}
       <Text style={[styles.buttonText, { color: fg }]} numberOfLines={1}>
         {label}
       </Text>
-    </Pressable>
+    </Pressable3D>
   );
 }
 
@@ -154,7 +167,8 @@ export function IconButton({
       style={({ pressed }) => [
         styles.iconButton,
         active && { backgroundColor: t.surfaceAlt },
-        { opacity: disabled ? 0.4 : pressed ? 0.6 : 1 },
+        pressed && { backgroundColor: t.surfaceAlt, transform: [{ scale: 0.92 }] },
+        { opacity: disabled ? 0.4 : 1 },
         style,
       ]}
     >
@@ -200,7 +214,7 @@ export function Section({ title, children }: { title?: string; children: ReactNo
           {title}
         </AppText>
       ) : null}
-      <View style={[styles.card, { backgroundColor: t.surface, borderColor: t.border }]}>{children}</View>
+      <View style={[styles.card, { backgroundColor: t.surface, borderColor: t.border }, cardShadow(t, 1)]}>{children}</View>
     </View>
   );
 }
@@ -385,20 +399,22 @@ export function Stepper({
 }
 
 const styles = StyleSheet.create({
+  buttonOuter: { borderRadius: RADIUS.pill, minHeight: TOUCH + 4 },
   button: {
     minHeight: TOUCH + 4,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: RADIUS.pill,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
+    overflow: 'hidden',
   },
   buttonText: { fontSize: 16, fontWeight: '700' },
   iconButton: {
     minWidth: TOUCH,
     minHeight: TOUCH,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 6,
@@ -411,8 +427,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  card: { borderRadius: RADIUS.lg, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: SPACING.lg, overflow: 'hidden' },
+  card: { borderRadius: RADIUS.lg, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: SPACING.lg },
   row: { flexDirection: 'row', alignItems: 'center', minHeight: TOUCH + 8 },
-  segmented: { flexDirection: 'row', borderWidth: 1, borderRadius: RADIUS.md, overflow: 'hidden', marginVertical: SPACING.sm },
-  segment: { flex: 1, minHeight: TOUCH, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SPACING.sm },
+  segmented: { flexDirection: 'row', borderWidth: 1, borderRadius: RADIUS.pill, overflow: 'hidden', marginVertical: SPACING.sm, padding: 3 },
+  segment: { flex: 1, minHeight: TOUCH - 4, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SPACING.sm, borderRadius: RADIUS.pill },
 });

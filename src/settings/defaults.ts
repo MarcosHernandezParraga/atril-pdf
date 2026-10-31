@@ -73,9 +73,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: 'system',
   language: 'system',
   reader: {
-    defaultMode: 'horizontal',
-    transition: 'slide',
-    transitionMs: 180,
+    defaultMode: 'horizontal-animated',
+    transition: 'curl',
+    transitionMs: 260,
     halfPageStyle: 'stand',
     lookaheadFraction: 0.2,
     continuousOverlap: 0.15,
@@ -93,14 +93,14 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   pedal: { keymap: DEFAULT_KEYMAP, debounceMs: DEFAULT_DEBOUNCE_MS, volumeKeys: false },
   annotations: {
-    inputMode: 'auto',
+    inputMode: 'both',
     palmRejection: true,
     penColors: ['#111111', '#D32F2F', '#1565C0', '#2E7D32'],
     highlighterColors: ['#FFEB3B', '#76FF03', '#FF4081', '#40C4FF', '#FFA726'],
     penWidths: [1, 2, 4],
   },
   thumbnails: { side: 'left', size: 'medium' },
-  library: { view: 'grid', sort: 'name', desktopImportMode: 'copy' },
+  library: { view: 'grid', sort: 'recent', desktopImportMode: 'copy' },
   hints: { performanceExitShown: false },
 };
 
@@ -129,6 +129,7 @@ export function sanitizeSettings(stored: unknown): AppSettings {
   s.pedal.keymap = sanitizeKeymap(isPlain(stored) && isPlain(stored.pedal) ? stored.pedal.keymap : undefined);
   if (!READER_MODES.includes(s.reader.defaultMode)) s.reader.defaultMode = 'horizontal';
   if (!['slide', 'fade', 'curl'].includes(s.reader.transition)) s.reader.transition = 'slide';
+  if (!['recent', 'name', 'added'].includes(s.library.sort)) s.library.sort = 'recent';
   s.reader.transitionMs = Math.max(100, Math.min(400, Math.round(s.reader.transitionMs)));
   s.reader.lookaheadFraction = Math.max(0.1, Math.min(0.35, s.reader.lookaheadFraction));
   s.reader.continuousOverlap = Math.max(0, Math.min(0.5, s.reader.continuousOverlap));

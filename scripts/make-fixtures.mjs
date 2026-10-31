@@ -50,8 +50,8 @@ async function score(file, pages, piano, password) {
   const doc = await PDFDocument.create();
   doc.setTitle(piano ? 'Piano de prueba' : 'Partitura de prueba');
   doc.setAuthor('Marcos Hernández Párraga');
-  doc.setCreator('Atril Musical test fixtures');
-  doc.setProducer('Atril Musical');
+  doc.setCreator('Atril PDF test fixtures');
+  doc.setProducer('Atril PDF');
   const font = await doc.embedFont(StandardFonts.TimesRoman);
   const bold = await doc.embedFont(StandardFonts.TimesRomanBold);
   for (let p = 0; p < pages; p++) {

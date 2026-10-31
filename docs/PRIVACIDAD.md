@@ -1,8 +1,8 @@
-# Política de privacidad — Atril Musical
+# Política de privacidad — Atril PDF
 
 *Última actualización: 31 de octubre de 2026*
 
-**Atril Musical no recoge, almacena fuera de tu dispositivo, comparte ni vende ningún dato personal.**
+**Atril PDF no recoge, almacena fuera de tu dispositivo, comparte ni vende ningún dato personal.**
 
 - La aplicación funciona completamente sin conexión a internet. No se comunica con ningún servidor.
 - No hay cuentas de usuario, ni publicidad, ni analítica, ni seguimiento, ni informes de errores automáticos.
@@ -11,7 +11,7 @@
 - **Archivos**: la aplicación solo accede a los archivos que tú eliges con el selector del sistema o abres con «Abrir con…».
 - **Copias de seguridad**: el archivo `.atril` se crea solo cuando tú lo pides y lo guardas donde tú decidas.
 
-Si compartes un PDF o una imagen exportada (por correo, mensajería, etc.), lo haces con las aplicaciones que tú eliges; Atril Musical no interviene en ese envío.
+Si compartes un PDF o una imagen exportada (por correo, mensajería, etc.), lo haces con las aplicaciones que tú eliges; Atril PDF no interviene en ese envío.
 
 Contacto: a través del repositorio del proyecto en GitHub (sección *Issues*).
 
@@ -19,11 +19,11 @@ Desarrollada por Marcos Hernández Párraga. Licencia MIT.
 
 ---
 
-# Privacy policy — Atril Musical
+# Privacy policy — Atril PDF
 
 *Last updated: 31 October 2026*
 
-**Atril Musical does not collect, store off your device, share or sell any personal data.**
+**Atril PDF does not collect, store off your device, share or sell any personal data.**
 
 - The app works completely offline and never communicates with any server.
 - There are no user accounts, ads, analytics, tracking or automatic crash reports.

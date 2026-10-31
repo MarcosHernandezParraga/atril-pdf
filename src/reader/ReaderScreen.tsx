@@ -2,28 +2,62 @@
 //
 // The reader. Every way of turning pages (taps, swipes, keyboard, Bluetooth
 // pedal, mouse wheel) goes through the same `turn()` function, which follows
-// the stops of the current view mode (see core/navigation.ts).
+// the stops of the current view mode (see core/navigation.ts). In concert mode
+// (a folder played in a row) turning past the last page opens the next piece.
 
+import { BlurView } from 'expo-blur';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
-import { GestureDetector, useCompetingGestures, usePanGesture, useTapGesture } from 'react-native-gesture-handler';
-import Animated, { FadeIn, FadeOut, SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  type LayoutChangeEvent,
+} from 'react-native';
+import {
+  GestureDetector,
+  useCompetingGestures,
+  usePanGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  FadeOut,
+  SlideInLeft,
+  SlideInRight,
+  SlideOutLeft,
+  SlideOutRight,
+} from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AnnotateView, DEFAULT_TOOL_STATE, type ToolState } from '../annotations/AnnotateView';
+import { AnnotationToolbar } from '../annotations/AnnotationToolbar';
 import type { KeyAction } from '../core/keymap';
-import { buildStops, primaryPage, step, stopIndexForPage, type Stop, type ViewMode } from '../core/navigation';
+import {
+  buildStops,
+  primaryPage,
+  step,
+  stopIndexForPage,
+  type Stop,
+  type ViewMode,
+} from '../core/navigation';
 import { swipeAction, tapZoneAction } from '../core/tapZones';
 import { useReaderKeys } from '../input/useReaderKeys';
 import { getServices } from '../services';
-import { READER_MODES, type DisplayFilter, type ReaderMode } from '../settings/defaults';
+import { READER_MODES, type DisplayFilter, type InputMode, type ReaderMode } from '../settings/defaults';
 import { useSettings } from '../settings/store';
-import { SPACING, useTheme } from '../theme';
+import { cardShadow, RADIUS, SPACING, useTheme } from '../theme';
 import { dialogs } from '../ui/dialogs';
 import { AppText, IconButton } from '../ui/primitives';
 import { ContinuousView, type ContinuousHandle } from './ContinuousView';
-import { fitWidth, renderPixelWidth } from './PageView';
+import { FlipStack, type Flip } from './FlipStack';
+import { fitWidth, PageAnnotationsContext, renderPixelWidth } from './PageView';
 import { PerformanceChrome, useDesktopFullscreenSync } from './performance';
 import { StopView } from './StopView';
 import { analysePage } from './usePageAnalysis';
@@ -35,8 +69,14 @@ function viewModeOf(mode: ReaderMode): ViewMode {
   return mode === 'horizontal-animated' ? 'horizontal' : mode;
 }
 
+interface Piece {
+  id: string;
+  title: string;
+}
+
 export function ReaderScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string; concert?: string }>();
+  const concertId = params.concert;
   const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -44,12 +84,33 @@ export function ReaderScreen() {
   const settings = useSettings((s) => s.settings);
   const updateSettings = useSettings((s) => s.update);
   const reader = settings.reader;
-  const { doc, model, history, error, execute, undo, redo, flush } = useDocument(id);
+
+  // ----------------------------------------------------------------- concert
+  const [currentId, setCurrentId] = useState(params.id);
+  const [pieces, setPieces] = useState<Piece[] | null>(null);
+  const [pendingStart, setPendingStart] = useState<'first' | 'last' | null>(null);
+  const [banner, setBanner] = useState<string | null>(null);
+  useEffect(() => {
+    if (!concertId) return;
+    let alive = true;
+    void getServices()
+      .repo.folderPieces(concertId)
+      .then((ps) => alive && setPieces(ps.map((p) => ({ id: p.doc.id, title: p.doc.title }))));
+    return () => {
+      alive = false;
+    };
+  }, [concertId]);
+  const pieceIndex = pieces ? pieces.findIndex((p) => p.id === currentId) : -1;
+
+  const { doc, model, history, error, execute, undo, redo, flush } = useDocument(currentId);
 
   const [modeChoice, setMode] = useState<ReaderMode | null>(null);
-  const [nav, setNav] = useState<{ stops: Stop[]; index: number; continuous: boolean } | null>(null);
+  const [nav, setNav] = useState<{ docId: string; stops: Stop[]; index: number; continuous: boolean } | null>(
+    null,
+  );
   const [continuousPage, setContinuousPage] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
+  const [flip, setFlip] = useState<Flip<Stop> | null>(null);
   const [jumpBack, setJumpBack] = useState<number | null>(null);
   const [barsVisible, setBarsVisible] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
@@ -57,21 +118,28 @@ export function ReaderScreen() {
   const [filter, setFilter] = useState<DisplayFilter>(reader.filter);
   const [busy, setBusy] = useState<string | null>(null);
   const [hint, setHint] = useState(false);
+  const [annotating, setAnnotating] = useState(false);
+  const [showAnnotations, setShowAnnotations] = useState(true);
+  const [tools, setTools] = useState<ToolState>(DEFAULT_TOOL_STATE);
   const continuousRef = useRef<ContinuousHandle>(null);
   const viewState = useMemo(() => parseViewState(doc?.viewStateJson), [doc]);
+  const inputMode: InputMode =
+    settings.annotations.inputMode === 'auto' ? 'both' : settings.annotations.inputMode;
 
   // Initial mode: as the user left this document (or the default from the settings).
   const savedMode = viewState.mode as ReaderMode | undefined;
   const mode: ReaderMode | null =
-    modeChoice ?? (doc ? (savedMode && READER_MODES.includes(savedMode) ? savedMode : reader.defaultMode) : null);
+    modeChoice ??
+    (doc ? (savedMode && READER_MODES.includes(savedMode) ? savedMode : reader.defaultMode) : null);
 
   const landscape = size.width > size.height;
   const effectiveMode: ViewMode = useMemo(() => {
+    if (annotating) return 'horizontal';
     if (!mode) return 'horizontal';
     const vm = viewModeOf(mode);
     if (reader.autoTwoPageLandscape && vm === 'horizontal') return landscape ? 'two-page' : 'horizontal';
     return vm;
-  }, [mode, reader.autoTwoPageLandscape, landscape]);
+  }, [annotating, mode, reader.autoTwoPageLandscape, landscape]);
 
   const pages = useMemo(() => model?.pages ?? [], [model]);
   const pageIndices = useMemo(() => pages.map((_, i) => i), [pages]);
@@ -79,25 +147,37 @@ export function ReaderScreen() {
     () => buildStops(pageIndices, effectiveMode, { twoPage: reader.twoPage }),
     [pageIndices, effectiveMode, reader.twoPage],
   );
-
   const isContinuous = effectiveMode === 'vertical-continuous';
 
   // Keep the same page when the mode or the pages change (React's "adjust state while
-  // rendering" pattern). The first time, start where the user left the document.
-  if (stops.length > 0 && nav?.stops !== stops) {
+  // rendering" pattern). A new piece starts at its first page (or last when going back);
+  // a document opened alone starts where the user left it.
+  if (doc && stops.length > 0 && nav?.stops !== stops) {
     let anchor = viewState.page;
-    if (nav) {
+    let toLast = false;
+    if (nav && nav.docId === doc.id) {
       const prev = nav.stops[Math.min(nav.index, nav.stops.length - 1)];
       anchor = nav.continuous ? continuousPage : prev ? primaryPage(prev) : 0;
+    } else if (pendingStart) {
+      toLast = pendingStart === 'last';
+      anchor = toLast ? pages.length - 1 : 0;
+      setPendingStart(null);
     }
     const clamped = Math.max(0, Math.min(anchor, pages.length - 1));
-    setNav({ stops, index: stopIndexForPage(stops, clamped), continuous: isContinuous });
+    setNav({
+      docId: doc.id,
+      stops,
+      index: toLast ? stops.length - 1 : stopIndexForPage(stops, clamped),
+      continuous: isContinuous,
+    });
     setContinuousPage(clamped);
+    if (nav && nav.docId !== doc.id) setFlip(null);
   }
 
   const stopIndex = nav?.stops === stops ? nav.index : 0;
   const currentStop = nav?.stops === stops ? stops[Math.min(stopIndex, stops.length - 1)] : undefined;
   const currentPage = isContinuous ? continuousPage : currentStop ? primaryPage(currentStop) : 0;
+  const atLastStop = !isContinuous && stops.length > 0 && stopIndex >= stops.length - 1;
 
   // Remember position and mode per document.
   useEffect(() => {
@@ -125,12 +205,31 @@ export function ReaderScreen() {
       const renderer = getServices().renderer;
       for (const p of order) renderer.prefetch([p], renderPixelWidth(p, displayWidth(p)));
     }, 60);
-    // Analyse the next pages too (split points, first systems).
     if (effectiveMode === 'half-page' || effectiveMode === 'vertical-lookahead') {
       order.slice(0, 2).forEach((p) => void analysePage(p));
     }
     return () => clearTimeout(timer);
   }, [currentPage, pages, size.width, size.height, effectiveMode]);
+
+  // Concert: near the end of a piece, prepare the first page of the next one.
+  const nextPiece = pieces && pieceIndex >= 0 ? pieces[pieceIndex + 1] : undefined;
+  useEffect(() => {
+    if (!nextPiece || (!atLastStop && currentPage < pages.length - 1)) return;
+    let alive = true;
+    void getServices()
+      .repo.loadModel(nextPiece.id)
+      .then((m) => {
+        const first = m?.pages[0];
+        if (!alive || !first) return;
+        getServices().renderer.prefetch(
+          [first],
+          renderPixelWidth(first, fitWidth(first, size.width, size.height)),
+        );
+      });
+    return () => {
+      alive = false;
+    };
+  }, [nextPiece, atLastStop, currentPage, pages.length, size]);
 
   // ------------------------------------------------------------------ bars
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,28 +238,67 @@ export function ReaderScreen() {
     hideTimer.current = setTimeout(() => setBarsVisible(false), BAR_HIDE_MS);
   }, []);
   useEffect(() => {
-    if (barsVisible && !fullscreen) scheduleHide();
+    if (barsVisible && !fullscreen && !annotating) scheduleHide();
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
-  }, [barsVisible, fullscreen, scheduleHide]);
+  }, [barsVisible, fullscreen, annotating, scheduleHide]);
+
+  const showBanner = useCallback((text: string) => {
+    setBanner(text);
+    setTimeout(() => setBanner((b) => (b === text ? null : b)), 1300);
+  }, []);
 
   // ------------------------------------------------------------- turning
+  const goPiece = useCallback(
+    (index: number, start: 'first' | 'last') => {
+      if (!pieces) return false;
+      const target = pieces[index];
+      if (!target) return false;
+      setPendingStart(start);
+      setCurrentId(target.id);
+      showBanner(t('reader.nextPiece', { title: `${index + 1}. ${target.title}` }));
+      return true;
+    },
+    [pieces, showBanner, t],
+  );
+
+  const crossPiece = useCallback(
+    (dir: 1 | -1) => {
+      if (!pieces || pieceIndex < 0) return;
+      if (!goPiece(pieceIndex + dir, dir === 1 ? 'first' : 'last') && dir === 1)
+        showBanner(t('reader.endOfConcert'));
+    },
+    [pieces, pieceIndex, goPiece, showBanner, t],
+  );
+
+  const animated3d =
+    mode === 'horizontal-animated' && effectiveMode === 'horizontal' && reader.transition === 'curl';
+
   const turn = useCallback(
     (dir: 1 | -1) => {
       setDirection(dir);
-      setBarsVisible(false);
+      if (!annotating) setBarsVisible(false);
       if (isContinuous) {
-        continuousRef.current?.step(dir);
+        const moved = continuousRef.current?.step(dir);
+        if (moved === false) crossPiece(dir);
         return;
       }
-      setNav((n) => {
-        if (!n) return n;
-        const r = step(n.stops.length, n.index, dir);
-        return 'index' in r ? { ...n, index: r.index } : n;
-      });
+      if (!nav || nav.stops !== stops) return;
+      const r = step(nav.stops.length, nav.index, dir);
+      if (!('index' in r)) {
+        crossPiece(dir);
+        return;
+      }
+      const from = nav.stops[nav.index];
+      if (animated3d && from) {
+        const key = Date.now();
+        setFlip({ from, dir, key });
+        setTimeout(() => setFlip((f) => (f && f.key === key ? null : f)), reader.transitionMs + 40);
+      }
+      setNav({ ...nav, index: r.index });
     },
-    [isContinuous],
+    [annotating, isContinuous, nav, stops, crossPiece, animated3d, reader.transitionMs],
   );
 
   const goToPage = useCallback(
@@ -182,6 +320,7 @@ export function ReaderScreen() {
         updateSettings((s) => ({ ...s, hints: { ...s.hints, performanceExitShown: true } }));
       }
       setBarsVisible(!next);
+      if (next) setAnnotating(false);
       return next;
     });
   }, [settings.hints.performanceExitShown, updateSettings]);
@@ -212,18 +351,20 @@ export function ReaderScreen() {
           if (fullscreen) toggleFullscreen();
           break;
         case 'nextPiece':
+          if (pieceIndex >= 0) goPiece(pieceIndex + 1, 'first');
+          break;
         case 'previousPiece':
-          // Set lists arrive in the library phase.
+          if (pieceIndex >= 0) goPiece(pieceIndex - 1, 'first');
           break;
       }
     },
-    [turn, goToPage, pages.length, toggleFullscreen, fullscreen],
+    [turn, goToPage, pages.length, toggleFullscreen, fullscreen, pieceIndex, goPiece],
   );
   useReaderKeys(onKeyAction, Boolean(model));
 
   // Mouse wheel on desktop (page modes; the continuous mode scrolls natively).
   useEffect(() => {
-    if (Platform.OS !== 'web' || isContinuous) return;
+    if (Platform.OS !== 'web' || isContinuous || annotating) return;
     let last = 0;
     const onWheel = (e: WheelEvent) => {
       if (e.ctrlKey || Math.abs(e.deltaY) < 4) return;
@@ -234,7 +375,7 @@ export function ReaderScreen() {
     };
     window.addEventListener('wheel', onWheel, { passive: true });
     return () => window.removeEventListener('wheel', onWheel);
-  }, [turn, isContinuous]);
+  }, [turn, isContinuous, annotating]);
 
   // --------------------------------------------------------------- gestures
   const lastCenterTap = useRef(0);
@@ -293,7 +434,9 @@ export function ReaderScreen() {
               ? ('book-open-page-variant-outline' as const)
               : m === 'half-page'
                 ? ('view-split-horizontal' as const)
-                : ('arrow-expand-horizontal' as const),
+                : m === 'horizontal-animated'
+                  ? ('book-open-page-variant' as const)
+                  : ('arrow-expand-horizontal' as const),
         onPress: () => setMode(m),
       })),
       t('reader.viewMode'),
@@ -301,14 +444,26 @@ export function ReaderScreen() {
 
   const chooseDisplay = () =>
     void dialogs.menu(
-      (['normal', 'night', 'sepia'] as DisplayFilter[]).map((f) => ({
-        label: `${f === filter ? '✓ ' : ''}${t(`reader.${f}`)}`,
-        icon: f === 'night' ? ('weather-night' as const) : f === 'sepia' ? ('palette-outline' as const) : ('white-balance-sunny' as const),
-        onPress: () => {
-          setFilter(f);
-          updateSettings((s) => ({ ...s, reader: { ...s.reader, filter: f } }));
+      [
+        ...(['normal', 'night', 'sepia'] as DisplayFilter[]).map((f) => ({
+          label: `${f === filter ? '✓ ' : ''}${t(`reader.${f}`)}`,
+          icon:
+            f === 'night'
+              ? ('weather-night' as const)
+              : f === 'sepia'
+                ? ('palette-outline' as const)
+                : ('white-balance-sunny' as const),
+          onPress: () => {
+            setFilter(f);
+            updateSettings((s) => ({ ...s, reader: { ...s.reader, filter: f } }));
+          },
+        })),
+        {
+          label: showAnnotations ? t('annotate.hide') : t('annotate.show'),
+          icon: showAnnotations ? ('eye-off-outline' as const) : ('eye-outline' as const),
+          onPress: () => setShowAnnotations((v) => !v),
         },
-      })),
+      ],
       t('reader.display'),
     );
 
@@ -326,7 +481,11 @@ export function ReaderScreen() {
               execute(
                 {
                   type: 'batch',
-                  commands: margins.map(({ id: pid, m }) => ({ type: 'setCrop' as const, pageIds: [pid], crop: m })),
+                  commands: margins.map(({ id: pid, m }) => ({
+                    type: 'setCrop' as const,
+                    pageIds: [pid],
+                    crop: m,
+                  })),
                 },
                 t('reader.crop'),
               );
@@ -338,7 +497,8 @@ export function ReaderScreen() {
         {
           label: t('reader.cropNone'),
           icon: 'crop-free',
-          onPress: () => execute({ type: 'setCrop', pageIds: pages.map((p) => p.id), crop: null }, t('reader.crop')),
+          onPress: () =>
+            execute({ type: 'setCrop', pageIds: pages.map((p) => p.id), crop: null }, t('reader.crop')),
         },
         {
           label: t('reader.rotate'),
@@ -380,148 +540,371 @@ export function ReaderScreen() {
   }
 
   const ready = Boolean(model && mode && currentStop);
-  const animated = mode === 'horizontal-animated' && effectiveMode === 'horizontal';
+  const slideOrFade =
+    mode === 'horizontal-animated' && effectiveMode === 'horizontal' && reader.transition !== 'curl';
   const ms = reader.transitionMs;
-  const dir = direction;
-  const entering = animated
+  const entering = slideOrFade
     ? reader.transition === 'fade'
       ? FadeIn.duration(ms)
-      : dir === 1
+      : direction === 1
         ? SlideInRight.duration(ms)
         : SlideInLeft.duration(ms)
     : undefined;
-  const exiting = animated
+  const exiting = slideOrFade
     ? reader.transition === 'fade'
       ? FadeOut.duration(ms)
-      : dir === 1
+      : direction === 1
         ? SlideOutLeft.duration(ms)
         : SlideOutRight.duration(ms)
     : undefined;
 
-  const showBars = barsVisible && !fullscreen;
+  const showBars = (barsVisible || annotating) && !fullscreen;
   const canUndo = (history?.past.length ?? 0) > 0;
   const canRedo = (history?.future.length ?? 0) > 0;
+  const annotatedPage = annotating && currentStop?.kind === 'page' ? pages[currentStop.page] : undefined;
+  const toolbarSpace = annotating ? 96 : 0;
+
+  const renderStop = (stop: Stop) => (
+    <StopView
+      stop={stop}
+      pages={pages}
+      width={size.width}
+      height={size.height}
+      lookahead={effectiveMode === 'vertical-lookahead'}
+      halfStyle={reader.halfPageStyle}
+      lookaheadFallback={viewState.lookahead ?? reader.lookaheadFraction}
+      splits={viewState.splits ?? {}}
+      filter={filter}
+      brightness={reader.brightness}
+    />
+  );
+
+  const glass = (style: object) => [styles.glass, cardShadow(theme, 2), style];
+  const glassBg = (
+    <>
+      <BlurView intensity={50} tint="dark" style={[StyleSheet.absoluteFill, styles.glassClip]} />
+      <View style={[StyleSheet.absoluteFill, styles.glassClip, { backgroundColor: 'rgba(24,20,16,0.62)' }]} />
+    </>
+  );
 
   return (
     <View style={[styles.fill, { backgroundColor: theme.readerBackground }]} testID="reader">
-      <Stack.Screen options={{ statusBarHidden: fullscreen, navigationBarHidden: fullscreen, autoHideHomeIndicator: fullscreen }} />
+      <Stack.Screen
+        options={{
+          statusBarHidden: fullscreen,
+          navigationBarHidden: fullscreen,
+          autoHideHomeIndicator: fullscreen,
+        }}
+      />
       <PerformanceChrome active={fullscreen} />
-      <View
-        style={[styles.fill, { paddingTop: fullscreen ? 0 : insets.top, paddingBottom: fullscreen ? 0 : insets.bottom }]}
-      >
-        <View style={styles.fill} onLayout={onLayout}>
-          {!ready ? (
-            <View style={[styles.fill, styles.center]}>
-              <ActivityIndicator color={theme.primary} size="large" />
-            </View>
-          ) : isContinuous ? (
-            <GestureDetector gesture={tap}>
-              <View style={styles.fill}>
-                <ContinuousView
-                  ref={continuousRef}
-                  pages={pages}
-                  width={size.width}
-                  height={size.height}
-                  overlap={reader.continuousOverlap}
-                  initialPage={currentPage}
+      <PageAnnotationsContext.Provider value={showAnnotations ? model?.annotations : undefined}>
+        <View
+          style={[
+            styles.fill,
+            { paddingTop: fullscreen ? 0 : insets.top, paddingBottom: fullscreen ? 0 : insets.bottom },
+          ]}
+        >
+          <View style={styles.fill} onLayout={onLayout}>
+            {!ready ? (
+              <View style={[styles.fill, styles.center]}>
+                <ActivityIndicator color={theme.primary} size="large" />
+              </View>
+            ) : annotatedPage ? (
+              <View style={[styles.fill, { paddingTop: 64, paddingBottom: toolbarSpace }]}>
+                <AnnotateView
+                  key={`${doc?.id}-${annotatedPage.id}`}
+                  page={annotatedPage}
+                  annotations={model?.annotations[annotatedPage.id] ?? []}
+                  boxWidth={size.width - 16}
+                  boxHeight={size.height - 64 - toolbarSpace}
+                  tools={tools}
+                  inputMode={inputMode}
                   filter={filter}
                   brightness={reader.brightness}
-                  onPageChange={setContinuousPage}
-                  scrollEnabled={!fullscreen || reader.swipeToTurn}
+                  onAdd={(anns) =>
+                    execute(
+                      { type: 'addAnnotations', pageId: annotatedPage.id, annotations: anns },
+                      t('reader.annotate'),
+                    )
+                  }
+                  onRemove={(ids) =>
+                    execute(
+                      { type: 'removeAnnotations', pageId: annotatedPage.id, ids },
+                      t('annotate.eraser'),
+                    )
+                  }
+                  onUpdate={(a) =>
+                    execute(
+                      { type: 'updateAnnotations', pageId: annotatedPage.id, annotations: [a] },
+                      t('annotate.text'),
+                    )
+                  }
                 />
               </View>
-            </GestureDetector>
-          ) : (
-            <GestureDetector gesture={gestures}>
-              <View style={[styles.fill, { overflow: 'hidden' }]} collapsable={false}>
-                <Animated.View key={stopIndex} entering={entering} exiting={exiting} style={StyleSheet.absoluteFill}>
-                  <StopView
-                    stop={currentStop!}
+            ) : isContinuous ? (
+              <GestureDetector gesture={tap}>
+                <View style={styles.fill}>
+                  <ContinuousView
+                    key={doc?.id}
+                    ref={continuousRef}
                     pages={pages}
                     width={size.width}
                     height={size.height}
-                    lookahead={effectiveMode === 'vertical-lookahead'}
-                    halfStyle={reader.halfPageStyle}
-                    lookaheadFallback={viewState.lookahead ?? reader.lookaheadFraction}
-                    splits={viewState.splits ?? {}}
+                    overlap={reader.continuousOverlap}
+                    initialPage={currentPage}
                     filter={filter}
                     brightness={reader.brightness}
+                    onPageChange={setContinuousPage}
+                    scrollEnabled={!fullscreen || reader.swipeToTurn}
+                  />
+                </View>
+              </GestureDetector>
+            ) : (
+              <GestureDetector gesture={gestures}>
+                <View style={[styles.fill, { overflow: 'hidden' }]} collapsable={false}>
+                  {animated3d ? (
+                    <FlipStack
+                      current={currentStop!}
+                      flip={flip}
+                      render={renderStop}
+                      width={size.width}
+                      sheetFor={(stop) => {
+                        const p = stop.kind === 'page' ? pages[stop.page] : undefined;
+                        if (!p) return { left: 0, width: size.width };
+                        const w = fitWidth(p, size.width, size.height);
+                        return { left: (size.width - w) / 2, width: w };
+                      }}
+                      duration={reader.transitionMs}
+                    />
+                  ) : (
+                    <Animated.View
+                      key={`${doc?.id}-${stopIndex}`}
+                      entering={entering}
+                      exiting={exiting}
+                      style={StyleSheet.absoluteFill}
+                    >
+                      {renderStop(currentStop!)}
+                    </Animated.View>
+                  )}
+                </View>
+              </GestureDetector>
+            )}
+          </View>
+
+          {fullscreen ? (
+            // Deliberate gesture to leave performance mode: press and hold the top edge.
+            <Pressable
+              testID="exit-fullscreen-zone"
+              accessibilityRole="button"
+              accessibilityLabel={t('reader.exitFullscreenHint')}
+              delayLongPress={600}
+              onLongPress={toggleFullscreen}
+              style={styles.exitZone}
+            />
+          ) : null}
+
+          {fullscreen && reader.showPageNumberInPerformance ? (
+            <View pointerEvents="none" style={styles.miniPage}>
+              <AppText variant="caption" style={{ color: '#FFFFFF' }}>
+                {currentPage + 1}/{pages.length}
+              </AppText>
+            </View>
+          ) : null}
+
+          {hint ? (
+            <View pointerEvents="none" style={[styles.hint, { backgroundColor: theme.overlay }]}>
+              <AppText style={{ color: '#FFFFFF', textAlign: 'center' }}>
+                {t('reader.exitFullscreenHint')}
+              </AppText>
+            </View>
+          ) : null}
+
+          {banner ? (
+            <Animated.View
+              entering={FadeInDown.springify()}
+              exiting={FadeOut}
+              pointerEvents="none"
+              style={[styles.banner, { top: insets.top + 12 }]}
+              testID="piece-banner"
+            >
+              <AppText style={{ color: '#FFFFFF', fontWeight: '700' }} numberOfLines={1}>
+                {banner}
+              </AppText>
+            </Animated.View>
+          ) : null}
+
+          {showBars ? (
+            <>
+              <Animated.View
+                entering={FadeInUp.duration(160)}
+                exiting={FadeOut.duration(120)}
+                style={glass({ top: insets.top + 8 })}
+                testID="reader-top-bar"
+              >
+                {glassBg}
+                <IconButton
+                  icon="arrow-left"
+                  label={t('common.back')}
+                  color="#FFFFFF"
+                  onPress={() => void close()}
+                  testID="reader-back"
+                />
+                <View style={{ flex: 1, marginHorizontal: SPACING.sm }}>
+                  <AppText style={styles.title} numberOfLines={1}>
+                    {doc?.title}
+                  </AppText>
+                  {pieces && pieceIndex >= 0 ? (
+                    <AppText
+                      variant="caption"
+                      style={{ color: 'rgba(255,255,255,0.8)' }}
+                      testID="piece-indicator"
+                    >
+                      {t('reader.piece', { n: pieceIndex + 1, total: pieces.length })}
+                    </AppText>
+                  ) : null}
+                </View>
+                {!annotating ? (
+                  <>
+                    <IconButton
+                      icon="draw"
+                      label={t('reader.annotate')}
+                      color="#FFFFFF"
+                      onPress={() => setAnnotating(true)}
+                      testID="reader-annotate"
+                    />
+                    <IconButton
+                      icon="undo"
+                      label={t('common.undo')}
+                      color="#FFFFFF"
+                      onPress={undo}
+                      disabled={!canUndo}
+                    />
+                    <IconButton icon="crop" label={t('reader.crop')} color="#FFFFFF" onPress={cropMenu} />
+                    <IconButton
+                      icon="theme-light-dark"
+                      label={t('reader.display')}
+                      color="#FFFFFF"
+                      onPress={chooseDisplay}
+                    />
+                    <IconButton
+                      icon="book-open-variant"
+                      label={t('reader.viewMode')}
+                      color="#FFFFFF"
+                      onPress={chooseMode}
+                      testID="reader-mode"
+                    />
+                    <IconButton
+                      icon="fullscreen"
+                      label={t('reader.fullscreen')}
+                      color="#FFFFFF"
+                      onPress={toggleFullscreen}
+                      testID="reader-fullscreen"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <IconButton
+                      icon="chevron-left"
+                      label={t('reader.previous')}
+                      color="#FFFFFF"
+                      onPress={() => turn(-1)}
+                    />
+                    <AppText style={{ color: '#FFFFFF', fontWeight: '700' }} testID="page-indicator-annotate">
+                      {currentPage + 1}/{pages.length}
+                    </AppText>
+                    <IconButton
+                      icon="chevron-right"
+                      label={t('reader.next')}
+                      color="#FFFFFF"
+                      onPress={() => turn(1)}
+                    />
+                  </>
+                )}
+                {annotating ? (
+                  <IconButton
+                    icon={showAnnotations ? 'eye-outline' : 'eye-off-outline'}
+                    label={showAnnotations ? t('annotate.hide') : t('annotate.show')}
+                    color="#FFFFFF"
+                    onPress={() => setShowAnnotations((v) => !v)}
+                  />
+                ) : null}
+              </Animated.View>
+              {annotating ? null : (
+                <Animated.View
+                  entering={FadeInDown.duration(160)}
+                  exiting={FadeOut.duration(120)}
+                  style={glass({
+                    bottom: insets.bottom + 8,
+                    alignSelf: 'center',
+                    left: undefined,
+                    right: undefined,
+                    paddingHorizontal: SPACING.sm,
+                  })}
+                >
+                  {glassBg}
+                  <IconButton
+                    icon="chevron-left"
+                    label={t('reader.previous')}
+                    color="#FFFFFF"
+                    onPress={() => turn(-1)}
+                  />
+                  {jumpBack !== null ? (
+                    <IconButton
+                      icon="keyboard-return"
+                      label={t('reader.back')}
+                      color="#FFFFFF"
+                      onPress={() => goToPage(jumpBack, false)}
+                    />
+                  ) : null}
+                  <Pressable
+                    onPress={() => void askPage()}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('reader.goToPage')}
+                    style={styles.pageLabel}
+                  >
+                    <AppText style={{ color: '#FFFFFF', fontWeight: '700' }} testID="page-indicator">
+                      {t('reader.page', { page: currentPage + 1, total: pages.length })}
+                    </AppText>
+                  </Pressable>
+                  <IconButton
+                    icon="chevron-right"
+                    label={t('reader.next')}
+                    color="#FFFFFF"
+                    onPress={() => turn(1)}
                   />
                 </Animated.View>
+              )}
+            </>
+          ) : null}
+
+          {annotating && !fullscreen ? (
+            <AnnotationToolbar
+              tools={tools}
+              onChange={setTools}
+              inputMode={inputMode}
+              onInputMode={(m) => {
+                updateSettings((s) => ({ ...s, annotations: { ...s.annotations, inputMode: m } }));
+                dialogs.toast(m === 'stylus' ? t('annotate.stylusHint') : t('annotate.fingerHint'));
+              }}
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={undo}
+              onRedo={redo}
+              onClose={() => setAnnotating(false)}
+              bottom={insets.bottom + 8}
+            />
+          ) : null}
+
+          {busy ? (
+            <View style={[StyleSheet.absoluteFill, styles.center, { backgroundColor: 'rgba(0,0,0,0.35)' }]}>
+              <View style={[styles.busy, { backgroundColor: theme.surface }]}>
+                <ActivityIndicator color={theme.primary} />
+                <AppText style={{ marginLeft: SPACING.md }}>{busy}</AppText>
               </View>
-            </GestureDetector>
-          )}
+            </View>
+          ) : null}
         </View>
-
-        {fullscreen ? (
-          // Deliberate gesture to leave performance mode: press and hold the top edge.
-          <Pressable
-            testID="exit-fullscreen-zone"
-            accessibilityRole="button"
-            accessibilityLabel={t('reader.exitFullscreenHint')}
-            delayLongPress={600}
-            onLongPress={toggleFullscreen}
-            style={styles.exitZone}
-          />
-        ) : null}
-
-        {fullscreen && reader.showPageNumberInPerformance ? (
-          <View pointerEvents="none" style={styles.miniPage}>
-            <AppText variant="caption" style={{ color: '#FFFFFF' }}>
-              {currentPage + 1}/{pages.length}
-            </AppText>
-          </View>
-        ) : null}
-
-        {hint ? (
-          <View pointerEvents="none" style={[styles.hint, { backgroundColor: theme.overlay }]}>
-            <AppText style={{ color: '#FFFFFF', textAlign: 'center' }}>{t('reader.exitFullscreenHint')}</AppText>
-          </View>
-        ) : null}
-
-        {showBars ? (
-          <>
-            <View style={[styles.topBar, { backgroundColor: theme.overlay, top: insets.top }]} testID="reader-top-bar">
-              <IconButton icon="arrow-left" label={t('common.back')} color="#FFFFFF" onPress={() => void close()} testID="reader-back" />
-              <AppText style={styles.title} numberOfLines={1}>
-                {doc?.title}
-              </AppText>
-              <IconButton icon="undo" label={t('common.undo')} color="#FFFFFF" onPress={undo} disabled={!canUndo} />
-              <IconButton icon="redo" label={t('common.redo')} color="#FFFFFF" onPress={redo} disabled={!canRedo} />
-              <IconButton icon="crop" label={t('reader.crop')} color="#FFFFFF" onPress={cropMenu} />
-              <IconButton icon="theme-light-dark" label={t('reader.display')} color="#FFFFFF" onPress={chooseDisplay} />
-              <IconButton icon="book-open-variant" label={t('reader.viewMode')} color="#FFFFFF" onPress={chooseMode} testID="reader-mode" />
-              <IconButton icon="fullscreen" label={t('reader.fullscreen')} color="#FFFFFF" onPress={toggleFullscreen} testID="reader-fullscreen" />
-            </View>
-            <View style={[styles.bottomBar, { backgroundColor: theme.overlay, bottom: insets.bottom }]}>
-              <IconButton icon="chevron-left" label={t('reader.previous')} color="#FFFFFF" onPress={() => turn(-1)} />
-              {jumpBack !== null ? (
-                <IconButton
-                  icon="keyboard-return"
-                  label={t('reader.back')}
-                  color="#FFFFFF"
-                  onPress={() => goToPage(jumpBack, false)}
-                />
-              ) : null}
-              <Pressable onPress={() => void askPage()} accessibilityRole="button" accessibilityLabel={t('reader.goToPage')} style={styles.pageLabel}>
-                <AppText style={{ color: '#FFFFFF', fontWeight: '700' }} testID="page-indicator">
-                  {t('reader.page', { page: currentPage + 1, total: pages.length })}
-                </AppText>
-              </Pressable>
-              <IconButton icon="chevron-right" label={t('reader.next')} color="#FFFFFF" onPress={() => turn(1)} />
-            </View>
-          </>
-        ) : null}
-
-        {busy ? (
-          <View style={[StyleSheet.absoluteFill, styles.center, { backgroundColor: 'rgba(0,0,0,0.35)' }]}>
-            <View style={[styles.busy, { backgroundColor: theme.surface }]}>
-              <ActivityIndicator color={theme.primary} />
-              <AppText style={{ marginLeft: SPACING.md }}>{busy}</AppText>
-            </View>
-          </View>
-        ) : null}
-      </View>
+      </PageAnnotationsContext.Provider>
     </View>
   );
 }
@@ -529,29 +912,45 @@ export function ReaderScreen() {
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   center: { alignItems: 'center', justifyContent: 'center' },
-  topBar: {
+  glass: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    minHeight: 56,
+    left: SPACING.sm,
+    right: SPACING.sm,
+    minHeight: 54,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACING.xs,
+    borderRadius: RADIUS.xl,
   },
-  title: { flex: 1, color: '#FFFFFF', fontWeight: '700', marginHorizontal: SPACING.sm },
-  bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    minHeight: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.md,
-  },
+  glassClip: { borderRadius: RADIUS.xl, overflow: 'hidden' },
+  title: { color: '#FFFFFF', fontWeight: '700' },
   pageLabel: { minHeight: 44, justifyContent: 'center', paddingHorizontal: SPACING.md },
   exitZone: { position: 'absolute', top: 0, left: 0, right: 0, height: 40 },
-  miniPage: { position: 'absolute', right: 8, bottom: 6, opacity: 0.45, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 6, paddingHorizontal: 6 },
-  hint: { position: 'absolute', top: 60, alignSelf: 'center', padding: SPACING.lg, borderRadius: 12, maxWidth: 420 },
-  busy: { flexDirection: 'row', alignItems: 'center', padding: SPACING.xl, borderRadius: 12 },
+  miniPage: {
+    position: 'absolute',
+    right: 8,
+    bottom: 6,
+    opacity: 0.45,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+  },
+  hint: {
+    position: 'absolute',
+    top: 60,
+    alignSelf: 'center',
+    padding: SPACING.lg,
+    borderRadius: RADIUS.lg,
+    maxWidth: 420,
+  },
+  banner: {
+    position: 'absolute',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(24,20,16,0.85)',
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.pill,
+    maxWidth: '90%',
+  },
+  busy: { flexDirection: 'row', alignItems: 'center', padding: SPACING.xl, borderRadius: RADIUS.lg },
 });

@@ -1,13 +1,13 @@
 {
-  "name": "atril-musical",
-  "productName": "Atril Musical",
+  "name": "atril-pdf",
+  "productName": "Atril PDF",
   "version": "0.1.0",
   "description": "Lector de partituras PDF libre y gratuito para músicos / Free and open-source PDF sheet music reader for musicians",
   "author": {
     "name": "Marcos Hernández Párraga"
   },
   "license": "MIT",
-  "homepage": "https://github.com/MarcosHernandezParraga/atril-musical",
+  "homepage": "https://github.com/MarcosHernandezParraga/atril-pdf",
   "main": "main.js",
   "private": true
 }

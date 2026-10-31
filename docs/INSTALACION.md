@@ -1,6 +1,6 @@
 # Instalación del entorno de desarrollo
 
-Este documento explica qué se ha usado para desarrollar Atril Musical y cómo preparar un ordenador **Windows** para trabajar con el proyecto. **Para usar la app no hace falta nada de esto**: basta con descargar el instalador o el APK (ver `docs/GUIA_PARA_MARCOS.md`).
+Este documento explica qué se ha usado para desarrollar Atril PDF y cómo preparar un ordenador **Windows** para trabajar con el proyecto. **Para usar la app no hace falta nada de esto**: basta con descargar el instalador o el APK (ver `docs/GUIA_PARA_MARCOS.md`).
 
 ## Qué se ha usado hasta ahora
 
@@ -58,11 +58,11 @@ cd $HOME\Documents
 ```
 
 ```powershell
-git clone https://github.com/MarcosHernandezParraga/atril-musical.git
+git clone https://github.com/MarcosHernandezParraga/atril-pdf.git
 ```
 
 ```powershell
-cd atril-musical
+cd atril-pdf
 ```
 
 ```powershell
@@ -85,7 +85,7 @@ Debe terminar con `Tests: … passed`.
 npm run desktop:start
 ```
 
-Se abrirá la ventana de Atril Musical. Para crear el instalador de Windows (`.exe`), en la carpeta `desktop\release`:
+Se abrirá la ventana de Atril PDF. Para crear el instalador de Windows (`.exe`), en la carpeta `desktop\release`:
 
 ```powershell
 npm run desktop:dist
@@ -124,7 +124,7 @@ Necesitas una cuenta gratuita en https://expo.dev. Para iPhone/iPad hace falta a
 ## Volver a arrancar el proyecto otro día
 
 ```powershell
-cd $HOME\Documents\atril-musical
+cd $HOME\Documents\atril-pdf
 ```
 
 ```powershell

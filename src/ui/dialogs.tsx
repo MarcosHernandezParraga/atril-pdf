@@ -15,6 +15,8 @@ import { AppText, Button, Icon, type IconName } from './primitives';
 export interface MenuItem {
   label: string;
   icon?: IconName;
+  /** Icon colour (e.g. folder colours). */
+  color?: string;
   danger?: boolean;
   onPress: () => void;
 }
@@ -205,7 +207,7 @@ export function DialogHost() {
                     }}
                     style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: t.surfaceAlt }]}
                   >
-                    {item.icon ? <Icon name={item.icon} color={item.danger ? t.danger : t.text} /> : null}
+                    {item.icon ? <Icon name={item.icon} color={item.color ?? (item.danger ? t.danger : t.text)} /> : null}
                     <AppText style={{ marginLeft: SPACING.md, color: item.danger ? t.danger : t.text }}>{item.label}</AppText>
                   </Pressable>
                 ))}
@@ -244,14 +246,14 @@ const styles = StyleSheet.create({
   sheet: {
     width: '100%',
     maxWidth: 440,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.xl,
     padding: SPACING.xl,
     borderWidth: StyleSheet.hairlineWidth,
   },
   input: {
     marginTop: SPACING.lg,
     borderWidth: 1,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.lg,
     minHeight: TOUCH + 4,
     paddingHorizontal: SPACING.md,
     fontSize: 16,
@@ -262,7 +264,7 @@ const styles = StyleSheet.create({
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.pill,
     paddingHorizontal: SPACING.lg,
     minHeight: TOUCH + 4,
     maxWidth: 560,

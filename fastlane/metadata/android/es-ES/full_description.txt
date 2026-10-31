@@ -1,4 +1,4 @@
-Atril Musical es un lector de partituras PDF pensado para músicos: estudiantes, profesorado, conservatorios, bandas, orquestas y coros. También sirve para leer libros y documentos.
+Atril PDF es un lector de partituras PDF pensado para músicos: estudiantes, profesorado, conservatorios, bandas, orquestas y coros. También sirve para leer libros y documentos.
 
 Es libre y gratuito: sin anuncios, sin cuentas, sin suscripciones, sin compras dentro de la app y sin recogida de datos. Funciona 100 % sin internet.
 

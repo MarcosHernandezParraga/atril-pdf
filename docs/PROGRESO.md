@@ -18,7 +18,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 
 ## Fase 1 — Base ✅
 
-- ✅ Identidad de la app en un único sitio: `src/config/identity.json` (nombre, identificador `com.marcoshernandez.atrilmusical`, autor, repositorio). La leen `app.config.ts`, el escritorio y la interfaz.
+- ✅ Identidad de la app en un único sitio: `src/config/identity.json` (nombre, identificador `com.marcoshernandez.atrilpdf`, autor, repositorio). La leen `app.config.ts`, el escritorio y la interfaz.
 - ✅ i18n español/inglés con test de claves; tema claro/oscuro/sistema.
 - ✅ SQLite + Drizzle con el mismo esquema en todas las plataformas (expo-sqlite, SQLite de Electron, sql.js en navegador, node:sqlite en tests). Migraciones con `PRAGMA user_version`.
 - ✅ StorageAdapter (móvil, escritorio, navegador).

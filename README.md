@@ -1,4 +1,4 @@
-# Atril Musical
+# Atril PDF
 
 **Lector de partituras PDF libre y gratuito para músicos.** También sirve para leer libros y documentos.
 Sin anuncios, sin cuentas, sin suscripciones, sin compras dentro de la app, sin recogida de datos y funciona 100 % sin internet.
@@ -33,9 +33,9 @@ Funciones en desarrollo: panel de miniaturas y organización de páginas, anotac
 ### macOS: abrir la app sin firmar
 
 Mientras la app no esté firmada con una cuenta de Apple de pago, macOS avisará la primera vez. Para abrirla:
-1. Intenta abrir **Atril Musical** (aparecerá un aviso; pulsa **Aceptar**).
+1. Intenta abrir **Atril PDF** (aparecerá un aviso; pulsa **Aceptar**).
 2. Abre **Ajustes del Sistema → Privacidad y seguridad**.
-3. Baja hasta el mensaje sobre Atril Musical y pulsa **Abrir igualmente**.
+3. Baja hasta el mensaje sobre Atril PDF y pulsa **Abrir igualmente**.
 
 ## Compilar desde el código
 
@@ -60,7 +60,7 @@ Lee [CONTRIBUTING.md](CONTRIBUTING.md). Licencias de terceros en [THIRD_PARTY_LI
 
 <a id="english"></a>
 
-# Atril Musical (English)
+# Atril PDF (English)
 
 **Free and open-source PDF sheet music reader for musicians**, also great for books and documents.
 No ads, no accounts, no subscriptions, no in-app purchases, no data collection, works 100% offline.

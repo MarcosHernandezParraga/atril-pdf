@@ -57,7 +57,7 @@ module.exports = {
     publisherDisplayName: identity.author,
     // Replace these two values with the ones shown in Microsoft Partner Center
     // (Product identity) before uploading to the Microsoft Store.
-    identityName: process.env.MS_STORE_IDENTITY_NAME || 'MarcosHernandezParraga.AtrilMusical',
+    identityName: process.env.MS_STORE_IDENTITY_NAME || 'MarcosHernandezParraga.AtrilPDF',
     publisher: process.env.MS_STORE_PUBLISHER || 'CN=00000000-0000-0000-0000-000000000000',
     languages: ['es-ES', 'en-US'],
     backgroundColor: '#1B1712',

@@ -14,6 +14,7 @@ import {
   annotations,
   bookmarks,
   documents,
+  folderItems,
   folders,
   settings,
   setlistItems,
@@ -27,7 +28,14 @@ import {
   type SourceRow,
 } from '../db/schema';
 
-export type DocumentSort = 'name' | 'added' | 'opened';
+export type DocumentSort = 'recent' | 'name' | 'added';
+
+/** A piece of a concert folder: the document plus its place in the folder. */
+export interface FolderPiece {
+  itemId: string;
+  position: number;
+  doc: DocumentRow;
+}
 
 export interface StoredPages {
   formatVersion: 1;
@@ -179,9 +187,9 @@ export class LibraryRepository {
     const order =
       opts.sort === 'added'
         ? desc(documents.createdAt)
-        : opts.sort === 'opened'
-          ? desc(sql`coalesce(${documents.lastOpenedAt}, 0)`)
-          : asc(sql`lower(${documents.title})`);
+        : opts.sort === 'name'
+          ? asc(sql`lower(${documents.title})`)
+          : desc(sql`coalesce(${documents.lastOpenedAt}, ${documents.createdAt})`);
     return this.db
       .select()
       .from(documents)
@@ -239,16 +247,7 @@ export class LibraryRepository {
 
   async restoreDocuments(ids: string[]): Promise<void> {
     if (ids.length === 0) return;
-    const rows = await this.db.select().from(documents).where(inArray(documents.id, ids));
-    const live = new Set((await this.allFolders()).map((f) => f.id));
-    await this.batch(
-      rows.map((r) =>
-        this.db
-          .update(documents)
-          .set({ deletedAt: null, folderId: r.folderId && live.has(r.folderId) ? r.folderId : null })
-          .where(eq(documents.id, r.id)),
-      ),
-    );
+    await this.db.update(documents).set({ deletedAt: null }).where(inArray(documents.id, ids));
   }
 
   /** Permanently deletes documents. Returns the sources no longer used by any document. */
@@ -256,6 +255,7 @@ export class LibraryRepository {
     if (ids.length === 0) return [];
     await this.batch([
       this.db.delete(annotations).where(inArray(annotations.documentId, ids)),
+      this.db.delete(folderItems).where(inArray(folderItems.documentId, ids)),
       this.db.delete(bookmarks).where(inArray(bookmarks.documentId, ids)),
       this.db.delete(setlistItems).where(inArray(setlistItems.documentId, ids)),
       this.db.delete(documents).where(inArray(documents.id, ids)),
@@ -420,18 +420,79 @@ export class LibraryRepository {
     return path;
   }
 
-  /** Moves a folder (and everything inside it) to the trash. */
-  async trashFolder(id: string): Promise<void> {
+  /**
+   * Deletes a folder and its sub-folders. The documents are NOT deleted: they stay in
+   * the library (a folder only holds references to them).
+   */
+  async deleteFolder(id: string): Promise<void> {
     const all = await this.allFolders();
     const ids = all.filter((f) => isInside(all, f.id, id)).map((f) => f.id);
-    const t = this.now();
     await this.batch([
-      this.db.update(folders).set({ deletedAt: t }).where(inArray(folders.id, ids)),
-      this.db
-        .update(documents)
-        .set({ deletedAt: t })
-        .where(and(inArray(documents.folderId, ids), isNull(documents.deletedAt))),
+      this.db.delete(folderItems).where(inArray(folderItems.folderId, ids)),
+      this.db.delete(folders).where(inArray(folders.id, ids)),
     ]);
+  }
+
+  // ------------------------------------------------------------ concert folders
+
+  /** Pieces of a folder in concert order (documents in the trash are skipped). */
+  async folderPieces(folderId: string): Promise<FolderPiece[]> {
+    const rows = await this.db
+      .select({ item: folderItems, doc: documents })
+      .from(folderItems)
+      .innerJoin(documents, eq(folderItems.documentId, documents.id))
+      .where(and(eq(folderItems.folderId, folderId), isNull(documents.deletedAt)))
+      .orderBy(asc(folderItems.position));
+    return rows.map((r) => ({ itemId: r.item.id, position: r.item.position, doc: r.doc }));
+  }
+
+  /** Number of pieces of every folder. */
+  async folderPieceCounts(): Promise<Record<string, number>> {
+    const rows = await this.db
+      .select({ folderId: folderItems.folderId, n: sql<number>`count(*)` })
+      .from(folderItems)
+      .innerJoin(documents, eq(folderItems.documentId, documents.id))
+      .where(isNull(documents.deletedAt))
+      .groupBy(folderItems.folderId);
+    return Object.fromEntries(rows.map((r) => [r.folderId, Number(r.n)]));
+  }
+
+  /** Adds documents at the end of a folder (documents already in it are skipped). */
+  async addToFolder(folderId: string, documentIds: string[], newId: () => string): Promise<number> {
+    const existing = await this.db.select().from(folderItems).where(eq(folderItems.folderId, folderId));
+    const present = new Set(existing.map((e) => e.documentId));
+    let pos = existing.reduce((m, e) => Math.max(m, e.position), 0);
+    const toAdd = documentIds.filter((d, i) => !present.has(d) && documentIds.indexOf(d) === i);
+    await this.batch(
+      toAdd.map((documentId) => this.db.insert(folderItems).values({ id: newId(), folderId, documentId, position: ++pos })),
+    );
+    return toAdd.length;
+  }
+
+  async removeFromFolder(itemIds: string[]): Promise<void> {
+    if (itemIds.length === 0) return;
+    await this.db.delete(folderItems).where(inArray(folderItems.id, itemIds));
+  }
+
+  /** Writes the concert order of a folder (1, 2, 3...). */
+  async reorderFolder(folderId: string, orderedItemIds: string[]): Promise<void> {
+    await this.batch(
+      orderedItemIds.map((id, i) =>
+        this.db
+          .update(folderItems)
+          .set({ position: i + 1 })
+          .where(and(eq(folderItems.id, id), eq(folderItems.folderId, folderId))),
+      ),
+    );
+  }
+
+  /** Folders that contain a document. */
+  async foldersOfDocument(documentId: string): Promise<string[]> {
+    const rows = await this.db
+      .select({ folderId: folderItems.folderId })
+      .from(folderItems)
+      .where(eq(folderItems.documentId, documentId));
+    return rows.map((r) => r.folderId);
   }
 
   // ---------------------------------------------------------------- bookmarks

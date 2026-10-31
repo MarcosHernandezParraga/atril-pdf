@@ -9,7 +9,7 @@ const os = require('os');
 (async () => {
   const shots = process.argv[2] || 'e2e-shots';
   const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'atril-e2e-'));
-  // ATRIL_EXECUTABLE: test a packaged build instead of desktop/app (e.g. desktop/release/linux-unpacked/atril-musical).
+  // ATRIL_EXECUTABLE: test a packaged build instead of desktop/app (e.g. desktop/release/linux-unpacked/atril-pdf).
   const packaged = process.env.ATRIL_EXECUTABLE;
   const app = await electron.launch({
     executablePath: packaged || require('electron'),

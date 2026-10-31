@@ -7,7 +7,7 @@ La lógica (mapeo de teclas, anti-rebote y navegación en todos los modos) tiene
 ## Preparación
 
 1. Empareja el pedal con el dispositivo (Ajustes de Bluetooth del sistema). La mayoría de pedales tienen varios modos: elige el de **flechas** o **Re Pág / Av Pág**.
-2. Abre **Atril Musical → Ajustes → Pedal / teclado → Probar pedal** y pisa cada pedal. Debe aparecer el nombre de la tecla (por ejemplo `ArrowRight` o `PageDown`).
+2. Abre **Atril PDF → Ajustes → Pedal / teclado → Probar pedal** y pisa cada pedal. Debe aparecer el nombre de la tecla (por ejemplo `ArrowRight` o `PageDown`).
 
 ## Lista de comprobación (repetir en cada plataforma)
 

@@ -172,6 +172,22 @@ export function SettingsScreen() {
           />
         </Section>
 
+        <Section title={t('settings.annotations')}>
+          <AppText variant="label" style={{ marginTop: SPACING.md }}>
+            {t('settings.inputMode')}
+          </AppText>
+          <ChoiceList
+            value={s.annotations.inputMode === 'auto' ? 'both' : s.annotations.inputMode}
+            onChange={(v) => set((d) => void (d.annotations.inputMode = v))}
+            options={[
+              { value: 'both', label: t('settings.inputBoth'), subtitle: t('annotate.fingerHint') },
+              { value: 'stylus', label: t('settings.inputStylus'), subtitle: t('annotate.stylusHint') },
+              { value: 'finger', label: t('settings.inputFinger') },
+              { value: 'off', label: t('settings.inputOff') },
+            ]}
+          />
+        </Section>
+
         <Section title={t('settings.pedal')}>
           <Row title={t('settings.pedal')} subtitle={t('settings.testKeysHint')} icon="foot-print" onPress={() => router.push('/settings/pedal')} testID="open-pedal" last />
         </Section>

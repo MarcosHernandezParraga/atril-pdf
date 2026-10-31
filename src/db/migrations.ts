@@ -91,4 +91,20 @@ export const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE sources ADD COLUMN password TEXT;
   `,
+  // 3: folders work as concerts: ordered references to documents (a piece can be in several).
+  `
+  CREATE TABLE IF NOT EXISTS folder_items (
+    id TEXT PRIMARY KEY NOT NULL,
+    folder_id TEXT NOT NULL,
+    document_id TEXT NOT NULL,
+    position REAL NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS folder_items_folder_idx ON folder_items (folder_id);
+  CREATE INDEX IF NOT EXISTS folder_items_document_idx ON folder_items (document_id);
+  INSERT INTO folder_items (id, folder_id, document_id, position)
+    SELECT lower(hex(randomblob(16))), folder_id, id,
+           row_number() OVER (PARTITION BY folder_id ORDER BY lower(title))
+    FROM documents WHERE folder_id IS NOT NULL;
+  UPDATE documents SET folder_id = NULL;
+  `,
 ];

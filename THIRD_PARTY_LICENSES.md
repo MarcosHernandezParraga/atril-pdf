@@ -1,8 +1,8 @@
 # Licencias de terceros / Third-party licenses
 
-Atril Musical se distribuye bajo la licencia MIT. Incluye los siguientes componentes de terceros, cada uno con su propia licencia.
+Atril PDF se distribuye bajo la licencia MIT. Incluye los siguientes componentes de terceros, cada uno con su propia licencia.
 
-Atril Musical is distributed under the MIT License. It includes the following third-party components, each under its own license.
+Atril PDF is distributed under the MIT License. It includes the following third-party components, each under its own license.
 
 | Componente / Component | Versión / Version | Licencia / License | Origen / Source |
 | --- | --- | --- | --- |

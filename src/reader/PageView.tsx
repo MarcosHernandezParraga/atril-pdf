@@ -6,13 +6,17 @@
 // vector shapes.
 
 import { Image } from 'expo-image';
-import { memo, useEffect, useState } from 'react';
+import { createContext, memo, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, PixelRatio, Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { displayedPageSize, type PageRef } from '../core/model';
+import { AnnotationLayer } from '../annotations/AnnotationLayer';
+import { displayedPageSize, type Annotation, type PageRef } from '../core/model';
 import type { RenderedPage } from '../pdf/types';
 import { getServices } from '../services';
 import type { DisplayFilter } from '../settings/defaults';
+
+/** Annotations of the open document by page id; undefined when they are hidden. */
+export const PageAnnotationsContext = createContext<Record<string, Annotation[]> | undefined>(undefined);
 
 /** Height of a page displayed at `width` (crop and rotation applied). */
 export function pageHeightForWidth(page: PageRef, width: number): number {
@@ -106,10 +110,24 @@ export interface PageViewProps {
   filter?: DisplayFilter;
   brightness?: number;
   testID?: string;
+  /** Annotations drawn on top of the page (vectors). */
+  annotations?: Annotation[];
+  hiddenIds?: ReadonlySet<string>;
 }
 
-export const PageView = memo(function PageView({ page, width, band, filter = 'normal', brightness = 1, testID }: PageViewProps) {
+export const PageView = memo(function PageView({
+  page,
+  width,
+  band,
+  filter = 'normal',
+  brightness = 1,
+  testID,
+  annotations,
+  hiddenIds,
+}: PageViewProps) {
   const height = pageHeightForWidth(page, width);
+  const fromContext = useContext(PageAnnotationsContext);
+  const pageAnnotations = annotations ?? fromContext?.[page.id];
   const [b0, b1] = band ?? [0, 1];
   const visibleH = Math.max(1, (b1 - b0) * height);
 
@@ -184,6 +202,9 @@ export const PageView = memo(function PageView({ page, width, band, filter = 'no
         >
           <View style={{ position: 'absolute', left: -crop.left * fullW, top: -crop.top * fullH }}>{content}</View>
         </View>
+        {pageAnnotations && pageAnnotations.length > 0 ? (
+          <AnnotationLayer page={page} viewWidth={width} viewHeight={height} annotations={pageAnnotations} hiddenIds={hiddenIds} />
+        ) : null}
       </View>
       {iosOverlay}
     </View>

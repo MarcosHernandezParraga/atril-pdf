@@ -69,6 +69,18 @@ export const annotations = sqliteTable(
   (t) => [index('annotations_document_idx').on(t.documentId)],
 );
 
+/** Ordered pieces of a folder (a folder is a concert). */
+export const folderItems = sqliteTable(
+  'folder_items',
+  {
+    id: text('id').primaryKey(),
+    folderId: text('folder_id').notNull(),
+    documentId: text('document_id').notNull(),
+    position: real('position').notNull(),
+  },
+  (t) => [index('folder_items_folder_idx').on(t.folderId), index('folder_items_document_idx').on(t.documentId)],
+);
+
 export const setlists = sqliteTable('setlists', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -106,9 +118,10 @@ export const settings = sqliteTable('settings', {
   value: text('value').notNull(),
 });
 
-export const schema = { folders, documents, sources, annotations, setlists, setlistItems, bookmarks, settings };
+export const schema = { folders, folderItems, documents, sources, annotations, setlists, setlistItems, bookmarks, settings };
 
 export type FolderRow = typeof folders.$inferSelect;
+export type FolderItemRow = typeof folderItems.$inferSelect;
 export type DocumentRow = typeof documents.$inferSelect;
 export type SourceRow = typeof sources.$inferSelect;
 export type SetlistRow = typeof setlists.$inferSelect;

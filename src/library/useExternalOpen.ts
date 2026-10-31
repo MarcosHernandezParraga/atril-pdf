@@ -6,6 +6,7 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 
+import { newId } from '../core/ids';
 import i18n from '../i18n';
 import { getDesktopBridge } from '../platform/desktopBridge';
 import { getServices } from '../services';
@@ -33,7 +34,9 @@ export async function importAndReport(files: ExternalFile[], folderId: string | 
       message: i18n.t(retry ? 'library.passwordWrong' : 'library.passwordPrompt', { name }),
       secure: true,
     });
-  const result = await importFiles({ repo: s.repo, storage: s.storage, engine: s.engine, askPassword }, files, folderId);
+  const result = await importFiles({ repo: s.repo, storage: s.storage, engine: s.engine, askPassword }, files, null);
+  // Imported inside a concert folder: the new pieces go at the end of the concert.
+  if (folderId && result.documentIds.length > 0) await s.repo.addToFolder(folderId, result.documentIds, newId);
   useLibraryRefresh.getState().bump();
   reportImport(result);
   return result;

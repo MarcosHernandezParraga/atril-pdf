@@ -1,6 +1,6 @@
 # Cómo contribuir / Contributing
 
-¡Gracias por tu interés en Atril Musical! / Thanks for your interest in Atril Musical!
+¡Gracias por tu interés en Atril PDF! / Thanks for your interest in Atril PDF!
 
 ## Principios
 

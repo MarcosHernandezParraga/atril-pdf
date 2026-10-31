@@ -84,8 +84,8 @@ jobs:
       - name: Collect
         run: |
           mkdir -p out
-          cp android/app/build/outputs/apk/release/app-release.apk "out/AtrilMusical-${GITHUB_REF_NAME}-android.apk"
-          cp android/app/build/outputs/bundle/release/app-release.aab "out/AtrilMusical-${GITHUB_REF_NAME}-android.aab"
+          cp android/app/build/outputs/apk/release/app-release.apk "out/AtrilPDF-${GITHUB_REF_NAME}-android.apk"
+          cp android/app/build/outputs/bundle/release/app-release.aab "out/AtrilPDF-${GITHUB_REF_NAME}-android.aab"
       - uses: actions/upload-artifact@v4
         with:
           name: android

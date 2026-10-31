@@ -1,4 +1,4 @@
-Atril Musical is a PDF sheet music reader made for musicians: students, teachers, music schools, bands, orchestras and choirs. It is also great for books and documents.
+Atril PDF is a PDF sheet music reader made for musicians: students, teachers, music schools, bands, orchestras and choirs. It is also great for books and documents.
 
 It is free and open source: no ads, no accounts, no subscriptions, no in-app purchases and no data collection. Works 100% offline.
 

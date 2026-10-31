@@ -5,6 +5,9 @@ import { isInside, LibraryRepository, TRASH_RETENTION_MS } from '../../library/r
 import { createNodeSqliteExecutor } from '../backends/nodeSqlite';
 import { getSchemaVersion, openDatabase } from '../database';
 import { MIGRATIONS } from '../migrations';
+import { sequentialIds } from '../../core/ids';
+
+const sequential = () => sequentialIds('item');
 
 let clock = 1_000_000;
 const now = () => clock;
@@ -69,6 +72,20 @@ describe('database', () => {
     expect(await getSchemaVersion(executor)).toBe(MIGRATIONS.length);
     await openDatabase(executor); // re-opening must not fail
     expect(await getSchemaVersion(executor)).toBe(MIGRATIONS.length);
+  });
+
+  it('migration 3 turns documents of a folder into concert pieces', async () => {
+    const executor = createNodeSqliteExecutor(':memory:');
+    await executor.exec(`${MIGRATIONS[0]}\n${MIGRATIONS[1]}\nPRAGMA user_version = 2;`);
+    await executor.exec(`
+      INSERT INTO folders (id, name, created_at, updated_at) VALUES ('f', 'Concierto', 1, 1);
+      INSERT INTO documents (id, title, folder_id, created_at, updated_at, model_json, original_model_json)
+        VALUES ('b', 'Bach', 'f', 1, 1, '{}', '{}'), ('a', 'Albéniz', 'f', 1, 1, '{}', '{}'), ('z', 'Suelto', NULL, 1, 1, '{}', '{}');
+    `);
+    const { db } = await openDatabase(executor);
+    const repo = new LibraryRepository(db, now);
+    expect((await repo.folderPieces('f')).map((p) => p.doc.id)).toEqual(['a', 'b']);
+    expect((await repo.getDocument('b'))?.folderId).toBeNull();
   });
 
   it('rolls back a failing batch completely', async () => {
@@ -171,15 +188,47 @@ describe('library repository', () => {
     expect((await repo.folderPath('f3')).map((f) => f.name)).toEqual(['Orquesta', 'Violín', 'Estudios']);
     expect(await repo.moveFolders(['f1'], 'f3')).toBe(false);
     expect(await repo.moveFolders(['f3'], null)).toBe(true);
-    await addDoc(repo, 'd1', 'A', 'f2');
-    await repo.moveDocuments(['d1'], 'f1');
-    expect((await repo.listDocuments({ folderId: 'f1' })).map((d) => d.id)).toEqual(['d1']);
-    await repo.trashFolder('f1');
-    expect(await repo.allFolders()).toHaveLength(1);
-    expect(await repo.listDocuments({ trash: true })).toHaveLength(1);
-    // Restoring a document whose folder is gone puts it at the root.
-    await repo.restoreDocuments(['d1']);
-    expect((await repo.getDocument('d1'))?.folderId).toBeNull();
+  });
+
+  it('folders work as concerts: ordered pieces, reorder, remove, several concerts', async () => {
+    const { repo } = await setup();
+    const ids = sequential();
+    await addDoc(repo, 'd1', 'Allegro');
+    await addDoc(repo, 'd2', 'Adagio');
+    await addDoc(repo, 'd3', 'Rondó');
+    await repo.createFolder('c1', 'Concierto de Navidad', null);
+    await repo.createFolder('c2', 'Ensayo', null);
+    expect(await repo.addToFolder('c1', ['d1', 'd2', 'd3', 'd1'], ids)).toBe(3);
+    expect(await repo.addToFolder('c1', ['d2'], ids)).toBe(0);
+    await repo.addToFolder('c2', ['d2'], ids);
+    let pieces = await repo.folderPieces('c1');
+    expect(pieces.map((p) => p.doc.id)).toEqual(['d1', 'd2', 'd3']);
+    await repo.reorderFolder('c1', [pieces[2]!.itemId, pieces[0]!.itemId, pieces[1]!.itemId]);
+    pieces = await repo.folderPieces('c1');
+    expect(pieces.map((p) => p.doc.id)).toEqual(['d3', 'd1', 'd2']);
+    expect(await repo.folderPieceCounts()).toEqual({ c1: 3, c2: 1 });
+    expect((await repo.foldersOfDocument('d2')).sort()).toEqual(['c1', 'c2']);
+    await repo.removeFromFolder([pieces[0]!.itemId]);
+    expect((await repo.folderPieces('c1')).map((p) => p.doc.id)).toEqual(['d1', 'd2']);
+    // Pieces in the trash are skipped; deleting a folder keeps the documents.
+    await repo.trashDocuments(['d1']);
+    expect((await repo.folderPieces('c1')).map((p) => p.doc.id)).toEqual(['d2']);
+    await repo.deleteFolder('c1');
+    expect(await repo.folderPieces('c1')).toEqual([]);
+    expect((await repo.listDocuments()).map((d) => d.id).sort()).toEqual(['d2', 'd3']);
+    // Deleting a document forever removes it from every concert.
+    await repo.deleteDocuments(['d2']);
+    expect(await repo.folderPieces('c2')).toEqual([]);
+  });
+
+  it('lists all documents from the most recent', async () => {
+    const { repo } = await setup();
+    await addDoc(repo, 'old', 'Old');
+    clock += 10;
+    await addDoc(repo, 'new', 'New');
+    clock += 10;
+    await repo.markOpened('old');
+    expect((await repo.listDocuments({ sort: 'recent' })).map((d) => d.id)).toEqual(['old', 'new']);
   });
 
   it('isInside detects ancestors', () => {

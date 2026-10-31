@@ -1,10 +1,10 @@
 {
   "name": "atril-native",
   "version": "0.1.0",
-  "description": "Native PDF rendering and hardware key capture for Atril Musical",
+  "description": "Native PDF rendering and hardware key capture for Atril PDF",
   "author": "Marcos Hernández Párraga",
   "license": "MIT",
-  "homepage": "https://github.com/MarcosHernandezParraga/atril-musical",
+  "homepage": "https://github.com/MarcosHernandezParraga/atril-pdf",
   "main": "index.ts",
   "private": true
 }
