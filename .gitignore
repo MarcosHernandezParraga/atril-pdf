@@ -67,3 +67,6 @@ AGENTS.md
 .cursorrules
 .github/copilot-instructions.md
 .aider*
+
+# Browser / desktop test screenshots
+e2e-shots/

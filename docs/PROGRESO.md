@@ -7,7 +7,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Estado general
 
 - **Fase actual:** 3–5 en curso (fases 0, 1 y 2 terminadas).
-- **Pruebas automáticas:** 99 tests unitarios y de base de datos en verde; prueba en navegador real (12 pasos) y prueba de escritorio en Electron en verde.
+- **Pruebas automáticas:** 109 tests unitarios, de base de datos y de seguridad de rutas en verde; prueba en navegador real (12 pasos) y prueba de escritorio en Electron en verde.
 - **Calidad:** `tsc --noEmit` y ESLint sin errores ni avisos.
 
 ## Fase 0 — Entorno ✅
@@ -22,7 +22,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - ✅ i18n español/inglés con test de claves; tema claro/oscuro/sistema.
 - ✅ SQLite + Drizzle con el mismo esquema en todas las plataformas (expo-sqlite, SQLite de Electron, sql.js en navegador, node:sqlite en tests). Migraciones con `PRAGMA user_version`.
 - ✅ StorageAdapter (móvil, escritorio, navegador).
-- ✅ Electron: protocolo `app://`, CSP estricta, red bloqueada, instancia única, «Abrir con», arrastrar archivos, pantalla completa, pantalla siempre encendida. Probado en Linux con Playwright.
+- ✅ Electron: protocolo `app://`, CSP estricta, red bloqueada, instancia única, «Abrir con», arrastrar archivos, pantalla completa, pantalla siempre encendida. Probado en Linux con Playwright, tanto en desarrollo como **empaquetado (AppImage de 132 MB)**. Los instaladores de Windows y macOS los genera GitHub Actions (pendiente de la primera ejecución).
 - ✅ «Acerca de» con autor, licencia, misión, repositorio y licencias de terceros (`npm run licenses`).
 - ✅ LICENSE (MIT), CI de GitHub Actions (tipos, lint, tests, prueba en navegador y en Electron), workflow de publicación por etiquetas.
 - ✅ Icono propio (atril con pentagrama) en todos los tamaños, icono adaptativo de Android y splash.
