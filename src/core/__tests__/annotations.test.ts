@@ -11,6 +11,7 @@ import {
 } from '../../annotations/ink';
 import type { InkAnnotation, PageRef, Rotation, TextAnnotation } from '../model';
 import { pageToView, viewScale, viewToPage } from '../pageTransform';
+import { POINTER, pointerAllowed } from '../../annotations/input';
 
 function page(rotation: Rotation, crop: PageRef['crop'] = null): PageRef {
   return {
@@ -141,9 +142,6 @@ describe('ink', () => {
 });
 
 describe('pencil / finger input mode', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { pointerAllowed, POINTER } =
-    require('../../annotations/input') as typeof import('../../annotations/input');
   it('"pencil and finger": both draw', () => {
     expect(pointerAllowed('both', POINTER.TOUCH)).toBe(true);
     expect(pointerAllowed('both', POINTER.STYLUS)).toBe(true);
