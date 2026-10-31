@@ -1,9 +1,12 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
-// 3D page turn: the page rotates around its left edge (the spine) like a real
-// sheet, with a soft shadow, revealing the next page underneath. Going back,
-// the previous page swings in from the left over the current one.
+// Quick "page swipe": like turning a book page by its bottom-right corner,
+// the sheet slides away to the left with a slight tilt and a soft shadow on
+// its edge, revealing the next page underneath. Going back, the previous page
+// slides in from the left over the current one. It is meant to be almost
+// imperceptible: just enough to see that the page has changed.
 
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -20,13 +23,13 @@ export interface Flip<T> {
   key: number;
 }
 
-/** Horizontal position of the sheet (the page) on screen: it turns around its own left edge. */
+/** Horizontal position of the sheet (the page) on screen. */
 export interface SheetRect {
   left: number;
   width: number;
 }
 
-function TurningSheet({
+function SwipingSheet({
   children,
   dir,
   width,
@@ -41,35 +44,58 @@ function TurningSheet({
 }) {
   const progress = useSharedValue(0);
   useEffect(() => {
-    progress.set(withTiming(1, { duration, easing: Easing.inOut(Easing.quad) }));
+    progress.set(withTiming(1, { duration, easing: Easing.out(Easing.cubic) }));
   }, [progress, duration]);
 
+  // Distance needed to take the sheet completely off the left side of the screen.
+  const travel = rect.left + rect.width + 24;
+
   const sheet = useAnimatedStyle(() => {
-    // dir 1: the current sheet leaves (0° → -100°). dir -1: the previous sheet arrives (-100° → 0°).
-    const angle =
-      dir === 1
-        ? interpolate(progress.value, [0, 1], [0, -100])
-        : interpolate(progress.value, [0, 1], [-100, 0]);
+    // 0 = sheet in place, 1 = sheet gone to the left.
+    const p = dir === 1 ? progress.value : 1 - progress.value;
     return {
       transform: [
-        { perspective: Math.max(1200, rect.width * 3) },
-        { translateX: -rect.width / 2 },
-        { rotateY: `${angle}deg` },
-        { translateX: rect.width / 2 },
+        { translateX: -travel * p },
+        // Pulled by the bottom-right corner: the bottom leads, the page tilts slightly.
+        { rotateZ: `${interpolate(p, [0, 1], [0, -5])}deg` },
       ],
     };
   });
-  const shade = useAnimatedStyle(() => {
+  const edgeShadow = useAnimatedStyle(() => {
     const p = dir === 1 ? progress.value : 1 - progress.value;
-    return { opacity: interpolate(p, [0, 1], [0, 0.3]) };
+    return { opacity: interpolate(p, [0, 0.15, 1], [0, 0.35, 0.1]) };
   });
 
   return (
-    <Animated.View style={[styles.sheet, { left: rect.left, width: rect.width }, sheet]} pointerEvents="none">
+    <Animated.View
+      style={[styles.sheet, { left: rect.left, width: rect.width, transformOrigin: 'left bottom' }, sheet]}
+      pointerEvents="none"
+    >
       <View style={{ position: 'absolute', top: 0, bottom: 0, left: -rect.left, width }}>{children}</View>
-      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000000' }, shade]} />
+      {/* Soft shadow on the right edge, where the page is held. */}
+      <Animated.View style={[styles.edge, edgeShadow]}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={StyleSheet.absoluteFill}
+        />
+      </Animated.View>
     </Animated.View>
   );
+}
+
+/** Shadow that the moving sheet casts on the page underneath. */
+function Underlay({ dir, duration }: { dir: 1 | -1; duration: number }) {
+  const progress = useSharedValue(0);
+  useEffect(() => {
+    progress.set(withTiming(1, { duration, easing: Easing.out(Easing.cubic) }));
+  }, [progress, duration]);
+  const style = useAnimatedStyle(() => {
+    const p = dir === 1 ? progress.value : 1 - progress.value;
+    return { opacity: interpolate(p, [0, 1], [0.12, 0]) };
+  });
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.underlay, style]} />;
 }
 
 export function FlipStack<T>({
@@ -84,7 +110,7 @@ export function FlipStack<T>({
   flip: Flip<T> | null;
   render: (item: T) => ReactNode;
   width: number;
-  /** Where the turning page is (defaults to the whole width). */
+  /** Where the moving page is (defaults to the whole width). */
   sheetFor?: (item: T) => SheetRect;
   duration: number;
 }) {
@@ -94,22 +120,32 @@ export function FlipStack<T>({
     return (
       <View style={StyleSheet.absoluteFill}>
         <View style={StyleSheet.absoluteFill}>{render(current)}</View>
-        <TurningSheet key={flip.key} dir={1} width={width} sheet={rectOf(flip.from)} duration={duration}>
+        <Underlay key={`u${flip.key}`} dir={1} duration={duration} />
+        <SwipingSheet key={flip.key} dir={1} width={width} sheet={rectOf(flip.from)} duration={duration}>
           {render(flip.from)}
-        </TurningSheet>
+        </SwipingSheet>
       </View>
     );
   }
   return (
     <View style={StyleSheet.absoluteFill}>
       <View style={StyleSheet.absoluteFill}>{render(flip.from)}</View>
-      <TurningSheet key={flip.key} dir={-1} width={width} sheet={rectOf(current)} duration={duration}>
+      <Underlay key={`u${flip.key}`} dir={-1} duration={duration} />
+      <SwipingSheet key={flip.key} dir={-1} width={width} sheet={rectOf(current)} duration={duration}>
         {render(current)}
-      </TurningSheet>
+      </SwipingSheet>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   sheet: { position: 'absolute', top: 0, bottom: 0, overflow: 'hidden' },
+  edge: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: 22,
+  },
+  underlay: { backgroundColor: '#000000' },
 });

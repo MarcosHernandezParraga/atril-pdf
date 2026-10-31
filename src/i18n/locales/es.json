@@ -86,7 +86,14 @@
     "newSubfolder": "Nueva subcarpeta",
     "noFoldersHint": "Crea una carpeta para cada concierto u obra que prepares.",
     "openPiece": "Abrir solo esta obra",
-    "concertHint": "Pulsa una obra para abrirla sola, o «Iniciar concierto» para tocarlas todas seguidas."
+    "concertHint": "Pulsa una obra para abrirla sola, o «Iniciar concierto» para tocarlas todas seguidas.",
+    "reorderHint": "Arrastra una obra con el dedo (o usa las flechas) para cambiar el orden.",
+    "folderOptions": "Opciones de la carpeta",
+    "moreOptions": "Más opciones",
+    "subfolders": "Subcarpetas",
+    "dragToFolder": "Suelta sobre una carpeta para añadirla",
+    "dragHint": "Mantén pulsada una obra y arrástrala a una carpeta",
+    "alreadyInFolder": "Ya estaba en «{{name}}»"
   },
   "reader": {
     "page": "Página {{page}} de {{total}}",
@@ -135,7 +142,7 @@
     "transition": "Animación al pasar página",
     "transitionSlide": "Deslizar",
     "transitionFade": "Fundido",
-    "transitionCurl": "Pasar hoja (3D)",
+    "transitionCurl": "Pasar hoja",
     "transitionMs": "Duración de la animación",
     "halfPageStyle": "Media página",
     "halfPageStand": "Estilo atril (no se mueve nada)",

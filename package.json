@@ -91,6 +91,7 @@
     "opentype.js": "^2.0.0",
     "playwright": "1.63.0",
     "prettier": "^3.9.10",
+    "resedit": "^3.1.0",
     "sql.js": "^1.15.2",
     "typescript": "~6.0.3"
   }

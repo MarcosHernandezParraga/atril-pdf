@@ -75,7 +75,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   reader: {
     defaultMode: 'horizontal-animated',
     transition: 'curl',
-    transitionMs: 260,
+    transitionMs: 180,
     halfPageStyle: 'stand',
     lookaheadFraction: 0.2,
     continuousOverlap: 0.15,

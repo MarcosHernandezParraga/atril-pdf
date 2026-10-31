@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 // Browser test of the main user journeys: import, read, turn pages with pedal keys,
-// view modes, write on the PDF (pen and text), concert folders, settings, protected PDFs.
+// view modes, write on the PDF (pen and text), concert folders, dragging pieces
+// onto folders and reordering them, settings, protected PDFs.
 import { createRequire } from 'node:module';
 
 // Uses the Playwright installed in the project (or on the machine).
@@ -204,6 +205,56 @@ await step('concert folder: create, add pieces, reorder, play in a row', async (
   await page.getByTestId('import-button').waitFor();
   await page.waitForTimeout(800);
   await page.screenshot({ path: `${shots}/08-inicio-con-carpeta.png` });
+});
+
+/** Press and hold on an element, then move the mouse to (x, y) and release. */
+async function holdAndDrag(box, x, y) {
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(450);
+  await page.mouse.move(box.x + box.width / 2 + 8, box.y + box.height / 2 - 8, { steps: 3 });
+  await page.mouse.move(x, y, { steps: 12 });
+  await page.waitForTimeout(150);
+  await page.mouse.up();
+  await page.waitForTimeout(700);
+}
+
+await step('drag pieces from home onto a folder, then reorder them by dragging', async () => {
+  await page.getByTestId('new-folder').click();
+  await page.getByTestId('dialog-input').fill('Ensayo');
+  await page.getByTestId('dialog-ok').click();
+  const folder = page.getByRole('button', { name: /^Ensayo,/ });
+  await folder.waitFor();
+  await page.waitForTimeout(600);
+  for (const title of ['partitura-prueba', 'piano-prueba']) {
+    const card = page.getByRole('button', { name: new RegExp(`^${title},`) }).first();
+    const fb = await folder.boundingBox();
+    await holdAndDrag(await card.boundingBox(), fb.x + fb.width / 2, fb.y + fb.height / 2);
+    const toast = await page.getByTestId('toast').textContent();
+    if (toast !== 'Añadido a «Ensayo»') throw new Error(`drop: ${toast}`);
+    if (await page.getByTestId('reader').count()) throw new Error('the drop opened the document');
+  }
+  await page.screenshot({ path: `${shots}/08b-arrastrar-a-carpeta.png` });
+  if (!(await folder.textContent())?.includes('2 obras')) throw new Error(await folder.textContent());
+  await folder.click();
+  await page.getByTestId('folder-title').waitFor();
+  const firstTitle = (await page.getByTestId('piece-1').textContent())?.includes('partitura-prueba')
+    ? 'partitura-prueba'
+    : 'piano-prueba';
+  await page.getByTestId('reorder').click();
+  await page.waitForTimeout(300);
+  const row = await page.getByTestId('piece-row-1').boundingBox();
+  await page.mouse.move(row.x + 200, row.y + row.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(row.x + 200, row.y + row.height / 2 + 30, { steps: 4 });
+  await page.mouse.move(row.x + 200, row.y + row.height * 1.6, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(600);
+  const after = await page.getByTestId('piece-2').textContent();
+  if (!after?.includes(firstTitle)) throw new Error(`drag reorder: ${firstTitle} is not second (${after})`);
+  await page.getByTestId('reorder').click();
+  await page.getByTestId('folder-back').click();
+  await page.getByTestId('import-button').waitFor();
 });
 
 await step('settings, pedal test and about', async () => {

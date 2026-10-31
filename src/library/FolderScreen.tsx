@@ -1,8 +1,12 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
-// A folder is a concert: its pieces are numbered (1, 2, 3...) and can be
-// reordered. Tapping a piece opens it alone; "Start concert" plays every piece
-// in a row: turning the last page of a piece goes to the first page of the next.
+// A folder is a concert: its pieces are numbered (1, 2, 3...). In "Reorder"
+// mode they can be moved with the arrows or by dragging them with the finger.
+// Tapping a piece opens it alone; "Start concert" plays every piece in a row:
+// turning the last page of a piece goes to the first page of the next one.
+//
+// The layout is deliberately simple (plain views, fixed row heights, no layout
+// animations inside lists) so it renders the same on phones, tablets and computers.
 
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -12,12 +16,12 @@ import {
   FlatList,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
   useWindowDimensions,
   View,
 } from 'react-native';
-import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { newId } from '../core/ids';
@@ -25,15 +29,17 @@ import type { DocumentRow, FolderRow } from '../db/schema';
 import { getServices } from '../services';
 import { cardShadow, RADIUS, SPACING, TOUCH, useTheme } from '../theme';
 import { dialogs } from '../ui/dialogs';
-import { Pressable3D } from '../ui/Pressable3D';
+import { DragSortList, moveItem } from '../ui/DragSortList';
 import { AppText, Button, Icon, IconButton } from '../ui/primitives';
 import { createFolder, documentMenuItems, folderMenuItems, openDocument, startConcert } from './actions';
-import { contextMenuProps, entering, FolderTile, Thumbnail } from './DocumentCard';
-import { SectionTitle } from './LibraryScreen';
+import { contextMenuProps, FolderTile, Thumbnail } from './DocumentCard';
 import { useLibraryRefresh } from './libraryEvents';
 import { pickFiles } from './pickFiles';
-import { importAndReport } from './useExternalOpen';
 import type { FolderPiece } from './repository';
+import { importAndReport } from './useExternalOpen';
+
+const ROW = 78;
+const GAP = 10;
 
 export function FolderScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -47,6 +53,7 @@ export function FolderScreen() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [pieces, setPieces] = useState<FolderPiece[] | null>(null);
   const [reordering, setReordering] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [picking, setPicking] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -82,12 +89,9 @@ export function FolderScreen() {
     }, [fetchAll, apply]),
   );
 
-  const move = async (index: number, delta: -1 | 1) => {
-    if (!pieces) return;
-    const target = index + delta;
-    if (target < 0 || target >= pieces.length) return;
-    const next = [...pieces];
-    [next[index], next[target]] = [next[target]!, next[index]!];
+  const reorder = async (from: number, to: number) => {
+    if (!pieces || from === to) return;
+    const next = moveItem(pieces, from, to);
     setPieces(next);
     await getServices().repo.reorderFolder(
       id,
@@ -125,12 +129,7 @@ export function FolderScreen() {
 
   if (!folder && pieces !== null) {
     return (
-      <SafeAreaView
-        style={[
-          styles.fill,
-          { backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' },
-        ]}
-      >
+      <SafeAreaView style={[styles.fill, styles.center, { backgroundColor: theme.background }]}>
         <Button label={t('common.back')} icon="arrow-left" onPress={() => router.back()} />
       </SafeAreaView>
     );
@@ -138,89 +137,9 @@ export function FolderScreen() {
 
   const color = folder?.color ?? theme.primary;
   const pad = width < 500 ? SPACING.lg : SPACING.xl;
-  const subWidth = Math.min(220, (Math.min(width, 900) - pad * 2 - SPACING.md) / 2);
-
-  const header = (
-    <View>
-      <Animated.View
-        entering={ZoomIn.springify().damping(16)}
-        style={[styles.hero, { backgroundColor: color }, cardShadow(theme, 3)]}
-      >
-        <Icon name="folder-music" size={40} color="#FFFFFF" />
-        <AppText
-          variant="title"
-          style={{ color: '#FFFFFF', marginTop: SPACING.sm }}
-          numberOfLines={2}
-          testID="folder-title"
-        >
-          {folder?.name ?? ''}
-        </AppText>
-        <AppText style={{ color: 'rgba(255,255,255,0.9)' }}>
-          {t('library.pieces', { count: pieces?.length ?? 0 })}
-        </AppText>
-        <Button
-          testID="start-concert"
-          icon="play"
-          label={t('library.startConcert')}
-          disabled={!pieces || pieces.length === 0}
-          onPress={() => pieces?.[0] && startConcert(id, pieces[0].doc.id)}
-          variant="secondary"
-          style={{ marginTop: SPACING.lg, alignSelf: 'flex-start', backgroundColor: '#FFFFFF' }}
-        />
-      </Animated.View>
-      <View style={styles.actions}>
-        <Button
-          testID="add-pieces"
-          icon="playlist-plus"
-          label={t('library.addPieces')}
-          variant="secondary"
-          onPress={() => setPicking(true)}
-        />
-        <Button
-          icon="file-plus-outline"
-          label={t('library.importHere')}
-          variant="secondary"
-          onPress={() => void importHere()}
-        />
-        {pieces && pieces.length > 1 ? (
-          <Button
-            testID="reorder"
-            icon={reordering ? 'check' : 'swap-vertical'}
-            label={reordering ? t('common.done') : t('library.reorder')}
-            variant={reordering ? 'primary' : 'secondary'}
-            onPress={() => setReordering((r) => !r)}
-          />
-        ) : null}
-      </View>
-      {pieces && pieces.length > 0 ? (
-        <AppText variant="caption" secondary style={{ marginBottom: SPACING.md }}>
-          {t('library.concertHint')}
-        </AppText>
-      ) : null}
-      {subfolders.length > 0 ? (
-        <>
-          <SectionTitle title={t('library.foldersConcerts')} icon="folder-outline" />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginBottom: SPACING.lg }}>
-            {subfolders.map((f, i) => (
-              <FolderTile
-                key={f.id}
-                index={i}
-                folder={f}
-                width={subWidth}
-                count={counts[f.id] ?? 0}
-                onOpen={() => router.push({ pathname: '/folder/[id]', params: { id: f.id } })}
-                onMenu={() => void dialogs.menu(folderMenuItems(f), f.name)}
-                onPlay={async () => {
-                  const ps = await getServices().repo.folderPieces(f.id);
-                  if (ps[0]) startConcert(f.id, ps[0].doc.id);
-                }}
-              />
-            ))}
-          </View>
-        </>
-      ) : null}
-    </View>
-  );
+  const contentWidth = Math.min(width, 900) - pad * 2;
+  const subWidth = Math.floor((contentWidth - SPACING.md) / 2);
+  const count = pieces?.length ?? 0;
 
   return (
     <SafeAreaView
@@ -234,7 +153,7 @@ export function FolderScreen() {
           onPress={() => router.back()}
           testID="folder-back"
         />
-        <View style={{ flex: 1 }} />
+        <View style={styles.fill} />
         <IconButton
           icon="folder-plus-outline"
           label={t('library.newSubfolder')}
@@ -243,7 +162,7 @@ export function FolderScreen() {
         {folder ? (
           <IconButton
             icon="dots-horizontal-circle-outline"
-            label={t('library.color')}
+            label={t('library.folderOptions')}
             onPress={() =>
               void dialogs.menu(
                 folderMenuItems(folder, () => router.back()),
@@ -253,49 +172,114 @@ export function FolderScreen() {
           />
         ) : null}
       </View>
+
       {pieces === null ? (
         <ActivityIndicator color={theme.primary} style={{ marginTop: SPACING.xxl }} />
       ) : (
-        <FlatList
-          data={pieces}
-          keyExtractor={(p) => p.itemId}
-          ListHeaderComponent={header}
-          contentContainerStyle={{
-            padding: pad,
-            paddingBottom: 120,
-            maxWidth: 900,
-            width: '100%',
-            alignSelf: 'center',
-          }}
-          ListEmptyComponent={
+        <ScrollView
+          scrollEnabled={!dragging}
+          contentContainerStyle={[styles.content, { paddingHorizontal: pad }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={[styles.hero, { backgroundColor: color }, cardShadow(theme, 2)]}>
+            <View style={styles.heroRow}>
+              <Icon name="folder-music" size={36} color="#FFFFFF" />
+              <View style={{ flex: 1, marginLeft: SPACING.md }}>
+                <AppText variant="title" style={{ color: '#FFFFFF' }} numberOfLines={2} testID="folder-title">
+                  {folder?.name ?? ''}
+                </AppText>
+                <AppText style={{ color: 'rgba(255,255,255,0.9)' }}>{t('library.pieces', { count })}</AppText>
+              </View>
+            </View>
+            <Pressable
+              testID="start-concert"
+              accessibilityRole="button"
+              accessibilityLabel={t('library.startConcert')}
+              disabled={count === 0}
+              onPress={() => pieces[0] && startConcert(id, pieces[0].doc.id)}
+              style={({ pressed }) => [
+                styles.playButton,
+                { opacity: count === 0 ? 0.5 : pressed ? 0.85 : 1 },
+              ]}
+            >
+              <Icon name="play" size={24} color={color} />
+              <AppText variant="label" style={{ color: '#1D1B18', marginLeft: SPACING.sm }}>
+                {t('library.startConcert')}
+              </AppText>
+            </Pressable>
+          </View>
+
+          <View style={styles.actions}>
+            <Button
+              testID="add-pieces"
+              icon="playlist-plus"
+              label={t('library.addPieces')}
+              variant="secondary"
+              onPress={() => setPicking(true)}
+            />
+            <Button
+              icon="file-plus-outline"
+              label={t('library.importHere')}
+              variant="secondary"
+              onPress={() => void importHere()}
+            />
+            {count > 1 ? (
+              <Button
+                testID="reorder"
+                icon={reordering ? 'check' : 'swap-vertical'}
+                label={reordering ? t('common.done') : t('library.reorder')}
+                variant={reordering ? 'primary' : 'secondary'}
+                onPress={() => setReordering((r) => !r)}
+              />
+            ) : null}
+          </View>
+
+          {count > 0 ? (
+            <AppText variant="caption" secondary style={{ marginBottom: SPACING.md }}>
+              {reordering ? t('library.reorderHint') : t('library.concertHint')}
+            </AppText>
+          ) : (
             <View style={styles.empty}>
               <Icon name="playlist-music-outline" size={48} color={theme.textSecondary} />
               <AppText secondary style={{ textAlign: 'center', marginTop: SPACING.sm, maxWidth: 420 }}>
                 {t('library.emptyConcert')}
               </AppText>
             </View>
-          }
-          renderItem={({ item, index }) => (
-            <Animated.View entering={entering(index)} layout={LinearTransition.springify().damping(18)}>
-              <Pressable3D
+          )}
+
+          <DragSortList
+            items={pieces}
+            keyOf={(p) => p.itemId}
+            rowHeight={ROW + GAP}
+            enabled={reordering}
+            onDragChange={setDragging}
+            onReorder={(from, to) => void reorder(from, to)}
+            testIDPrefix="piece-row"
+            renderRow={(item, index, isDragging) => (
+              <Pressable
                 testID={`piece-${index + 1}`}
                 accessibilityRole="button"
                 accessibilityLabel={`${index + 1}. ${item.doc.title}`}
                 onPress={() => (reordering ? undefined : openDocument(item.doc.id))}
-                onLongPress={() => pieceMenu(item)}
-                tilt={3}
-                depth={0.98}
-                style={[styles.piece, { backgroundColor: theme.surface }, cardShadow(theme, 1)]}
-                contentStyle={styles.pieceContent}
+                onLongPress={reordering ? undefined : () => pieceMenu(item)}
                 {...contextMenuProps(() => pieceMenu(item))}
+                style={({ pressed }) => [
+                  styles.piece,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: isDragging ? theme.primary : theme.border,
+                    opacity: pressed && !reordering ? 0.85 : 1,
+                  },
+                ]}
               >
+                {reordering ? <Icon name="drag-vertical" size={26} color={theme.textSecondary} /> : null}
                 <View style={[styles.number, { backgroundColor: color }]}>
                   <AppText variant="label" style={{ color: '#FFFFFF' }}>
                     {index + 1}
                   </AppText>
                 </View>
-                <Thumbnail doc={item.doc} width={44} height={60} radius={8} />
-                <View style={{ flex: 1, marginLeft: SPACING.md }}>
+                <Thumbnail doc={item.doc} width={42} height={58} radius={8} />
+                <View style={{ flex: 1, marginLeft: SPACING.sm }}>
                   <AppText variant="label" numberOfLines={2}>
                     {item.doc.title}
                   </AppText>
@@ -309,29 +293,55 @@ export function FolderScreen() {
                       icon="chevron-up"
                       label={t('library.moveUp')}
                       disabled={index === 0}
-                      onPress={() => void move(index, -1)}
+                      onPress={() => void reorder(index, index - 1)}
                       testID={`up-${index + 1}`}
                     />
                     <IconButton
                       icon="chevron-down"
                       label={t('library.moveDown')}
-                      disabled={index === pieces.length - 1}
-                      onPress={() => void move(index, 1)}
+                      disabled={index === count - 1}
+                      onPress={() => void reorder(index, index + 1)}
                       testID={`down-${index + 1}`}
                     />
                   </>
                 ) : (
                   <IconButton
                     icon="dots-horizontal"
-                    label={t('common.rename')}
+                    label={t('library.moreOptions')}
                     onPress={() => pieceMenu(item)}
                   />
                 )}
-              </Pressable3D>
-            </Animated.View>
-          )}
-        />
+              </Pressable>
+            )}
+          />
+
+          {subfolders.length > 0 ? (
+            <View style={{ marginTop: SPACING.xl }}>
+              <AppText variant="heading" style={{ marginBottom: SPACING.md }}>
+                {t('library.subfolders')}
+              </AppText>
+              <View style={styles.subGrid}>
+                {subfolders.map((f, i) => (
+                  <FolderTile
+                    key={f.id}
+                    index={i}
+                    folder={f}
+                    width={subWidth}
+                    count={counts[f.id] ?? 0}
+                    onOpen={() => router.push({ pathname: '/folder/[id]', params: { id: f.id } })}
+                    onMenu={() => void dialogs.menu(folderMenuItems(f), f.name)}
+                    onPlay={async () => {
+                      const ps = await getServices().repo.folderPieces(f.id);
+                      if (ps[0]) startConcert(f.id, ps[0].doc.id);
+                    }}
+                  />
+                ))}
+              </View>
+            </View>
+          ) : null}
+        </ScrollView>
       )}
+
       <PickDocuments
         visible={picking}
         exclude={new Set(pieces?.map((p) => p.doc.id) ?? [])}
@@ -344,12 +354,7 @@ export function FolderScreen() {
         }}
       />
       {busy ? (
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            { alignItems: 'center', justifyContent: 'center', backgroundColor: theme.dropHighlight },
-          ]}
-        >
+        <View style={[StyleSheet.absoluteFill, styles.center, { backgroundColor: theme.dropHighlight }]}>
           <ActivityIndicator color={theme.primary} size="large" />
         </View>
       ) : null}
@@ -371,6 +376,7 @@ function PickDocuments({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { height } = useWindowDimensions();
   const [docs, setDocs] = useState<DocumentRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState('');
@@ -386,8 +392,8 @@ function PickDocuments({
     };
   }, [visible, search]);
 
-  const toggle = (id: string) =>
-    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  const toggle = (docId: string) =>
+    setSelected((s) => (s.includes(docId) ? s.filter((x) => x !== docId) : [...s, docId]));
   const close = () => {
     setSelected([]);
     setSearch('');
@@ -395,35 +401,32 @@ function PickDocuments({
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={close}>
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={close} statusBarTranslucent>
       <View style={styles.sheetBackdrop}>
-        <View style={[styles.sheet, { backgroundColor: theme.background }]} testID="pick-documents">
+        <View
+          style={[styles.sheet, { backgroundColor: theme.background, maxHeight: height * 0.88 }]}
+          testID="pick-documents"
+        >
           <View style={styles.sheetHeader}>
-            <AppText variant="heading" style={{ flex: 1 }}>
+            <AppText variant="heading" style={styles.fill}>
               {t('library.choosePieces')}
             </AppText>
             <IconButton icon="close" label={t('common.close')} onPress={close} />
           </View>
-          <View style={[styles.search, { backgroundColor: theme.surface }]}>
+          <View style={[styles.search, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <Icon name="magnify" color={theme.textSecondary} />
             <TextInput
               value={search}
               onChangeText={setSearch}
               placeholder={t('library.search')}
               placeholderTextColor={theme.textSecondary}
-              style={{
-                flex: 1,
-                color: theme.text,
-                fontSize: 16,
-                minHeight: TOUCH,
-                paddingHorizontal: SPACING.sm,
-              }}
+              style={[styles.searchInput, { color: theme.text }]}
             />
           </View>
           <FlatList
             data={docs.filter((d) => !exclude.has(d.id))}
             keyExtractor={(d) => d.id}
-            style={{ flexGrow: 0, maxHeight: 420 }}
+            style={{ flexGrow: 0, flexShrink: 1 }}
             renderItem={({ item }) => {
               const on = selected.includes(item.id);
               const order = selected.indexOf(item.id) + 1;
@@ -477,40 +480,52 @@ function PickDocuments({
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
+  center: { alignItems: 'center', justifyContent: 'center' },
   topBar: { flexDirection: 'row', alignItems: 'center', minHeight: 56 },
+  content: { paddingTop: SPACING.sm, paddingBottom: 120, width: '100%', maxWidth: 900, alignSelf: 'center' },
   hero: { borderRadius: RADIUS.xl, padding: SPACING.xl, marginBottom: SPACING.lg },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginBottom: SPACING.md },
-  piece: { borderRadius: RADIUS.lg, marginBottom: SPACING.sm },
-  pieceContent: {
+  heroRow: { flexDirection: 'row', alignItems: 'center' },
+  playButton: {
+    marginTop: SPACING.lg,
+    alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: SPACING.sm,
-    paddingLeft: SPACING.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: RADIUS.pill,
+    paddingHorizontal: SPACING.xl,
+    minHeight: TOUCH + 4,
+  },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginBottom: SPACING.md },
+  piece: {
+    height: ROW,
+    borderRadius: RADIUS.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.sm,
     gap: SPACING.sm,
   },
-  number: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  number: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  subGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md },
   empty: { alignItems: 'center', paddingVertical: 40 },
   sheetBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
     alignItems: 'center',
+    padding: SPACING.lg,
   },
-  sheet: {
-    width: '100%',
-    maxWidth: 640,
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
-    padding: SPACING.xl,
-  },
+  sheet: { width: '100%', maxWidth: 640, borderRadius: RADIUS.xl, padding: SPACING.xl },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md },
   search: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: RADIUS.pill,
+    borderWidth: StyleSheet.hairlineWidth,
     paddingLeft: SPACING.lg,
     marginBottom: SPACING.md,
   },
+  searchInput: { flex: 1, fontSize: 16, minHeight: TOUCH, paddingHorizontal: SPACING.sm },
   pickRow: {
     flexDirection: 'row',
     alignItems: 'center',

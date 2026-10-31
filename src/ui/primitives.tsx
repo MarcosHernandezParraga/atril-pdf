@@ -4,7 +4,7 @@
 // 44 pt), clear icons with text and good contrast in light and dark themes.
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import type { ComponentProps, ReactNode } from 'react';
+import { useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -174,6 +174,14 @@ export function IconButton({
 }) {
   const t = useTheme();
   const fg = color ?? (active ? t.primary : t.text);
+  const [tip, setTip] = useState(false);
+  const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Touch screens: holding an icon shows its name for a moment.
+  const showTipBriefly = () => {
+    setTip(true);
+    if (tipTimer.current) clearTimeout(tipTimer.current);
+    tipTimer.current = setTimeout(() => setTip(false), 1600);
+  };
   return (
     <Pressable
       testID={testID}
@@ -181,8 +189,13 @@ export function IconButton({
       accessibilityLabel={label}
       accessibilityState={{ selected: active, disabled }}
       disabled={disabled}
-      onPress={onPress}
-      onLongPress={onLongPress}
+      onPress={() => {
+        setTip(false);
+        onPress();
+      }}
+      onLongPress={onLongPress ?? (showLabel ? undefined : showTipBriefly)}
+      onHoverIn={() => !showLabel && setTip(true)}
+      onHoverOut={() => setTip(false)}
       hitSlop={4}
       style={({ pressed }) => [
         styles.iconButton,
@@ -197,6 +210,15 @@ export function IconButton({
         <Text style={[styles.iconLabel, { color: fg }]} numberOfLines={1}>
           {label}
         </Text>
+      ) : null}
+      {tip && !showLabel ? (
+        <View pointerEvents="none" style={styles.tipWrap}>
+          <View style={styles.tip} testID="tooltip">
+            <Text style={styles.tipText} numberOfLines={1}>
+              {label}
+            </Text>
+          </View>
+        </View>
       ) : null}
     </Pressable>
   );
@@ -480,6 +502,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   iconLabel: { fontSize: 11, marginTop: 1, fontWeight: '600' },
+  tipWrap: {
+    position: 'absolute',
+    top: '100%',
+    left: -80,
+    right: -80,
+    alignItems: 'center',
+    marginTop: 6,
+    zIndex: 1000,
+  },
+  tip: { backgroundColor: 'rgba(20,18,16,0.92)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 },
+  tipText: { color: '#FFFFFF', fontSize: 12.5, fontWeight: '600' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

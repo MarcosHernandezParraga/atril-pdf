@@ -15,7 +15,7 @@ describe('settings', () => {
     });
     expect(s.theme).toBe('dark');
     expect(s.reader.defaultMode).toBe('half-page');
-    expect(s.reader.transitionMs).toBe(260);
+    expect(s.reader.transitionMs).toBe(180);
     expect(s.pedal.keymap.next).toEqual(['B']);
     expect(s.pedal.keymap.previous).toEqual(DEFAULT_SETTINGS.pedal.keymap.previous);
     expect((s as unknown as Record<string, unknown>).bogus).toBeUndefined();

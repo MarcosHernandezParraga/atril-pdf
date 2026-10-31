@@ -86,7 +86,14 @@
     "newSubfolder": "New subfolder",
     "noFoldersHint": "Create a folder for each concert or programme you prepare.",
     "openPiece": "Open only this piece",
-    "concertHint": "Tap a piece to open it alone, or “Start concert” to play them all in a row."
+    "concertHint": "Tap a piece to open it alone, or “Start concert” to play them all in a row.",
+    "reorderHint": "Drag a piece with your finger (or use the arrows) to change the order.",
+    "folderOptions": "Folder options",
+    "moreOptions": "More options",
+    "subfolders": "Subfolders",
+    "dragToFolder": "Drop on a folder to add it",
+    "dragHint": "Press and hold a piece and drag it to a folder",
+    "alreadyInFolder": "Already in “{{name}}”"
   },
   "reader": {
     "page": "Page {{page}} of {{total}}",
@@ -135,7 +142,7 @@
     "transition": "Page turn animation",
     "transitionSlide": "Slide",
     "transitionFade": "Fade",
-    "transitionCurl": "Page turn (3D)",
+    "transitionCurl": "Page swipe",
     "transitionMs": "Animation duration",
     "halfPageStyle": "Half page",
     "halfPageStand": "Music stand style (nothing moves)",

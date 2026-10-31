@@ -7,6 +7,14 @@ import { LoadSkiaWeb } from '@shopify/react-native-skia/lib/module/web';
 import { App } from 'expo-router/build/qualified-entry';
 import { renderRootComponent } from 'expo-router/build/renderRootComponent';
 
+// Images and text inside the app must never start the browser's own "drag and
+// drop" (it would cancel our gestures: dragging a piece onto a folder, turning or
+// moving pages). Dropping PDF files from outside the app keeps working.
+document.addEventListener('dragstart', (e) => e.preventDefault(), true);
+const noDrag = document.createElement('style');
+noDrag.textContent = 'img { -webkit-user-drag: none; user-select: none; }';
+document.head.appendChild(noDrag);
+
 LoadSkiaWeb({ locateFile: (file: string) => `/vendor/canvaskit/${file}` })
   .catch((e: unknown) => console.error('Skia could not be loaded', e))
   .finally(() => renderRootComponent(App));

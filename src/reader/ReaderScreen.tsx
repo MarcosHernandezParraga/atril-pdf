@@ -545,14 +545,14 @@ export function ReaderScreen() {
   const ms = reader.transitionMs;
   const entering = slideOrFade
     ? reader.transition === 'fade'
-      ? FadeIn.duration(ms)
+      ? FadeIn.duration(Math.round(ms * 0.65))
       : direction === 1
         ? SlideInRight.duration(ms)
         : SlideInLeft.duration(ms)
     : undefined;
   const exiting = slideOrFade
     ? reader.transition === 'fade'
-      ? FadeOut.duration(ms)
+      ? FadeOut.duration(Math.round(ms * 0.65))
       : direction === 1
         ? SlideOutLeft.duration(ms)
         : SlideOutRight.duration(ms)

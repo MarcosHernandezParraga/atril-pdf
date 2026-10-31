@@ -32,11 +32,13 @@ import {
   openDocument,
   startConcert,
 } from './actions';
-import { DocumentCard, FolderTile, NewFolderTile } from './DocumentCard';
+import { DocumentCard, FolderTile, NewFolderTile, Thumbnail } from './DocumentCard';
+import { useDragToFolder } from './useDragToFolder';
 import { useLibraryRefresh } from './libraryEvents';
 import { pickFiles } from './pickFiles';
 import { useDesktopDrop } from './useDesktopDrop';
 import { importAndReport } from './useExternalOpen';
+import { newId } from '../core/ids';
 
 type LibraryView = 'all' | 'favorites' | 'trash';
 
@@ -159,6 +161,31 @@ export function LibraryScreen() {
     );
   };
 
+  // Press and hold a document, then drop it on a folder to add it to that concert.
+  const {
+    drag: dragging,
+    handlers: dragHandlers,
+    target: dropTarget,
+    lateTarget: lateDropTarget,
+    layerRef: dragLayerRef,
+  } = useDragToFolder({
+    onDrop: (doc, folderId) => {
+      const folder = folders.find((f) => f.id === folderId);
+      void getServices()
+        .repo.addToFolder(folderId, [doc.id], newId)
+        .then((added) => {
+          bump();
+          dialogs.toast(
+            added > 0
+              ? t('library.addedToFolder', { name: folder?.name ?? '' })
+              : t('library.alreadyInFolder', { name: folder?.name ?? '' }),
+          );
+        });
+    },
+    onHoldWithoutMoving: (doc) => docMenu(doc),
+  });
+  const canDrag = view === 'all' && folders.some((f) => f.parentId === null);
+
   const title =
     view === 'trash' ? t('library.trash') : view === 'favorites' ? t('library.favorites') : APP_NAME;
   const layout = libSettings.view;
@@ -216,6 +243,8 @@ export function LibraryScreen() {
                     onOpen={() => router.push({ pathname: '/folder/[id]', params: { id: f.id } })}
                     onMenu={() => void dialogs.menu(folderMenuItems(f), f.name)}
                     onPlay={() => void play(f)}
+                    dropRef={dropTarget(f.id)}
+                    highlighted={dragging?.overId === f.id}
                   />
                 ))}
               </View>
@@ -309,76 +338,123 @@ export function LibraryScreen() {
 
   return (
     <Screen>
-      <View style={[styles.topBar, { paddingHorizontal: pagePad }]}>
-        {view !== 'all' ? (
-          <IconButton icon="arrow-left" label={t('common.back')} onPress={() => router.back()} />
-        ) : null}
-        {view === 'all' ? (
-          <Image
-            source={require('../../assets/images/icon.png')}
-            style={styles.logo}
-            accessibilityIgnoresInvertColors
-          />
-        ) : null}
-        <View style={{ flex: 1, marginLeft: SPACING.md }}>
-          <AppText variant="title" numberOfLines={1} accessibilityRole="header">
-            {title}
-          </AppText>
-          {view === 'all' ? (
-            <AppText variant="caption" secondary testID="made-by">
-              {t('library.madeBy', { author: APP_AUTHOR })}
-            </AppText>
+      <View ref={dragLayerRef as never} collapsable={false} style={{ flex: 1 }}>
+        <View style={[styles.topBar, { paddingHorizontal: pagePad }]}>
+          {view !== 'all' ? (
+            <IconButton icon="arrow-left" label={t('common.back')} onPress={() => router.back()} />
           ) : null}
-        </View>
-        <IconButton
-          icon="cog-outline"
-          label={t('library.settings')}
-          onPress={() => router.push('/settings')}
-          testID="open-settings"
-          style={{ backgroundColor: theme.surface, ...cardShadow(theme, 1) }}
-        />
-      </View>
-      <FlatList
-        key={`${layout}-${columns}`}
-        data={docs ?? []}
-        keyExtractor={(d) => d.id}
-        numColumns={layout === 'grid' ? columns : 1}
-        ListHeaderComponent={header}
-        ListEmptyComponent={empty}
-        contentContainerStyle={{
-          paddingHorizontal: pagePad,
-          paddingBottom: 120,
-          width: '100%',
-          maxWidth: 1400,
-          alignSelf: 'center',
-        }}
-        columnWrapperStyle={layout === 'grid' ? { gap: SPACING.lg, marginBottom: SPACING.xl } : undefined}
-        renderItem={({ item, index }) => (
-          <DocumentCard
-            doc={item}
-            index={index}
-            width={cardWidth}
-            layout={layout}
-            onOpen={() => (view === 'trash' ? docMenu(item) : openDocument(item.id))}
-            onMenu={() => docMenu(item)}
-          />
-        )}
-      />
-      {busy || dropActive ? (
-        <View
-          style={[StyleSheet.absoluteFill, styles.overlay, { backgroundColor: theme.dropHighlight }]}
-          pointerEvents="none"
-        >
-          <View style={[styles.busy, { backgroundColor: theme.surface }, cardShadow(theme, 3)]}>
-            {busy ? (
-              <ActivityIndicator color={theme.primary} />
-            ) : (
-              <Icon name="tray-arrow-down" size={32} color={theme.primary} />
-            )}
-            <AppText style={{ marginLeft: SPACING.md }}>{busy ?? t('library.dropHere')}</AppText>
+          {view === 'all' ? (
+            <Image
+              source={require('../../assets/images/icon.png')}
+              style={styles.logo}
+              accessibilityIgnoresInvertColors
+            />
+          ) : null}
+          <View style={{ flex: 1, marginLeft: SPACING.md }}>
+            <AppText variant="title" numberOfLines={1} accessibilityRole="header">
+              {title}
+            </AppText>
+            {view === 'all' ? (
+              <AppText variant="caption" secondary testID="made-by">
+                {t('library.madeBy', { author: APP_AUTHOR })}
+              </AppText>
+            ) : null}
           </View>
+          <IconButton
+            icon="cog-outline"
+            label={t('library.settings')}
+            onPress={() => router.push('/settings')}
+            testID="open-settings"
+            style={{ backgroundColor: theme.surface, ...cardShadow(theme, 1) }}
+          />
         </View>
-      ) : null}
+        <FlatList
+          key={`${layout}-${columns}`}
+          data={docs ?? []}
+          keyExtractor={(d) => d.id}
+          numColumns={layout === 'grid' ? columns : 1}
+          ListHeaderComponent={header}
+          ListEmptyComponent={empty}
+          contentContainerStyle={{
+            paddingHorizontal: pagePad,
+            paddingBottom: 120,
+            width: '100%',
+            maxWidth: 1400,
+            alignSelf: 'center',
+          }}
+          columnWrapperStyle={layout === 'grid' ? { gap: SPACING.lg, marginBottom: SPACING.xl } : undefined}
+          renderItem={({ item, index }) => (
+            <DocumentCard
+              doc={item}
+              index={index}
+              width={cardWidth}
+              layout={layout}
+              onOpen={() => (view === 'trash' ? docMenu(item) : openDocument(item.id))}
+              onMenu={() => docMenu(item)}
+              drag={canDrag ? dragHandlers : undefined}
+              lifted={dragging?.doc.id === item.id}
+            />
+          )}
+          scrollEnabled={!dragging}
+        />
+        {dragging ? (
+          <View pointerEvents="box-none" style={StyleSheet.absoluteFill} testID="drag-layer">
+            {/* Every folder, always reachable while dragging (even if scrolled away). */}
+            <View
+              pointerEvents="none"
+              style={[styles.dropBar, { backgroundColor: theme.surface }, cardShadow(theme, 3)]}
+            >
+              <AppText variant="caption" secondary style={{ marginBottom: SPACING.xs }}>
+                {t('library.dragToFolder')}
+              </AppText>
+              <View style={styles.dropChips}>
+                {topFolders.map((f) => {
+                  const over = dragging?.overId === f.id;
+                  return (
+                    <View
+                      key={f.id}
+                      ref={lateDropTarget(f.id) as never}
+                      collapsable={false}
+                      testID={`drop-chip-${f.id}`}
+                      style={[
+                        styles.dropChip,
+                        { backgroundColor: f.color ?? theme.primary },
+                        over && { transform: [{ scale: 1.08 }], borderColor: theme.accent, borderWidth: 3 },
+                      ]}
+                    >
+                      <Icon name="folder-music" size={18} color="#FFFFFF" />
+                      <AppText variant="label" style={{ color: '#FFFFFF', marginLeft: 6 }} numberOfLines={1}>
+                        {f.name}
+                      </AppText>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+            <View
+              pointerEvents="none"
+              style={[styles.ghost, { left: dragging.x - 44, top: dragging.y - 60 }, cardShadow(theme, 3)]}
+            >
+              <Thumbnail doc={dragging.doc} width={88} height={120} radius={RADIUS.md} />
+            </View>
+          </View>
+        ) : null}
+        {busy || dropActive ? (
+          <View
+            style={[StyleSheet.absoluteFill, styles.overlay, { backgroundColor: theme.dropHighlight }]}
+            pointerEvents="none"
+          >
+            <View style={[styles.busy, { backgroundColor: theme.surface }, cardShadow(theme, 3)]}>
+              {busy ? (
+                <ActivityIndicator color={theme.primary} />
+              ) : (
+                <Icon name="tray-arrow-down" size={32} color={theme.primary} />
+              )}
+              <AppText style={{ marginLeft: SPACING.md }}>{busy ?? t('library.dropHere')}</AppText>
+            </View>
+          </View>
+        ) : null}
+      </View>
     </Screen>
   );
 }
@@ -449,4 +525,28 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', paddingVertical: 48, paddingHorizontal: SPACING.lg },
   overlay: { alignItems: 'center', justifyContent: 'center' },
   busy: { flexDirection: 'row', alignItems: 'center', padding: SPACING.xl, borderRadius: RADIUS.xl },
+  dropBar: {
+    position: 'absolute',
+    top: SPACING.sm,
+    left: SPACING.md,
+    right: SPACING.md,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.md,
+  },
+  dropChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
+  dropChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: RADIUS.pill,
+    paddingHorizontal: SPACING.lg,
+    minHeight: 48,
+    maxWidth: 260,
+  },
+  ghost: {
+    position: 'absolute',
+    width: 88,
+    height: 120,
+    borderRadius: RADIUS.md,
+    transform: [{ rotate: '-4deg' }, { scale: 1.05 }],
+  },
 });
