@@ -1,0 +1,56 @@
+# Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
+# On every push and pull request: types, lint and tests.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx tsc --noEmit -p desktop/tsconfig.json
+      - run: npm run lint
+      - run: npm test -- --ci
+      - name: Licences of the bundled dependencies are allowed
+        run: npm run licenses && git diff --exit-code -- THIRD_PARTY_LICENSES.md src/settings/thirdParty.ts
+
+  web-and-desktop-smoke:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run export:web
+      - name: Browser smoke test
+        run: |
+          node e2e/serve.mjs dist 8765 &
+          sleep 1
+          mkdir -p e2e-shots
+          node e2e/web-smoke.mjs http://localhost:8765 e2e-shots
+      - name: Desktop (Electron) smoke test
+        run: |
+          node scripts/desktop.mjs prepare
+          xvfb-run -a node e2e/desktop-smoke.cjs e2e-shots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: capturas
+          path: e2e-shots

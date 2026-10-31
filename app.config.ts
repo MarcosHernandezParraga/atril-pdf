@@ -116,6 +116,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-sharing',
     'expo-screen-orientation',
     './modules/atril-native/plugin/withAtrilNative.js',
+    './plugins/withReleaseSigning.js',
   ],
   experiments: {
     typedRoutes: true,

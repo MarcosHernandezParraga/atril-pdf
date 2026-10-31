@@ -1,0 +1,45 @@
+# Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
+#
+# Stage 2 (paid accounts): upload to Google Play (internal/closed testing) and
+# App Store Connect (TestFlight) with EAS Submit. Disabled until the repository
+# variable ENABLE_STORES is set to "true" and the secrets exist (see
+# docs/GUIA_PARA_MARCOS.md).
+name: Stores
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'android, ios or all'
+        default: all
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_STORES == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Google Play service account
+        env:
+          GOOGLE_PLAY_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        if: env.GOOGLE_PLAY_JSON != ''
+        run: echo "$GOOGLE_PLAY_JSON" > google-play-service-account.json
+      - name: App Store Connect API key
+        env:
+          ASC_KEY: ${{ secrets.ASC_API_KEY_P8 }}
+        if: env.ASC_KEY != ''
+        run: echo "$ASC_KEY" > asc-api-key.p8
+      - name: Build and submit
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: npx eas-cli@latest build --platform ${{ github.event.inputs.platform }} --profile production --auto-submit --non-interactive --no-wait
