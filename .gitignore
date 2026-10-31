@@ -70,3 +70,8 @@ AGENTS.md
 
 # Browser / desktop test screenshots
 e2e-shots/
+
+# Native build outputs of local modules
+modules/*/android/build/
+modules/*/android/.cxx/
+modules/*/ios/build/
