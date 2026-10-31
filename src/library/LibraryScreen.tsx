@@ -43,10 +43,10 @@ export function LibraryScreen() {
   const [search, setSearch] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const fetchAll = useCallback(() => {
     const { repo } = getServices();
     const searching = search.trim().length > 0;
-    const [d, r, f, p] = await Promise.all([
+    return Promise.all([
       repo.listDocuments({
         folderId: searching || view !== 'all' ? undefined : folderId,
         search,
@@ -57,21 +57,36 @@ export function LibraryScreen() {
       repo.recentDocuments(10),
       repo.allFolders(),
       repo.folderPath(folderId),
-    ]);
-    setDocs(d);
-    setRecents(r);
-    setFolders(f);
-    setPath(p);
+    ] as const);
   }, [folderId, search, libSettings.sort, view]);
 
+  const load = useCallback(() => {
+    void fetchAll().then(([d, r, f, p]) => {
+      setDocs(d);
+      setRecents(r);
+      setFolders(f);
+      setPath(p);
+    });
+  }, [fetchAll]);
+
   useEffect(() => {
-    void load();
-  }, [load, version]);
+    let alive = true;
+    void fetchAll().then(([d, r, f, p]) => {
+      if (!alive) return;
+      setDocs(d);
+      setRecents(r);
+      setFolders(f);
+      setPath(p);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [fetchAll, version]);
 
   // Reload when coming back from the reader (recent documents, page counts, thumbnails).
   useFocusEffect(
     useCallback(() => {
-      void load();
+      load();
     }, [load]),
   );
 

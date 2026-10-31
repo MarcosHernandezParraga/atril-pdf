@@ -1,4 +1,5 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
+/* eslint-disable import/no-named-as-default-member -- i18next is used through its default instance */
 import { getLocales } from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';

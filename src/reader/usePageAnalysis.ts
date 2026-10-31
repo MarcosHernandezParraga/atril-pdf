@@ -47,15 +47,14 @@ export function analysePage(page: PageRef): Promise<PageAnalysis> {
 }
 
 export function usePageAnalysis(page: PageRef | undefined, enabled: boolean): PageAnalysis | null {
-  const [result, setResult] = useState<PageAnalysis | null>(null);
+  const [result, setResult] = useState<{ page: PageRef; analysis: PageAnalysis } | null>(null);
   useEffect(() => {
-    setResult(null);
     if (!page || !enabled) return;
     let alive = true;
-    void analysePage(page).then((r) => alive && setResult(r));
+    void analysePage(page).then((analysis) => alive && setResult({ page, analysis }));
     return () => {
       alive = false;
     };
   }, [page, enabled]);
-  return result;
+  return result && result.page === page && enabled ? result.analysis : null;
 }

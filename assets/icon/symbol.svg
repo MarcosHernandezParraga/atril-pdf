@@ -1,0 +1,25 @@
+<!-- Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- music stand: sheet with a staff and a note, on a tripod -->
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="232" y="196" width="560" height="420" rx="34" fill="#FFF8EE" stroke="none"/>
+    <path d="M232 586 L792 586" stroke="#3A2312" stroke-width="0"/>
+    <g stroke="#3A2312" stroke-width="13">
+      <line x1="292" y1="300" x2="732" y2="300"/>
+      <line x1="292" y1="342" x2="732" y2="342"/>
+      <line x1="292" y1="384" x2="732" y2="384"/>
+      <line x1="292" y1="426" x2="732" y2="426"/>
+      <line x1="292" y1="468" x2="732" y2="468"/>
+    </g>
+    <g fill="#8A4B1C" stroke="none">
+      <ellipse cx="452" cy="447" rx="44" ry="31" transform="rotate(-22 452 447)"/>
+      <rect x="484" y="250" width="15" height="194" rx="6"/>
+      <path d="M492 252 C540 268 588 300 580 362 C572 330 540 306 496 300 Z"/>
+      <ellipse cx="612" cy="405" rx="44" ry="31" transform="rotate(-22 612 405)"/>
+      <rect x="644" y="208" width="15" height="194" rx="6"/>
+    </g>
+    <path d="M200 616 L824 616" stroke-width="30"/>
+    <path d="M512 616 L512 846" stroke-width="30"/>
+    <path d="M512 846 L388 920 M512 846 L636 920 M512 846 L512 930" stroke-width="26"/>
+  </g>
+</svg>

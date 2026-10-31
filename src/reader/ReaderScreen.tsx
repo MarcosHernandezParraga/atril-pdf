@@ -13,7 +13,7 @@ import Animated, { FadeIn, FadeOut, SlideInLeft, SlideInRight, SlideOutLeft, Sli
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { KeyAction } from '../core/keymap';
-import { buildStops, primaryPage, step, stopIndexForPage, type ViewMode } from '../core/navigation';
+import { buildStops, primaryPage, step, stopIndexForPage, type Stop, type ViewMode } from '../core/navigation';
 import { swipeAction, tapZoneAction } from '../core/tapZones';
 import { useReaderKeys } from '../input/useReaderKeys';
 import { getServices } from '../services';
@@ -45,28 +45,24 @@ export function ReaderScreen() {
   const reader = settings.reader;
   const { doc, model, history, error, execute, undo, redo, flush } = useDocument(id);
 
-  const [mode, setMode] = useState<ReaderMode | null>(null);
-  const [stopIndex, setStopIndex] = useState(0);
+  const [modeChoice, setMode] = useState<ReaderMode | null>(null);
+  const [nav, setNav] = useState<{ stops: Stop[]; index: number; continuous: boolean } | null>(null);
   const [continuousPage, setContinuousPage] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [jumpBack, setJumpBack] = useState<number | null>(null);
   const [barsVisible, setBarsVisible] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [size, setSize] = useState({ width: dims.width, height: dims.height });
   const [filter, setFilter] = useState<DisplayFilter>(reader.filter);
   const [busy, setBusy] = useState<string | null>(null);
   const [hint, setHint] = useState(false);
-  const directionRef = useRef<1 | -1>(1);
   const continuousRef = useRef<ContinuousHandle>(null);
-  const initialPage = useRef<number | null>(null);
-  const jumpBack = useRef<number | null>(null);
   const viewState = useMemo(() => parseViewState(doc?.viewStateJson), [doc]);
 
-  // Initial mode and page: as the user left this document.
-  useEffect(() => {
-    if (!doc || mode) return;
-    const saved = viewState.mode as ReaderMode | undefined;
-    setMode(saved && READER_MODES.includes(saved) ? saved : reader.defaultMode);
-    initialPage.current = viewState.page;
-  }, [doc, mode, viewState, reader.defaultMode]);
+  // Initial mode: as the user left this document (or the default from the settings).
+  const savedMode = viewState.mode as ReaderMode | undefined;
+  const mode: ReaderMode | null =
+    modeChoice ?? (doc ? (savedMode && READER_MODES.includes(savedMode) ? savedMode : reader.defaultMode) : null);
 
   const landscape = size.width > size.height;
   const effectiveMode: ViewMode = useMemo(() => {
@@ -83,21 +79,24 @@ export function ReaderScreen() {
     [pageIndices, effectiveMode, reader.twoPage],
   );
 
-  // Keep the same page when the mode or the stops change.
-  const currentPageRef = useRef(0);
-  useEffect(() => {
-    if (stops.length === 0) return;
-    const target = initialPage.current ?? currentPageRef.current;
-    initialPage.current = null;
-    const clamped = Math.max(0, Math.min(target, pages.length - 1));
-    setStopIndex(stopIndexForPage(stops, clamped));
-    setContinuousPage(clamped);
-  }, [stops, pages.length]);
-
   const isContinuous = effectiveMode === 'vertical-continuous';
-  const currentStop = stops[Math.min(stopIndex, stops.length - 1)];
+
+  // Keep the same page when the mode or the pages change (React's "adjust state while
+  // rendering" pattern). The first time, start where the user left the document.
+  if (stops.length > 0 && nav?.stops !== stops) {
+    let anchor = viewState.page;
+    if (nav) {
+      const prev = nav.stops[Math.min(nav.index, nav.stops.length - 1)];
+      anchor = nav.continuous ? continuousPage : prev ? primaryPage(prev) : 0;
+    }
+    const clamped = Math.max(0, Math.min(anchor, pages.length - 1));
+    setNav({ stops, index: stopIndexForPage(stops, clamped), continuous: isContinuous });
+    setContinuousPage(clamped);
+  }
+
+  const stopIndex = nav?.stops === stops ? nav.index : 0;
+  const currentStop = nav?.stops === stops ? stops[Math.min(stopIndex, stops.length - 1)] : undefined;
   const currentPage = isContinuous ? continuousPage : currentStop ? primaryPage(currentStop) : 0;
-  currentPageRef.current = currentPage;
 
   // Remember position and mode per document.
   useEffect(() => {
@@ -137,29 +136,30 @@ export function ReaderScreen() {
 
   // ------------------------------------------------------------- turning
   const turn = useCallback(
-    (direction: 1 | -1) => {
-      directionRef.current = direction;
+    (dir: 1 | -1) => {
+      setDirection(dir);
       setBarsVisible(false);
       if (isContinuous) {
-        continuousRef.current?.step(direction);
+        continuousRef.current?.step(dir);
         return;
       }
-      setStopIndex((i) => {
-        const r = step(stops.length, i, direction);
-        return 'index' in r ? r.index : i;
+      setNav((n) => {
+        if (!n) return n;
+        const r = step(n.stops.length, n.index, dir);
+        return 'index' in r ? { ...n, index: r.index } : n;
       });
     },
-    [isContinuous, stops.length],
+    [isContinuous],
   );
 
   const goToPage = useCallback(
     (page: number, remember = true) => {
-      if (remember) jumpBack.current = currentPageRef.current;
+      setJumpBack(remember ? currentPage : null);
       const p = Math.max(0, Math.min(page, pages.length - 1));
       if (isContinuous) continuousRef.current?.goToPage(p);
-      else setStopIndex(stopIndexForPage(stops, p));
+      else setNav((n) => (n ? { ...n, index: stopIndexForPage(n.stops, p) } : n));
     },
-    [isContinuous, pages.length, stops],
+    [isContinuous, pages.length, currentPage],
   );
 
   const toggleFullscreen = useCallback(() => {
@@ -371,7 +371,7 @@ export function ReaderScreen() {
   const ready = Boolean(model && mode && currentStop);
   const animated = mode === 'horizontal-animated' && effectiveMode === 'horizontal';
   const ms = reader.transitionMs;
-  const dir = directionRef.current;
+  const dir = direction;
   const entering = animated
     ? reader.transition === 'fade'
       ? FadeIn.duration(ms)
@@ -484,16 +484,12 @@ export function ReaderScreen() {
             </View>
             <View style={[styles.bottomBar, { backgroundColor: theme.overlay, bottom: insets.bottom }]}>
               <IconButton icon="chevron-left" label={t('reader.previous')} color="#FFFFFF" onPress={() => turn(-1)} />
-              {jumpBack.current !== null ? (
+              {jumpBack !== null ? (
                 <IconButton
                   icon="keyboard-return"
                   label={t('reader.back')}
                   color="#FFFFFF"
-                  onPress={() => {
-                    const p = jumpBack.current;
-                    jumpBack.current = null;
-                    if (p !== null) goToPage(p, false);
-                  }}
+                  onPress={() => goToPage(jumpBack, false)}
                 />
               ) : null}
               <Pressable onPress={() => void askPage()} accessibilityRole="button" accessibilityLabel={t('reader.goToPage')} style={styles.pageLabel}>

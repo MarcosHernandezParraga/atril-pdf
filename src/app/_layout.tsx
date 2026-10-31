@@ -28,8 +28,7 @@ export default function RootLayout() {
   const [state, setState] = useState<'loading' | 'ready' | Error>('loading');
   const loadSettings = useSettings((s) => s.load);
 
-  const start = () => {
-    setState('loading');
+  const boot = () => {
     initServices()
       .then((s) => loadSettings(s.repo))
       .then(() => setState('ready'))
@@ -37,7 +36,11 @@ export default function RootLayout() {
       .finally(() => void SplashScreen.hideAsync().catch(() => undefined));
   };
 
-  useEffect(start, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(boot, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const retry = () => {
+    setState('loading');
+    boot();
+  };
 
   const navTheme = theme.scheme === 'dark' ? DarkTheme : DefaultTheme;
 
@@ -61,7 +64,7 @@ export default function RootLayout() {
               <AppText secondary style={{ textAlign: 'center' }}>
                 {state.message}
               </AppText>
-              <Button label="↻" onPress={start} />
+              <Button label="↻" onPress={retry} />
             </View>
           )}
           <DialogHost />

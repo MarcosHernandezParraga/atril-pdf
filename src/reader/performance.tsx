@@ -3,7 +3,7 @@
 // Performance (full screen) mode on desktop: real full-screen window and the
 // display is prevented from sleeping (Electron powerSaveBlocker).
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 
 import { getDesktopBridge } from '../platform/desktopBridge';
 
@@ -38,12 +38,11 @@ export function PerformanceChrome({ active }: { active: boolean }) {
 
 /** Keeps the reader in sync when the user leaves full screen with the window controls. */
 export function useDesktopFullscreenSync(onChange: (on: boolean) => void) {
-  const cb = useRef(onChange);
-  cb.current = onChange;
+  const notify = useEffectEvent((on: boolean) => onChange(on));
   useEffect(() => {
     const bridge = getDesktopBridge();
-    if (bridge) return bridge.window.onFullScreenChange((on) => cb.current(on));
-    const handler = () => cb.current(Boolean(document.fullscreenElement));
+    if (bridge) return bridge.window.onFullScreenChange((on) => notify(on));
+    const handler = () => notify(Boolean(document.fullscreenElement));
     document.addEventListener('fullscreenchange', handler);
     return () => document.removeEventListener('fullscreenchange', handler);
   }, []);

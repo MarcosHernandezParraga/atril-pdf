@@ -2,7 +2,7 @@
 //
 // Desktop: dragging files from the system file manager onto the window imports them.
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { getDesktopBridge } from '../platform/desktopBridge';
@@ -11,8 +11,7 @@ import { fileKind } from './importer';
 
 export function useDesktopDrop(onFiles: (files: ExternalFile[]) => void): boolean {
   const [active, setActive] = useState(false);
-  const cb = useRef(onFiles);
-  cb.current = onFiles;
+  const deliver = useEffectEvent((files: ExternalFile[]) => onFiles(files));
 
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof window === 'undefined') return;
@@ -47,7 +46,7 @@ export function useDesktopDrop(onFiles: (files: ExternalFile[]) => void): boolea
           files.push({ kind: 'blob', blob: f, name: f.name });
         }
       }
-      if (files.length > 0) cb.current(files);
+      if (files.length > 0) deliver(files);
     };
     window.addEventListener('dragenter', enter);
     window.addEventListener('dragover', over);

@@ -40,23 +40,22 @@ export function filterStyle(filter: DisplayFilter, brightness = 1): ViewStyle {
 
 function usePageImage(page: PageRef, pixelWidth: number): RenderedPage | null | 'error' {
   const renderer = getServices().renderer;
-  const [img, setImg] = useState<RenderedPage | null | 'error'>(() => renderer.peek(page, pixelWidth) ?? null);
+  const cached = pixelWidth > 0 ? renderer.peek(page, pixelWidth) : undefined;
+  const [loaded, setLoaded] = useState<{ page: PageRef; width: number; img: RenderedPage | 'error' } | null>(null);
   useEffect(() => {
+    if (cached || pixelWidth <= 0) return;
     let alive = true;
-    const cached = renderer.peek(page, pixelWidth);
-    if (cached) {
-      setImg(cached);
-      return;
-    }
     renderer
       .render(page, pixelWidth)
-      .then((r) => alive && setImg(r))
-      .catch(() => alive && setImg('error'));
+      .then((r) => alive && r && setLoaded({ page, width: pixelWidth, img: r }))
+      .catch(() => alive && setLoaded({ page, width: pixelWidth, img: 'error' }));
     return () => {
       alive = false;
     };
-  }, [renderer, page, pixelWidth]);
-  return img;
+  }, [renderer, page, pixelWidth, cached]);
+  if (cached) return cached;
+  if (loaded && loaded.page === page && loaded.width === pixelWidth) return loaded.img;
+  return null;
 }
 
 /** Five-line staves drawn as vectors (staff paper pages). */

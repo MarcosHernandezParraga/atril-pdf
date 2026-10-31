@@ -4,7 +4,7 @@
 // map and the anti-bounce filter. The capture stays active for as long as the
 // reader is mounted, whatever menus or panels are opened and closed.
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 
 import { actionForKey, consumedKeys, effectiveKeymap, KeyFilter, type KeyAction, type RawKeyEvent } from '../core/keymap';
 import { useSettings } from '../settings/store';
@@ -12,8 +12,7 @@ import { subscribeKeys } from './keySource';
 
 export function useReaderKeys(onAction: (action: KeyAction) => void, enabled = true): void {
   const pedal = useSettings((s) => s.settings.pedal);
-  const handlerRef = useRef(onAction);
-  handlerRef.current = onAction;
+  const dispatch = useEffectEvent((action: KeyAction) => onAction(action));
 
   useEffect(() => {
     if (!enabled) return;
@@ -22,7 +21,7 @@ export function useReaderKeys(onAction: (action: KeyAction) => void, enabled = t
     const unsubscribe = subscribeKeys(
       (ev: RawKeyEvent) => {
         const action = actionForKey(map, ev.key);
-        if (action && filter.accept(action, ev)) handlerRef.current(action);
+        if (action && filter.accept(action, ev)) dispatch(action);
       },
       { consumed: consumedKeys(map), captureAll: false },
     );
@@ -32,10 +31,9 @@ export function useReaderKeys(onAction: (action: KeyAction) => void, enabled = t
 
 /** Learn / test mode: reports every key received. */
 export function useRawKeys(onKey: (ev: RawKeyEvent) => void, enabled = true): void {
-  const ref = useRef(onKey);
-  ref.current = onKey;
+  const report = useEffectEvent((ev: RawKeyEvent) => onKey(ev));
   useEffect(() => {
     if (!enabled) return;
-    return subscribeKeys((ev) => ref.current(ev), { consumed: [], captureAll: true });
+    return subscribeKeys((ev) => report(ev), { consumed: [], captureAll: true });
   }, [enabled]);
 }
