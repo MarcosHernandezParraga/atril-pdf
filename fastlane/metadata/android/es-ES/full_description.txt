@@ -1,0 +1,17 @@
+Atril Musical es un lector de partituras PDF pensado para músicos: estudiantes, profesorado, conservatorios, bandas, orquestas y coros. También sirve para leer libros y documentos.
+
+Es libre y gratuito: sin anuncios, sin cuentas, sin suscripciones, sin compras dentro de la app y sin recogida de datos. Funciona 100 % sin internet.
+
+<b>Pensado para tocar</b>
+• Pasar página instantáneo, tocando la pantalla, deslizando o con un pedal Bluetooth (AirTurn, PageFlip, Donner, iRig BlueTurn, Cubilux…), sin configurar nada.
+• Media página «estilo atril»: ves la parte de arriba de la página siguiente mientras terminas la actual, con el corte entre sistemas, nunca a mitad de un pentagrama.
+• Vertical con anticipación: el primer sistema de la página siguiente siempre visible abajo.
+• Dos páginas como un libro, avanzando de 1 en 1 o de 2 en 2.
+• Modo actuación: pantalla completa total y la pantalla no se apaga.
+• Modo noche, sepia y recorte automático de márgenes para ver los pentagramas más grandes.
+
+<b>Biblioteca</b>
+• Importa PDF e imágenes; todo PDF que abras desde otra app se guarda solo en la biblioteca.
+• Carpetas, favoritos, búsqueda, recientes y papelera recuperable.
+
+Código abierto (licencia MIT). Desarrollada por Marcos Hernández Párraga.

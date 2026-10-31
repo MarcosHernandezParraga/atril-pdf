@@ -1,0 +1,17 @@
+Atril Musical is a PDF sheet music reader made for musicians: students, teachers, music schools, bands, orchestras and choirs. It is also great for books and documents.
+
+It is free and open source: no ads, no accounts, no subscriptions, no in-app purchases and no data collection. Works 100% offline.
+
+<b>Made for playing</b>
+• Instant page turns by tapping, swiping or with a Bluetooth pedal (AirTurn, PageFlip, Donner, iRig BlueTurn, Cubilux…), no setup needed.
+• Music-stand half-page turns: see the top of the next page while you finish the current one, split between systems, never through a staff.
+• Vertical with look-ahead: the first system of the next page is always visible at the bottom.
+• Two pages like a book, advancing by one or by two.
+• Performance mode: true full screen and the screen never sleeps.
+• Night mode, sepia and automatic margin crop to make staves bigger.
+
+<b>Library</b>
+• Import PDFs and images; any PDF opened from another app is saved to the library automatically.
+• Folders, favourites, search, recent documents and a recoverable trash.
+
+Open source (MIT License). Developed by Marcos Hernández Párraga.
