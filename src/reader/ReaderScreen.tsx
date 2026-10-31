@@ -23,6 +23,7 @@ import { SPACING, useTheme } from '../theme';
 import { dialogs } from '../ui/dialogs';
 import { AppText, IconButton } from '../ui/primitives';
 import { ContinuousView, type ContinuousHandle } from './ContinuousView';
+import { fitWidth, renderPixelWidth } from './PageView';
 import { PerformanceChrome, useDesktopFullscreenSync } from './performance';
 import { StopView } from './StopView';
 import { analysePage } from './usePageAnalysis';
@@ -113,13 +114,23 @@ export function ReaderScreen() {
     const order = [currentPage + 1, currentPage + 2, currentPage - 1, currentPage + 3]
       .filter((i) => i >= 0 && i < pages.length)
       .map((i) => pages[i]!);
-    const timer = setTimeout(() => getServices().renderer.prefetch(order, Math.min(size.width, 1600) * 2), 60);
+    // Same width as the one the screen will ask for (see PageView), so the cache is hit.
+    const displayWidth = (p: (typeof pages)[number]) =>
+      effectiveMode === 'vertical-continuous'
+        ? Math.min(size.width, 1400)
+        : effectiveMode === 'two-page'
+          ? fitWidth(p, (size.width - 6) / 2, size.height)
+          : fitWidth(p, size.width, size.height);
+    const timer = setTimeout(() => {
+      const renderer = getServices().renderer;
+      for (const p of order) renderer.prefetch([p], renderPixelWidth(p, displayWidth(p)));
+    }, 60);
     // Analyse the next pages too (split points, first systems).
     if (effectiveMode === 'half-page' || effectiveMode === 'vertical-lookahead') {
       order.slice(0, 2).forEach((p) => void analysePage(p));
     }
     return () => clearTimeout(timer);
-  }, [currentPage, pages, size.width, effectiveMode]);
+  }, [currentPage, pages, size.width, size.height, effectiveMode]);
 
   // ------------------------------------------------------------------ bars
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

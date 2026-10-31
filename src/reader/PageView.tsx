@@ -26,6 +26,18 @@ export function fitWidth(page: PageRef, boxW: number, boxH: number): number {
   return Math.max(1, Math.min(boxW, (boxH * s.width) / s.height));
 }
 
+/**
+ * Pixel width used to render a page displayed at `width`. Pre-rendering must use the
+ * same value as the screen, otherwise the cached image is not reused.
+ */
+export function renderPixelWidth(page: PageRef, width: number): number {
+  const crop = page.crop ?? { left: 0, top: 0, right: 0, bottom: 0 };
+  const rotated = page.rotation === 90 || page.rotation === 270;
+  const cw = rotated ? pageHeightForWidth(page, width) : width;
+  const fullW = cw / Math.max(0.05, 1 - crop.left - crop.right);
+  return Math.min(4096, fullW * PixelRatio.get());
+}
+
 export function filterStyle(filter: DisplayFilter, brightness = 1): ViewStyle {
   const parts: string[] = [];
   if (filter === 'night') parts.push('invert(1) hue-rotate(180deg)');
@@ -109,7 +121,7 @@ export const PageView = memo(function PageView({ page, width, band, filter = 'no
   // Size of the full (uncropped) page at this scale.
   const fullW = cw / Math.max(0.05, 1 - crop.left - crop.right);
   const fullH = ch / Math.max(0.05, 1 - crop.top - crop.bottom);
-  const pixelWidth = Math.min(4096, fullW * PixelRatio.get());
+  const pixelWidth = renderPixelWidth(page, width);
 
   const isRaster = page.kind === 'pdf' || page.kind === 'image';
   const img = usePageImage(page, isRaster ? pixelWidth : 0);

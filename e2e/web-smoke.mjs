@@ -41,6 +41,16 @@ await step('page 1 shown', async () => {
   await page.screenshot({ path: `${shots}/02-lector-pagina-1.png` });
 });
 
+await step('turning shows the next page without a loading indicator', async () => {
+  await page.waitForTimeout(1500);
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(80);
+  const spinners = await page.locator('[role="progressbar"]').count();
+  if (spinners > 0) throw new Error('next page was not pre-rendered');
+  await page.keyboard.press('ArrowLeft');
+  await page.waitForTimeout(300);
+});
+
 await step('ArrowRight / PageDown / Space turn pages (pedal keys)', async () => {
   await page.mouse.move(5, 5);
   await page.keyboard.press('ArrowRight');
