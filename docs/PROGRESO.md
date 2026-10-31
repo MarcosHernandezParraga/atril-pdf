@@ -7,7 +7,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Estado general
 
 - **Fase actual:** 3–5 en curso (fases 0, 1 y 2 terminadas).
-- **Pruebas automáticas:** 109 tests unitarios, de base de datos y de seguridad de rutas en verde; prueba en navegador real (12 pasos) y prueba de escritorio en Electron en verde.
+- **Pruebas automáticas:** 109 tests unitarios, de base de datos y de seguridad de rutas en verde; prueba en navegador real (13 pasos) y prueba de escritorio en Electron en verde.
 - **Calidad:** `tsc --noEmit` y ESLint sin errores ni avisos.
 
 ## Fase 0 — Entorno ✅
@@ -30,7 +30,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Fase 2 — Motor PDF y modelo ✅ / 🟡
 
 - ✅ Interfaz `PdfEngine`; motor pdf.js (escritorio/web) con worker local.
-- 🟡 Módulo nativo `modules/atril-native`: Android (PdfRenderer, serializado, caché en disco de 300 MB) e iOS (PDFKit). Android compila en este entorno; **iOS no se ha compilado todavía** (requiere EAS Build o un Mac).
+- 🟡 Módulo nativo `modules/atril-native`: Android (PdfRenderer, serializado, caché en disco de 300 MB) e iOS (PDFKit). **Android compilado** (APK de prueba de 0.1.0, arm64 y armv7, revisado su manifiesto); falta probarlo en un dispositivo real (este entorno no permite emuladores). **iOS no se ha compilado todavía** (requiere EAS Build o un Mac).
 - ✅ Caché LRU en memoria y pre-renderizado de las páginas siguientes y anterior.
 - ✅ Modelo no destructivo, comandos (insertar, eliminar, mover, duplicar, girar, recortar, anotaciones) y deshacer/rehacer, con tests.
 - ✅ PDF protegidos con contraseña: se pide la contraseña al importarlos (se vuelve a pedir si es incorrecta) y se recuerda en el dispositivo. En Android solo es posible desde Android 15 (limitación de `PdfRenderer`); en versiones anteriores se muestra un mensaje claro.
@@ -71,6 +71,8 @@ Panel de miniaturas y organización de páginas, anotaciones, pentagramas e imá
 
 - En iOS, el modo noche/sepia usa una capa de mezcla (React Native en iOS no admite el filtro `invert`); pendiente de comprobar en un iPad.
 - En el entorno de desarrollo en la nube, Maven Central limita las descargas: para compilar Android allí se usa el espejo de Google (solo afecta a ese entorno).
+- El APK de prueba incluye el permiso de Internet (lo añade React Native) aunque no lo usa; las versiones publicadas por GitHub Actions se compilan sin él (`ATRIL_OFFLINE_BUILD=1`).
+- La prueba automática «pasar página sin indicador de carga» no distingue si la página venía pre-renderizada con PDF sencillos (pdf.js es muy rápido); el pre-renderizado se corrigió por análisis del código y queda pendiente medirlo con partituras escaneadas pesadas.
 
 ## Siguiente paso
 

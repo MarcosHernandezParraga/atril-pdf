@@ -87,6 +87,7 @@
     "jest": "^30.5.2",
     "jest-expo": "^58.0.13",
     "opentype.js": "^2.0.0",
+    "playwright": "1.63.0",
     "prettier": "^3.9.10",
     "sql.js": "^1.15.2",
     "typescript": "~6.0.3"

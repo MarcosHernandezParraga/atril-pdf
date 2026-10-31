@@ -83,6 +83,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'android.permission.MANAGE_EXTERNAL_STORAGE',
       'android.permission.RECORD_AUDIO',
       'android.permission.SYSTEM_ALERT_WINDOW',
+      // Published builds work 100% offline: no Internet permission at all. (Development
+      // builds keep it, because they load the code from the development server.)
+      ...(process.env.ATRIL_OFFLINE_BUILD === '1'
+        ? ['android.permission.INTERNET', 'android.permission.ACCESS_NETWORK_STATE']
+        : []),
     ],
     intentFilters: [
       {

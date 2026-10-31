@@ -66,6 +66,8 @@ jobs:
           java-version: 21
       - run: npm ci
       - run: npx expo prebuild -p android --clean --no-install
+        env:
+          ATRIL_OFFLINE_BUILD: '1'
       - name: Release signing key (from GitHub secrets)
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
