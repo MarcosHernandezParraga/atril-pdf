@@ -67,7 +67,7 @@ export const DARK: Palette = {
   success: '#8BD18F',
   readerBackground: '#0C0B0A',
   lookaheadTint: 'rgba(122, 174, 255, 0.10)',
-  overlay: 'rgba(16, 14, 12, 0.88)',
+  overlay: 'rgba(58, 53, 47, 0.97)',
   glassTint: 'dark',
   dropHighlight: 'rgba(240, 163, 94, 0.20)',
   shadow: '#000000',
