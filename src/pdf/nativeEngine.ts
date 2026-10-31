@@ -75,7 +75,8 @@ export function createNativeEngine(storage: StorageAdapter): PdfEngine {
       try {
         const r = await native.openDocument(uri, req.password ?? null);
         const sizes: Size[] = [];
-        for (let i = 0; i < r.pageCount; i++) sizes.push({ width: r.sizes[i * 2]!, height: r.sizes[i * 2 + 1]! });
+        for (let i = 0; i < r.pageCount; i++)
+          sizes.push({ width: r.sizes[i * 2]!, height: r.sizes[i * 2 + 1]! });
         return new NativeHandle(native, r.handle, r.pageCount, sizes);
       } catch (e) {
         throw mapError(e);

@@ -13,7 +13,15 @@ import type { InkAnnotation, PageRef, Rotation, TextAnnotation } from '../model'
 import { pageToView, viewScale, viewToPage } from '../pageTransform';
 
 function page(rotation: Rotation, crop: PageRef['crop'] = null): PageRef {
-  return { id: 'p', kind: 'pdf', sourceId: 's', pageIndex: 0, size: { width: 600, height: 800 }, rotation, crop };
+  return {
+    id: 'p',
+    kind: 'pdf',
+    sourceId: 's',
+    pageIndex: 0,
+    size: { width: 600, height: 800 },
+    rotation,
+    crop,
+  };
 }
 
 describe('page ↔ view coordinates', () => {
@@ -78,7 +86,12 @@ describe('ink', () => {
   });
 
   it('builds polylines for the highlighter', () => {
-    expect(polylinePath([{ x: 0, y: 0 }, { x: 5, y: 5 }])).toBe('M 0.00 0.00 L 5.00 5.00');
+    expect(
+      polylinePath([
+        { x: 0, y: 0 },
+        { x: 5, y: 5 },
+      ]),
+    ).toBe('M 0.00 0.00 L 5.00 5.00');
   });
 
   it('eraser finds the strokes it touches', () => {
@@ -129,7 +142,8 @@ describe('ink', () => {
 
 describe('pencil / finger input mode', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { pointerAllowed, POINTER } = require('../../annotations/input') as typeof import('../../annotations/input');
+  const { pointerAllowed, POINTER } =
+    require('../../annotations/input') as typeof import('../../annotations/input');
   it('"pencil and finger": both draw', () => {
     expect(pointerAllowed('both', POINTER.TOUCH)).toBe(true);
     expect(pointerAllowed('both', POINTER.STYLUS)).toBe(true);

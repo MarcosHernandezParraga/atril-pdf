@@ -7,7 +7,15 @@ import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { APP_AUTHOR, APP_NAME } from '../config/identity';
 import type { DocumentRow, FolderRow } from '../db/schema';
@@ -16,7 +24,14 @@ import { useSettings } from '../settings/store';
 import { cardShadow, RADIUS, SPACING, TOUCH, useTheme } from '../theme';
 import { dialogs } from '../ui/dialogs';
 import { AppText, Button, Icon, IconButton, Screen, type IconName } from '../ui/primitives';
-import { createFolder, deleteForever, documentMenuItems, folderMenuItems, openDocument, startConcert } from './actions';
+import {
+  createFolder,
+  deleteForever,
+  documentMenuItems,
+  folderMenuItems,
+  openDocument,
+  startConcert,
+} from './actions';
 import { DocumentCard, FolderTile, NewFolderTile } from './DocumentCard';
 import { useLibraryRefresh } from './libraryEvents';
 import { pickFiles } from './pickFiles';
@@ -120,23 +135,39 @@ export function LibraryScreen() {
     if (view === 'trash') {
       void dialogs.menu(
         [
-          { label: t('library.restore'), icon: 'restore', onPress: () => void repo.restoreDocuments([doc.id]).then(bump) },
-          { label: t('library.deleteForever'), icon: 'delete-forever', danger: true, onPress: () => void deleteForever([doc]) },
+          {
+            label: t('library.restore'),
+            icon: 'restore',
+            onPress: () => void repo.restoreDocuments([doc.id]).then(bump),
+          },
+          {
+            label: t('library.deleteForever'),
+            icon: 'delete-forever',
+            danger: true,
+            onPress: () => void deleteForever([doc]),
+          },
         ],
         doc.title,
       );
       return;
     }
     void dialogs.menu(
-      documentMenuItems(doc, [{ label: t('library.open'), icon: 'book-open-variant', onPress: () => openDocument(doc.id) }]),
+      documentMenuItems(doc, [
+        { label: t('library.open'), icon: 'book-open-variant', onPress: () => openDocument(doc.id) },
+      ]),
       doc.title,
     );
   };
 
-  const title = view === 'trash' ? t('library.trash') : view === 'favorites' ? t('library.favorites') : APP_NAME;
+  const title =
+    view === 'trash' ? t('library.trash') : view === 'favorites' ? t('library.favorites') : APP_NAME;
   const layout = libSettings.view;
   const sortLabel =
-    libSettings.sort === 'name' ? t('library.sortName') : libSettings.sort === 'added' ? t('library.sortAdded') : t('library.sortRecent');
+    libSettings.sort === 'name'
+      ? t('library.sortName')
+      : libSettings.sort === 'added'
+        ? t('library.sortAdded')
+        : t('library.sortRecent');
 
   const header = (
     <View style={{ paddingTop: SPACING.lg }}>
@@ -161,14 +192,20 @@ export function LibraryScreen() {
               style={[styles.searchInput, { color: theme.text }]}
               accessibilityLabel={t('library.search')}
             />
-            {search ? <IconButton icon="close-circle" label={t('common.close')} onPress={() => setSearch('')} /> : null}
+            {search ? (
+              <IconButton icon="close-circle" label={t('common.close')} onPress={() => setSearch('')} />
+            ) : null}
           </View>
 
           {!search.trim() ? (
             <>
               <SectionTitle title={t('library.foldersConcerts')} icon="folder-music-outline" />
               <View style={styles.folderGrid}>
-                <NewFolderTile width={folderWidth} label={t('library.newFolder')} onPress={() => void createFolder(null)} />
+                <NewFolderTile
+                  width={folderWidth}
+                  label={t('library.newFolder')}
+                  onPress={() => void createFolder(null)}
+                />
                 {topFolders.map((f, i) => (
                   <FolderTile
                     key={f.id}
@@ -192,7 +229,10 @@ export function LibraryScreen() {
         </>
       ) : null}
 
-      <SectionTitle title={view === 'all' ? t('library.allDocuments') : title} icon="file-document-multiple-outline" />
+      <SectionTitle
+        title={view === 'all' ? t('library.allDocuments') : title}
+        icon="file-document-multiple-outline"
+      />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.toolbar}>
         <Chip
           icon="sort"
@@ -210,13 +250,20 @@ export function LibraryScreen() {
         <Chip
           icon={layout === 'grid' ? 'view-list-outline' : 'view-grid-outline'}
           label={layout === 'grid' ? t('library.viewList') : t('library.viewGrid')}
-          onPress={() => update((s) => ({ ...s, library: { ...s.library, view: s.library.view === 'grid' ? 'list' : 'grid' } }))}
+          onPress={() =>
+            update((s) => ({
+              ...s,
+              library: { ...s.library, view: s.library.view === 'grid' ? 'list' : 'grid' },
+            }))
+          }
         />
         <Chip
           icon="star-outline"
           label={t('library.favorites')}
           active={view === 'favorites'}
-          onPress={() => router.push({ pathname: '/', params: { view: view === 'favorites' ? 'all' : 'favorites' } })}
+          onPress={() =>
+            router.push({ pathname: '/', params: { view: view === 'favorites' ? 'all' : 'favorites' } })
+          }
         />
         <Chip
           icon="trash-can-outline"
@@ -225,7 +272,11 @@ export function LibraryScreen() {
           onPress={() => router.push({ pathname: '/', params: { view: view === 'trash' ? 'all' : 'trash' } })}
         />
         {view === 'trash' && docs && docs.length > 0 ? (
-          <Chip icon="delete-sweep-outline" label={t('library.emptyTrash')} onPress={() => void deleteForever(docs)} />
+          <Chip
+            icon="delete-sweep-outline"
+            label={t('library.emptyTrash')}
+            onPress={() => void deleteForever(docs)}
+          />
         ) : null}
       </ScrollView>
     </View>
@@ -236,9 +287,17 @@ export function LibraryScreen() {
       <ActivityIndicator color={theme.primary} style={{ marginTop: SPACING.xxl }} />
     ) : (
       <View style={styles.empty} testID="library-empty">
-        <Icon name={view === 'trash' ? 'trash-can-outline' : 'file-music-outline'} size={56} color={theme.textSecondary} />
+        <Icon
+          name={view === 'trash' ? 'trash-can-outline' : 'file-music-outline'}
+          size={56}
+          color={theme.textSecondary}
+        />
         <AppText variant="heading" style={{ marginTop: SPACING.md, textAlign: 'center' }}>
-          {search.trim() ? t('library.noResults') : view === 'trash' ? t('library.trashEmpty') : t('library.empty')}
+          {search.trim()
+            ? t('library.noResults')
+            : view === 'trash'
+              ? t('library.trashEmpty')
+              : t('library.empty')}
         </AppText>
         {view === 'all' && !search.trim() ? (
           <AppText secondary style={{ marginTop: SPACING.sm, textAlign: 'center', maxWidth: 420 }}>
@@ -251,9 +310,15 @@ export function LibraryScreen() {
   return (
     <Screen>
       <View style={[styles.topBar, { paddingHorizontal: pagePad }]}>
-        {view !== 'all' ? <IconButton icon="arrow-left" label={t('common.back')} onPress={() => router.back()} /> : null}
+        {view !== 'all' ? (
+          <IconButton icon="arrow-left" label={t('common.back')} onPress={() => router.back()} />
+        ) : null}
         {view === 'all' ? (
-          <Image source={require('../../assets/images/icon.png')} style={styles.logo} accessibilityIgnoresInvertColors />
+          <Image
+            source={require('../../assets/images/icon.png')}
+            style={styles.logo}
+            accessibilityIgnoresInvertColors
+          />
         ) : null}
         <View style={{ flex: 1, marginLeft: SPACING.md }}>
           <AppText variant="title" numberOfLines={1} accessibilityRole="header">
@@ -280,7 +345,13 @@ export function LibraryScreen() {
         numColumns={layout === 'grid' ? columns : 1}
         ListHeaderComponent={header}
         ListEmptyComponent={empty}
-        contentContainerStyle={{ paddingHorizontal: pagePad, paddingBottom: 120, width: '100%', maxWidth: 1400, alignSelf: 'center' }}
+        contentContainerStyle={{
+          paddingHorizontal: pagePad,
+          paddingBottom: 120,
+          width: '100%',
+          maxWidth: 1400,
+          alignSelf: 'center',
+        }}
         columnWrapperStyle={layout === 'grid' ? { gap: SPACING.lg, marginBottom: SPACING.xl } : undefined}
         renderItem={({ item, index }) => (
           <DocumentCard
@@ -294,9 +365,16 @@ export function LibraryScreen() {
         )}
       />
       {busy || dropActive ? (
-        <View style={[StyleSheet.absoluteFill, styles.overlay, { backgroundColor: theme.dropHighlight }]} pointerEvents="none">
+        <View
+          style={[StyleSheet.absoluteFill, styles.overlay, { backgroundColor: theme.dropHighlight }]}
+          pointerEvents="none"
+        >
           <View style={[styles.busy, { backgroundColor: theme.surface }, cardShadow(theme, 3)]}>
-            {busy ? <ActivityIndicator color={theme.primary} /> : <Icon name="tray-arrow-down" size={32} color={theme.primary} />}
+            {busy ? (
+              <ActivityIndicator color={theme.primary} />
+            ) : (
+              <Icon name="tray-arrow-down" size={32} color={theme.primary} />
+            )}
             <AppText style={{ marginLeft: SPACING.md }}>{busy ?? t('library.dropHere')}</AppText>
           </View>
         </View>
@@ -305,7 +383,15 @@ export function LibraryScreen() {
   );
 }
 
-export function SectionTitle({ title, icon, right }: { title: string; icon: IconName; right?: React.ReactNode }) {
+export function SectionTitle({
+  title,
+  icon,
+  right,
+}: {
+  title: string;
+  icon: IconName;
+  right?: React.ReactNode;
+}) {
   const theme = useTheme();
   return (
     <View style={styles.sectionTitle}>
@@ -318,7 +404,17 @@ export function SectionTitle({ title, icon, right }: { title: string; icon: Icon
   );
 }
 
-export function Chip({ label, icon, onPress, active }: { label: string; icon?: IconName; onPress: () => void; active?: boolean }) {
+export function Chip({
+  label,
+  icon,
+  onPress,
+  active,
+}: {
+  label: string;
+  icon?: IconName;
+  onPress: () => void;
+  active?: boolean;
+}) {
   return (
     <Button
       label={label}
@@ -334,11 +430,22 @@ export function Chip({ label, icon, onPress, active }: { label: string; icon?: I
 const styles = StyleSheet.create({
   topBar: { flexDirection: 'row', alignItems: 'center', paddingTop: SPACING.md, paddingBottom: SPACING.sm },
   logo: { width: 48, height: 48, borderRadius: 14 },
-  search: { flexDirection: 'row', alignItems: 'center', borderRadius: RADIUS.pill, paddingLeft: SPACING.lg, minHeight: TOUCH + 4 },
+  search: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: RADIUS.pill,
+    paddingLeft: SPACING.lg,
+    minHeight: TOUCH + 4,
+  },
   searchInput: { flex: 1, fontSize: 16, paddingHorizontal: SPACING.sm, minHeight: TOUCH },
   folderGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md },
   toolbar: { gap: SPACING.sm, paddingBottom: SPACING.lg },
-  sectionTitle: { flexDirection: 'row', alignItems: 'center', marginTop: SPACING.xl, marginBottom: SPACING.md },
+  sectionTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.xl,
+    marginBottom: SPACING.md,
+  },
   empty: { alignItems: 'center', paddingVertical: 48, paddingHorizontal: SPACING.lg },
   overlay: { alignItems: 'center', justifyContent: 'center' },
   busy: { flexDirection: 'row', alignItems: 'center', padding: SPACING.xl, borderRadius: RADIUS.xl },

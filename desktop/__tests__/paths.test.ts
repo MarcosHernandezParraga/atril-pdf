@@ -30,7 +30,9 @@ describe('app:// protocol paths', () => {
     expect(resolveWebPath(web, '/reader/123')).toBe(join(web, 'index.html'));
   });
   it('maps library assets to their renamed folder', () => {
-    expect(resolveWebPath(web, '/assets/node_modules/icons/font.ttf')).toBe(join(web, 'assets', '__nm', 'icons', 'font.ttf'));
+    expect(resolveWebPath(web, '/assets/node_modules/icons/font.ttf')).toBe(
+      join(web, 'assets', '__nm', 'icons', 'font.ttf'),
+    );
   });
   it('never escapes the web root', () => {
     expect(resolveWebPath(web, '/../../etc/passwd')).toBe(join(web, 'index.html'));

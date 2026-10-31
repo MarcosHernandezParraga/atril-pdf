@@ -25,7 +25,9 @@ const os = require('os');
   win.on('console', (m) => logs.push(`${m.type()}: ${m.text()}`));
   win.on('pageerror', (e) => logs.push(`pageerror: ${e.message}`));
   await win.setViewportSize?.({ width: 1280, height: 860 });
-  const bridge = await win.evaluate(() => typeof window.atrilDesktop === 'object' && Object.keys(window.atrilDesktop));
+  const bridge = await win.evaluate(
+    () => typeof window.atrilDesktop === 'object' && Object.keys(window.atrilDesktop),
+  );
   console.log('bridge:', bridge);
   const node = await win.evaluate(() => typeof require);
   console.log('require in page:', node);
@@ -40,7 +42,12 @@ const os = require('os');
   await win.waitForTimeout(400);
   console.log('after PageDown:', await indicator());
   // Network must be blocked (offline app).
-  const net = await win.evaluate(() => fetch('https://example.com').then(() => 'reachable', () => 'blocked'));
+  const net = await win.evaluate(() =>
+    fetch('https://example.com').then(
+      () => 'reachable',
+      () => 'blocked',
+    ),
+  );
   console.log('network:', net);
   await win.keyboard.press('F11');
   await win.waitForTimeout(800);
@@ -53,7 +60,10 @@ const os = require('os');
   console.log('fullscreen after Esc:', fs2);
   const dbFile = path.join(userData, 'atril.db');
   console.log('database file exists:', fs.existsSync(dbFile));
-  console.log('library files:', fs.readdirSync(path.join(userData, 'library'), { recursive: true }).join(', '));
+  console.log(
+    'library files:',
+    fs.readdirSync(path.join(userData, 'library'), { recursive: true }).join(', '),
+  );
   await app.close();
   const bad = logs.filter((l) => l.startsWith('error') || l.startsWith('pageerror'));
   if (bad.length) console.log('LOGS:\n' + bad.join('\n'));

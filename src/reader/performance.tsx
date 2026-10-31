@@ -24,8 +24,13 @@ export function PerformanceChrome({ active }: { active: boolean }) {
     let lock: { release(): Promise<void> } | null = null;
     if (active) {
       void document.documentElement.requestFullscreen?.().catch(() => undefined);
-      const wl = (navigator as unknown as { wakeLock?: { request(t: string): Promise<{ release(): Promise<void> }> } }).wakeLock;
-      void wl?.request('screen').then((l) => (lock = l)).catch(() => undefined);
+      const wl = (
+        navigator as unknown as { wakeLock?: { request(t: string): Promise<{ release(): Promise<void> }> } }
+      ).wakeLock;
+      void wl
+        ?.request('screen')
+        .then((l) => (lock = l))
+        .catch(() => undefined);
     } else if (document.fullscreenElement) {
       void document.exitFullscreen().catch(() => undefined);
     }

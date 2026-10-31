@@ -8,7 +8,13 @@ import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
 import { FlatList, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import type { PageRef } from '../core/model';
-import { computeContinuousLayout, nextScroll, pageAtScroll, previousScroll, scrollForPage } from '../core/navigation';
+import {
+  computeContinuousLayout,
+  nextScroll,
+  pageAtScroll,
+  previousScroll,
+  scrollForPage,
+} from '../core/navigation';
 import type { DisplayFilter } from '../settings/defaults';
 import { PageView, pageHeightForWidth } from './PageView';
 
@@ -38,7 +44,11 @@ export const ContinuousView = forwardRef<
   const offset = useRef(0);
   const pageWidth = Math.min(p.width, 1400);
   const layout = useMemo(
-    () => computeContinuousLayout(p.pages.map((pg) => pageHeightForWidth(pg, pageWidth)), GAP),
+    () =>
+      computeContinuousLayout(
+        p.pages.map((pg) => pageHeightForWidth(pg, pageWidth)),
+        GAP,
+      ),
     [p.pages, pageWidth],
   );
 
@@ -92,7 +102,13 @@ export const ContinuousView = forwardRef<
       }}
       renderItem={({ item }) => (
         <View style={{ width: p.width, alignItems: 'center', paddingBottom: GAP }}>
-          <PageView page={item} width={pageWidth} filter={p.filter} brightness={p.brightness} testID={`page-${item.id}`} />
+          <PageView
+            page={item}
+            width={pageWidth}
+            filter={p.filter}
+            brightness={p.brightness}
+            testID={`page-${item.id}`}
+          />
         </View>
       )}
     />

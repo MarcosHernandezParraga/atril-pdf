@@ -38,7 +38,15 @@ export function PedalScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'left', 'right']}>
       <Header title={t('settings.pedal')} onBack={() => router.back()} backLabel={t('common.back')} />
-      <ScrollView contentContainerStyle={{ padding: SPACING.lg, paddingBottom: 80, maxWidth: 820, width: '100%', alignSelf: 'center' }}>
+      <ScrollView
+        contentContainerStyle={{
+          padding: SPACING.lg,
+          paddingBottom: 80,
+          maxWidth: 820,
+          width: '100%',
+          alignSelf: 'center',
+        }}
+      >
         <Section title={t('settings.testKeys')}>
           <View style={{ paddingVertical: SPACING.lg }} testID="key-test">
             <AppText secondary>{t('settings.testKeysHint')}</AppText>
@@ -89,7 +97,10 @@ export function PedalScreen() {
                             label: k,
                             icon: 'close' as const,
                             onPress: () =>
-                              update((s) => ({ ...s, pedal: { ...s.pedal, keymap: removeKey(s.pedal.keymap, action, k) } })),
+                              update((s) => ({
+                                ...s,
+                                pedal: { ...s.pedal, keymap: removeKey(s.pedal.keymap, action, k) },
+                              })),
                           })),
                           t('common.delete'),
                         )

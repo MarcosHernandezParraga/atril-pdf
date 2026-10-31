@@ -45,18 +45,41 @@ export function entering(index: number) {
     .damping(16);
 }
 
-export function Thumbnail({ doc, width, height, radius = RADIUS.md }: { doc: DocumentRow; width: number; height: number; radius?: number }) {
+export function Thumbnail({
+  doc,
+  width,
+  height,
+  radius = RADIUS.md,
+}: {
+  doc: DocumentRow;
+  width: number;
+  height: number;
+  radius?: number;
+}) {
   const t = useTheme();
   const thumb = useThumbnail(doc);
   return (
     <View
       style={[
-        { width, height, borderRadius: radius, backgroundColor: '#FFFFFF', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+        {
+          width,
+          height,
+          borderRadius: radius,
+          backgroundColor: '#FFFFFF',
+          overflow: 'hidden',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
         { borderWidth: StyleSheet.hairlineWidth, borderColor: t.border },
       ]}
     >
       {thumb ? (
-        <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} contentFit="contain" transition={150} />
+        <Image
+          source={{ uri: thumb }}
+          style={StyleSheet.absoluteFill}
+          contentFit="contain"
+          transition={150}
+        />
       ) : (
         <Icon name="file-music-outline" size={Math.min(40, width / 3)} color="#C4BBB0" />
       )}
@@ -184,7 +207,14 @@ export function FolderTile({
         <View style={styles.folderTop}>
           <Icon name="folder-music" size={30} color="#FFFFFF" />
           {count > 0 ? (
-            <IconButton icon="play-circle" label={tr('library.startConcert')} color="#FFFFFF" size={32} onPress={onPlay} testID={`play-${folder.id}`} />
+            <IconButton
+              icon="play-circle"
+              label={tr('library.startConcert')}
+              color="#FFFFFF"
+              size={32}
+              onPress={onPlay}
+              testID={`play-${folder.id}`}
+            />
           ) : null}
         </View>
         <AppText variant="label" numberOfLines={2} style={{ color: '#FFFFFF' }}>
@@ -198,7 +228,15 @@ export function FolderTile({
   );
 }
 
-export function NewFolderTile({ width, onPress, label }: { width: number; onPress: () => void; label: string }) {
+export function NewFolderTile({
+  width,
+  onPress,
+  label,
+}: {
+  width: number;
+  onPress: () => void;
+  label: string;
+}) {
   const t = useTheme();
   return (
     <Pressable3D
@@ -206,7 +244,16 @@ export function NewFolderTile({ width, onPress, label }: { width: number; onPres
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={[{ width, borderRadius: RADIUS.lg, borderWidth: 2, borderStyle: 'dashed', borderColor: t.border, backgroundColor: t.surface }]}
+      style={[
+        {
+          width,
+          borderRadius: RADIUS.lg,
+          borderWidth: 2,
+          borderStyle: 'dashed',
+          borderColor: t.border,
+          backgroundColor: t.surface,
+        },
+      ]}
       contentStyle={[styles.folderContent, { alignItems: 'center', justifyContent: 'center' }]}
     >
       <View style={[styles.plus, { backgroundColor: t.surfaceAlt }]}>
@@ -223,7 +270,19 @@ const styles = StyleSheet.create({
   star: { position: 'absolute', top: 8, right: 8, borderRadius: 14, padding: 4 },
   listRow: { borderRadius: RADIUS.lg, marginBottom: SPACING.sm },
   listContent: { flexDirection: 'row', alignItems: 'center', padding: SPACING.sm, paddingLeft: SPACING.md },
-  folderContent: { padding: SPACING.lg, minHeight: 124, borderRadius: RADIUS.lg, overflow: 'hidden', justifyContent: 'space-between' },
-  folderTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACING.sm, minHeight: 40 },
+  folderContent: {
+    padding: SPACING.lg,
+    minHeight: 124,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+    justifyContent: 'space-between',
+  },
+  folderTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+    minHeight: 40,
+  },
   plus: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
 });

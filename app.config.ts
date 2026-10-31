@@ -93,7 +93,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         action: 'VIEW',
         category: ['DEFAULT', 'BROWSABLE'],
-        data: [{ scheme: 'content', mimeType: 'application/pdf' }, { scheme: 'file', mimeType: 'application/pdf' }],
+        data: [
+          { scheme: 'content', mimeType: 'application/pdf' },
+          { scheme: 'file', mimeType: 'application/pdf' },
+        ],
       },
     ],
   },

@@ -5,7 +5,16 @@
 // work on desktop/web, so the whole app uses these instead.
 
 import { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { create } from 'zustand';
 
 import i18n from '../i18n';
@@ -31,7 +40,14 @@ type Dialog =
       secure?: boolean;
       resolve: (v: string | null) => void;
     }
-  | { kind: 'confirm'; title: string; message?: string; confirmLabel: string; danger: boolean; resolve: (v: boolean) => void }
+  | {
+      kind: 'confirm';
+      title: string;
+      message?: string;
+      confirmLabel: string;
+      danger: boolean;
+      resolve: (v: boolean) => void;
+    }
   | { kind: 'menu'; title?: string; items: MenuItem[]; resolve: () => void };
 
 interface ToastState {
@@ -66,7 +82,10 @@ export const dialogs = {
       useDialogStore.getState().set({ kind: 'prompt', title, initial: opts.initial ?? '', ...opts, resolve }),
     );
   },
-  confirm(title: string, opts: { message?: string; confirmLabel?: string; danger?: boolean } = {}): Promise<boolean> {
+  confirm(
+    title: string,
+    opts: { message?: string; confirmLabel?: string; danger?: boolean } = {},
+  ): Promise<boolean> {
     return new Promise((resolve) =>
       useDialogStore.getState().set({
         kind: 'confirm',
@@ -156,8 +175,15 @@ export function DialogHost() {
   return (
     <>
       <Modal visible={dialog !== null} transparent animationType="fade" onRequestClose={dismiss}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={dismiss} accessibilityLabel={i18n.t('common.close')} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.backdrop}
+        >
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={dismiss}
+            accessibilityLabel={i18n.t('common.close')}
+          />
           <View style={[styles.sheet, { backgroundColor: t.surface, borderColor: t.border }]} testID="dialog">
             {dialog?.kind === 'prompt' ? <PromptBody key={dialog.title} d={dialog} close={close} /> : null}
             {dialog?.kind === 'confirm' ? (
@@ -207,8 +233,12 @@ export function DialogHost() {
                     }}
                     style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: t.surfaceAlt }]}
                   >
-                    {item.icon ? <Icon name={item.icon} color={item.color ?? (item.danger ? t.danger : t.text)} /> : null}
-                    <AppText style={{ marginLeft: SPACING.md, color: item.danger ? t.danger : t.text }}>{item.label}</AppText>
+                    {item.icon ? (
+                      <Icon name={item.icon} color={item.color ?? (item.danger ? t.danger : t.text)} />
+                    ) : null}
+                    <AppText style={{ marginLeft: SPACING.md, color: item.danger ? t.danger : t.text }}>
+                      {item.label}
+                    </AppText>
                   </Pressable>
                 ))}
               </ScrollView>
@@ -218,7 +248,11 @@ export function DialogHost() {
       </Modal>
       {toast ? (
         <View pointerEvents="box-none" style={styles.toastWrap}>
-          <View style={[styles.toast, { backgroundColor: t.overlay }]} accessibilityLiveRegion="polite" testID="toast">
+          <View
+            style={[styles.toast, { backgroundColor: t.overlay }]}
+            accessibilityLiveRegion="polite"
+            testID="toast"
+          >
             <AppText style={{ color: '#FFFFFF', flexShrink: 1 }}>{toast.message}</AppText>
             {toast.actionLabel ? (
               <Pressable
@@ -242,7 +276,13 @@ export function DialogHost() {
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center', padding: SPACING.lg },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.lg,
+  },
   sheet: {
     width: '100%',
     maxWidth: 440,
@@ -259,8 +299,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: SPACING.sm, marginTop: SPACING.xl },
-  menuItem: { flexDirection: 'row', alignItems: 'center', minHeight: TOUCH + 4, paddingHorizontal: SPACING.sm, borderRadius: RADIUS.md },
-  toastWrap: { position: 'absolute', left: 0, right: 0, bottom: SPACING.xxl, alignItems: 'center', paddingHorizontal: SPACING.lg },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: TOUCH + 4,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.md,
+  },
+  toastWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: SPACING.xxl,
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+  },
   toast: {
     flexDirection: 'row',
     alignItems: 'center',

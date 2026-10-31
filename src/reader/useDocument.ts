@@ -23,7 +23,12 @@ export interface ViewState {
 export function parseViewState(json: string | null | undefined): ViewState {
   try {
     const v = json ? (JSON.parse(json) as Partial<ViewState>) : {};
-    return { page: typeof v.page === 'number' ? v.page : 0, mode: v.mode, lookahead: v.lookahead, splits: v.splits ?? {} };
+    return {
+      page: typeof v.page === 'number' ? v.page : 0,
+      mode: v.mode,
+      lookahead: v.lookahead,
+      splits: v.splits ?? {},
+    };
   } catch {
     return { page: 0, splits: {} };
   }

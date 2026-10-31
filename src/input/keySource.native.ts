@@ -18,7 +18,9 @@ export function subscribeKeys(handler: KeyHandler, opts: KeyCaptureOptions): () 
   if (!native) return () => undefined;
   active++;
   native.setKeyCapture(true, opts.consumed, opts.captureAll);
-  const sub = native.addListener('onKey', (e) => handler({ key: normalizeKey(e.key), repeat: e.repeat, time: e.time }));
+  const sub = native.addListener('onKey', (e) =>
+    handler({ key: normalizeKey(e.key), repeat: e.repeat, time: e.time }),
+  );
   return () => {
     sub.remove();
     active = Math.max(0, active - 1);

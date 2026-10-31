@@ -39,7 +39,11 @@ export const DEFAULT_STOP_OPTIONS: StopOptions = { twoPage: { coverAlone: false,
  * Builds the stops for a list of page indices (normally 0..n-1, or the page
  * range of a set-list item). Not used for 'vertical-continuous'.
  */
-export function buildStops(pages: readonly number[], mode: ViewMode, opts: StopOptions = DEFAULT_STOP_OPTIONS): Stop[] {
+export function buildStops(
+  pages: readonly number[],
+  mode: ViewMode,
+  opts: StopOptions = DEFAULT_STOP_OPTIONS,
+): Stop[] {
   const n = pages.length;
   if (n === 0) return [];
   switch (mode) {
@@ -190,14 +194,24 @@ export function maxScroll(layout: ContinuousLayout, viewport: number): number {
  * last system that was being read stays visible at the top.
  * Returns null when already at the end.
  */
-export function nextScroll(layout: ContinuousLayout, offset: number, viewport: number, overlap: number): number | null {
+export function nextScroll(
+  layout: ContinuousLayout,
+  offset: number,
+  viewport: number,
+  overlap: number,
+): number | null {
   const max = maxScroll(layout, viewport);
   if (offset >= max - 0.5) return null;
   const advance = Math.max(1, viewport * (1 - clampOverlap(overlap)));
   return Math.min(max, offset + advance);
 }
 
-export function previousScroll(layout: ContinuousLayout, offset: number, viewport: number, overlap: number): number | null {
+export function previousScroll(
+  layout: ContinuousLayout,
+  offset: number,
+  viewport: number,
+  overlap: number,
+): number | null {
   if (offset <= 0.5) return null;
   const advance = Math.max(1, viewport * (1 - clampOverlap(overlap)));
   return Math.max(0, offset - advance);

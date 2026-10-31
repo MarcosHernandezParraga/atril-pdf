@@ -22,7 +22,10 @@ describe('settings', () => {
   });
 
   it('clamps numbers to their allowed ranges', () => {
-    const s = sanitizeSettings({ reader: { transitionMs: 2000, lookaheadFraction: 0.9 }, pedal: { debounceMs: -5 } });
+    const s = sanitizeSettings({
+      reader: { transitionMs: 2000, lookaheadFraction: 0.9 },
+      pedal: { debounceMs: -5 },
+    });
     expect(s.reader.transitionMs).toBe(400);
     expect(s.reader.lookaheadFraction).toBe(0.35);
     expect(s.pedal.debounceMs).toBe(0);

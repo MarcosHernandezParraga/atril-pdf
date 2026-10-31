@@ -19,9 +19,12 @@ describe('default pedal and keyboard mapping', () => {
     },
   );
 
-  it.each(['ArrowLeft', 'ArrowUp', 'PageUp', 'MediaTrackPrevious'])('%s turns to the previous page', (key) => {
-    expect(actionForKey(DEFAULT_KEYMAP, key)).toBe('previous');
-  });
+  it.each(['ArrowLeft', 'ArrowUp', 'PageUp', 'MediaTrackPrevious'])(
+    '%s turns to the previous page',
+    (key) => {
+      expect(actionForKey(DEFAULT_KEYMAP, key)).toBe('previous');
+    },
+  );
 
   it('Home/End go to the first/last page, F11 and Escape control full screen', () => {
     expect(actionForKey(DEFAULT_KEYMAP, 'Home')).toBe('first');

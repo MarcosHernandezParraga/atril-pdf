@@ -38,8 +38,16 @@ export async function chooseFolder(title: string): Promise<FolderRow | null | un
     void dialogs
       .menu(
         [
-          ...folders.map((f) => ({ label: f.name, icon: 'folder-music-outline' as const, onPress: () => (chosen = f) })),
-          { label: t('library.newFolder'), icon: 'folder-plus-outline' as const, onPress: () => (chosen = null) },
+          ...folders.map((f) => ({
+            label: f.name,
+            icon: 'folder-music-outline' as const,
+            onPress: () => (chosen = f),
+          })),
+          {
+            label: t('library.newFolder'),
+            icon: 'folder-plus-outline' as const,
+            onPress: () => (chosen = null),
+          },
         ],
         title,
       )
@@ -58,7 +66,12 @@ export async function addToFolderFlow(docIds: string[]) {
     const name = await dialogs.prompt(t('library.newFolder'), { placeholder: t('library.folderName') });
     if (!name) return;
     const id = newId();
-    await repo.createFolder(id, name, null, FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)] ?? null);
+    await repo.createFolder(
+      id,
+      name,
+      null,
+      FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)] ?? null,
+    );
     folder = (await repo.allFolders()).find((f) => f.id === id) ?? null;
     if (!folder) return;
   }
@@ -79,7 +92,10 @@ export async function trashDocument(doc: DocumentRow) {
 
 export async function deleteForever(list: DocumentRow[]) {
   const { repo, storage } = getServices();
-  const ok = await dialogs.confirm(t('library.deleteForever'), { danger: true, confirmLabel: t('common.delete') });
+  const ok = await dialogs.confirm(t('library.deleteForever'), {
+    danger: true,
+    confirmLabel: t('common.delete'),
+  });
   if (!ok) return;
   const orphans = await repo.deleteDocuments(list.map((d) => d.id));
   for (const s of orphans) if (!s.linked) await storage.remove(s.path).catch(() => undefined);
@@ -93,7 +109,11 @@ export function documentMenuItems(doc: DocumentRow, extra: MenuItem[] = []): Men
   return [
     ...extra,
     { label: t('common.rename'), icon: 'pencil-outline', onPress: () => void renameDocument(doc) },
-    { label: t('library.addToFolder'), icon: 'folder-plus-outline', onPress: () => void addToFolderFlow([doc.id]) },
+    {
+      label: t('library.addToFolder'),
+      icon: 'folder-plus-outline',
+      onPress: () => void addToFolderFlow([doc.id]),
+    },
     {
       label: doc.favorite ? t('library.unfavorite') : t('library.favorite'),
       icon: doc.favorite ? 'star-off-outline' : 'star-outline',
@@ -134,7 +154,12 @@ export function documentMenuItems(doc: DocumentRow, extra: MenuItem[] = []): Men
         bump();
       },
     },
-    { label: t('common.delete'), icon: 'trash-can-outline', danger: true, onPress: () => void trashDocument(doc) },
+    {
+      label: t('common.delete'),
+      icon: 'trash-can-outline',
+      danger: true,
+      onPress: () => void trashDocument(doc),
+    },
   ];
 }
 

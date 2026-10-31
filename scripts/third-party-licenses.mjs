@@ -10,10 +10,21 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
 // Packages bundled at runtime that are not direct dependencies.
-const EXTRA = ['canvaskit-wasm', 'react-native-web', '@expo/vector-icons', 'expo-modules-core', 'react-native-screens'];
+const EXTRA = [
+  'canvaskit-wasm',
+  'react-native-web',
+  '@expo/vector-icons',
+  'expo-modules-core',
+  'react-native-screens',
+];
 // Assets that are not npm packages.
 const ASSETS = [
-  { name: 'Material Design Icons (Pictogrammers)', version: '', license: 'Apache-2.0', url: 'https://pictogrammers.com' },
+  {
+    name: 'Material Design Icons (Pictogrammers)',
+    version: '',
+    license: 'Apache-2.0',
+    url: 'https://pictogrammers.com',
+  },
 ];
 const FORBIDDEN = /(^|[^L])GPL|AGPL|SSPL|BUSL|Commercial/i;
 
@@ -24,7 +35,8 @@ for (const name of names) {
   if (!existsSync(p)) continue;
   const info = JSON.parse(readFileSync(p, 'utf8'));
   const license = typeof info.license === 'string' ? info.license : (info.license?.type ?? 'UNKNOWN');
-  const url = typeof info.repository === 'string' ? info.repository : (info.repository?.url ?? info.homepage ?? '');
+  const url =
+    typeof info.repository === 'string' ? info.repository : (info.repository?.url ?? info.homepage ?? '');
   rows.push({ name, version: info.version, license, url: url.replace(/^git\+/, '').replace(/\.git$/, '') });
 }
 rows.push(...ASSETS);

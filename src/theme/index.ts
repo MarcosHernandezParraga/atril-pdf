@@ -101,4 +101,13 @@ export function useTheme(): Palette {
 }
 
 /** Colours users can choose for folders. */
-export const FOLDER_COLORS = ['#B5622A', '#2F6FEB', '#2E9E5B', '#D93025', '#8E44AD', '#E69B00', '#00897B', '#5F6B7A'];
+export const FOLDER_COLORS = [
+  '#B5622A',
+  '#2F6FEB',
+  '#2E9E5B',
+  '#D93025',
+  '#8E44AD',
+  '#E69B00',
+  '#00897B',
+  '#5F6B7A',
+];

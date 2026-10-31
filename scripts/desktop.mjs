@@ -29,8 +29,16 @@ async function compile() {
     banner,
     logLevel: 'warning',
   };
-  await build({ ...common, entryPoints: [join(root, 'desktop/src/main.ts')], outfile: join(appDir, 'main.js') });
-  await build({ ...common, entryPoints: [join(root, 'desktop/src/preload.ts')], outfile: join(appDir, 'preload.js') });
+  await build({
+    ...common,
+    entryPoints: [join(root, 'desktop/src/main.ts')],
+    outfile: join(appDir, 'main.js'),
+  });
+  await build({
+    ...common,
+    entryPoints: [join(root, 'desktop/src/preload.ts')],
+    outfile: join(appDir, 'preload.js'),
+  });
 }
 
 function copyWeb() {

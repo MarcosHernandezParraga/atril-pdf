@@ -15,7 +15,6 @@ import { registerAppProtocol, registerAppScheme, APP_ORIGIN } from './protocol';
 import { libraryPath } from './safePath';
 import identity from '../../src/config/identity.json';
 
-
 registerAppScheme();
 app.setName(identity.name);
 if (process.platform === 'win32') app.setAppUserModelId(identity.appId);
@@ -119,12 +118,20 @@ function buildMenu() {
     { role: 'editMenu' },
     {
       label: 'View',
-      submenu: [{ role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { type: 'separator' }, { role: 'togglefullscreen' }],
+      submenu: [
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' },
+      ],
     },
     { role: 'windowMenu' },
   ];
   if (!app.isPackaged) {
-    (template[template.length - 2]!.submenu as Electron.MenuItemConstructorOptions[]).push({ role: 'toggleDevTools' });
+    (template[template.length - 2]!.submenu as Electron.MenuItemConstructorOptions[]).push({
+      role: 'toggleDevTools',
+    });
   }
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
@@ -138,8 +145,9 @@ async function start() {
     cb(permission === 'clipboard-sanitized-write' || permission === 'fullscreen'),
   );
   // Block any network access: the app works 100% offline.
-  session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*', 'ws://*/*', 'wss://*/*'] }, (_d, cb) =>
-    cb({ cancel: true }),
+  session.defaultSession.webRequest.onBeforeRequest(
+    { urls: ['http://*/*', 'https://*/*', 'ws://*/*', 'wss://*/*'] },
+    (_d, cb) => cb({ cancel: true }),
   );
 
   await fsp.mkdir(libraryRoot(), { recursive: true });
@@ -185,7 +193,10 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
   ipcMain.handle('db:batch', (_e, qs: SqlQuery[]) => executor.batch(qs));
   ipcMain.handle('db:exec', (_e, script: string) => executor.exec(script));
 
-  ipcMain.handle('fs:read', async (_e, rel: string) => new Uint8Array(await fsp.readFile(libraryPath(root, rel))));
+  ipcMain.handle(
+    'fs:read',
+    async (_e, rel: string) => new Uint8Array(await fsp.readFile(libraryPath(root, rel))),
+  );
   ipcMain.handle('fs:write', async (_e, rel: string, data: Uint8Array) => {
     const p = libraryPath(root, rel);
     await fsp.mkdir(join(p, '..'), { recursive: true });
@@ -199,10 +210,17 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
       .then(() => true)
       .catch(() => false),
   );
-  ipcMain.handle('fs:remove', async (_e, rel: string) => fsp.rm(libraryPath(root, rel), { force: true, recursive: true }));
+  ipcMain.handle('fs:remove', async (_e, rel: string) =>
+    fsp.rm(libraryPath(root, rel), { force: true, recursive: true }),
+  );
   ipcMain.handle('fs:size', async (_e, rel: string) => (await fsp.stat(libraryPath(root, rel))).size);
-  ipcMain.handle('fs:list', async (_e, rel: string) => fsp.readdir(libraryPath(root, rel)).catch(() => [] as string[]));
-  ipcMain.handle('fs:readExternal', async (_e, abs: string) => new Uint8Array(await fsp.readFile(checkExternal(abs))));
+  ipcMain.handle('fs:list', async (_e, rel: string) =>
+    fsp.readdir(libraryPath(root, rel)).catch(() => [] as string[]),
+  );
+  ipcMain.handle(
+    'fs:readExternal',
+    async (_e, abs: string) => new Uint8Array(await fsp.readFile(checkExternal(abs))),
+  );
   ipcMain.handle('fs:importExternal', async (_e, abs: string, rel: string) => {
     const dest = libraryPath(root, rel);
     await fsp.mkdir(join(dest, '..'), { recursive: true });
@@ -241,10 +259,13 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
     allowedDirs.add(r.filePaths[0]);
     return r.filePaths[0];
   });
-  ipcMain.handle('dialog:writeFilesTo', async (_e, dir: string, files: { name: string; data: Uint8Array }[]) => {
-    if (!allowedDirs.has(dir)) throw new Error('Access denied');
-    for (const f of files) await fsp.writeFile(join(dir, basename(f.name)), f.data);
-  });
+  ipcMain.handle(
+    'dialog:writeFilesTo',
+    async (_e, dir: string, files: { name: string; data: Uint8Array }[]) => {
+      if (!allowedDirs.has(dir)) throw new Error('Access denied');
+      for (const f of files) await fsp.writeFile(join(dir, basename(f.name)), f.data);
+    },
+  );
 
   ipcMain.handle('window:setFullScreen', (_e, on: boolean) => mainWindow?.setFullScreen(Boolean(on)));
   ipcMain.handle('window:isFullScreen', () => mainWindow?.isFullScreen() ?? false);

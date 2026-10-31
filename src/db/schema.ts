@@ -78,7 +78,10 @@ export const folderItems = sqliteTable(
     documentId: text('document_id').notNull(),
     position: real('position').notNull(),
   },
-  (t) => [index('folder_items_folder_idx').on(t.folderId), index('folder_items_document_idx').on(t.documentId)],
+  (t) => [
+    index('folder_items_folder_idx').on(t.folderId),
+    index('folder_items_document_idx').on(t.documentId),
+  ],
 );
 
 export const setlists = sqliteTable('setlists', {
@@ -118,7 +121,17 @@ export const settings = sqliteTable('settings', {
   value: text('value').notNull(),
 });
 
-export const schema = { folders, folderItems, documents, sources, annotations, setlists, setlistItems, bookmarks, settings };
+export const schema = {
+  folders,
+  folderItems,
+  documents,
+  sources,
+  annotations,
+  setlists,
+  setlistItems,
+  bookmarks,
+  settings,
+};
 
 export type FolderRow = typeof folders.$inferSelect;
 export type FolderItemRow = typeof folderItems.$inferSelect;

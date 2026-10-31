@@ -35,7 +35,19 @@ function Separator({ y, color }: { y: number; color: string }) {
   return <View pointerEvents="none" style={[styles.separator, { top: y - 1, backgroundColor: color }]} />;
 }
 
-function SinglePage({ page, width, height, filter, brightness }: { page: PageRef; width: number; height: number; filter: DisplayFilter; brightness: number }) {
+function SinglePage({
+  page,
+  width,
+  height,
+  filter,
+  brightness,
+}: {
+  page: PageRef;
+  width: number;
+  height: number;
+  filter: DisplayFilter;
+  brightness: number;
+}) {
   const w = fitWidth(page, width, height);
   return (
     <View style={styles.center}>
@@ -44,7 +56,16 @@ function SinglePage({ page, width, height, filter, brightness }: { page: PageRef
   );
 }
 
-function HalfPage({ top, bottom, width, height, style, splits, filter, brightness }: {
+function HalfPage({
+  top,
+  bottom,
+  width,
+  height,
+  style,
+  splits,
+  filter,
+  brightness,
+}: {
   top: PageRef;
   bottom: PageRef;
   width: number;
@@ -57,7 +78,8 @@ function HalfPage({ top, bottom, width, height, style, splits, filter, brightnes
   const theme = useTheme();
   const analysis = usePageAnalysis(bottom, splits[bottom.id] === undefined);
   // Split of the page being read, so the systems being played are never cut.
-  const raw = splits[bottom.id] ?? (analysis?.split != null ? toCroppedFraction(bottom, analysis.split) : 0.5);
+  const raw =
+    splits[bottom.id] ?? (analysis?.split != null ? toCroppedFraction(bottom, analysis.split) : 0.5);
   const s = Math.max(0.2, Math.min(0.8, raw));
   const w = fitWidth(bottom, width, height);
   const hBottom = pageHeightForWidth(bottom, w);
@@ -90,14 +112,27 @@ function HalfPage({ top, bottom, width, height, style, splits, filter, brightnes
         <PageView page={bottom} width={w} band={[s, 1]} filter={filter} brightness={brightness} />
       </View>
       <View style={{ position: 'absolute', left, top: offsetY + upperH }}>
-        <PageView page={top} width={wTop} band={[0, Math.max(0.05, lowerBand)]} filter={filter} brightness={brightness} />
+        <PageView
+          page={top}
+          width={wTop}
+          band={[0, Math.max(0.05, lowerBand)]}
+          filter={filter}
+          brightness={brightness}
+        />
       </View>
       <Separator y={offsetY + upperH} color={theme.accent} />
     </View>
   );
 }
 
-function Spread({ left, right, width, height, filter, brightness }: {
+function Spread({
+  left,
+  right,
+  width,
+  height,
+  filter,
+  brightness,
+}: {
   left: PageRef | null;
   right: PageRef | null;
   width: number;
@@ -111,17 +146,41 @@ function Spread({ left, right, width, height, filter, brightness }: {
   return (
     <View style={[styles.row, { width, height }]} testID="two-page">
       <View style={{ width: half, alignItems: 'flex-end', justifyContent: 'center' }}>
-        {left ? <PageView page={left} width={wl} filter={filter} brightness={brightness} testID={`page-${left.id}`} /> : null}
+        {left ? (
+          <PageView
+            page={left}
+            width={wl}
+            filter={filter}
+            brightness={brightness}
+            testID={`page-${left.id}`}
+          />
+        ) : null}
       </View>
       <View style={{ width: GAP }} />
       <View style={{ width: half, alignItems: 'flex-start', justifyContent: 'center' }}>
-        {right ? <PageView page={right} width={wr} filter={filter} brightness={brightness} testID={`page-${right.id}`} /> : null}
+        {right ? (
+          <PageView
+            page={right}
+            width={wr}
+            filter={filter}
+            brightness={brightness}
+            testID={`page-${right.id}`}
+          />
+        ) : null}
       </View>
     </View>
   );
 }
 
-function Lookahead({ page, next, width, height, fallback, filter, brightness }: {
+function Lookahead({
+  page,
+  next,
+  width,
+  height,
+  fallback,
+  filter,
+  brightness,
+}: {
   page: PageRef;
   next: PageRef | undefined;
   width: number;
@@ -132,7 +191,8 @@ function Lookahead({ page, next, width, height, fallback, filter, brightness }: 
 }) {
   const theme = useTheme();
   const analysis = usePageAnalysis(next, true);
-  if (!next) return <SinglePage page={page} width={width} height={height} filter={filter} brightness={brightness} />;
+  if (!next)
+    return <SinglePage page={page} width={width} height={height} filter={filter} brightness={brightness} />;
   // First try with the detected height of the next page's first system.
   let strip = clampLookahead(fallback) * height;
   if (analysis?.firstSystemEnd != null) {
@@ -150,9 +210,24 @@ function Lookahead({ page, next, width, height, fallback, filter, brightness }: 
   return (
     <View style={{ width, height, alignItems: 'center' }} testID="lookahead">
       <PageView page={page} width={w} filter={filter} brightness={brightness} testID={`page-${page.id}`} />
-      <View style={{ height: height - hPage, width, alignItems: 'center', backgroundColor: theme.lookaheadTint, overflow: 'hidden' }}>
+      <View
+        style={{
+          height: height - hPage,
+          width,
+          alignItems: 'center',
+          backgroundColor: theme.lookaheadTint,
+          overflow: 'hidden',
+        }}
+      >
         <View style={{ width: w, borderTopWidth: 2, borderTopColor: theme.accent }}>
-          <PageView page={next} width={w} band={[0, band]} filter={filter} brightness={brightness} testID="lookahead-strip" />
+          <PageView
+            page={next}
+            width={w}
+            band={[0, band]}
+            filter={filter}
+            brightness={brightness}
+            testID="lookahead-strip"
+          />
         </View>
       </View>
     </View>
@@ -205,7 +280,9 @@ export function StopView(p: StopViewProps) {
       />
     );
   }
-  return <SinglePage page={page} width={p.width} height={p.height} filter={p.filter} brightness={p.brightness} />;
+  return (
+    <SinglePage page={page} width={p.width} height={p.height} filter={p.filter} brightness={p.brightness} />
+  );
 }
 
 const styles = StyleSheet.create({

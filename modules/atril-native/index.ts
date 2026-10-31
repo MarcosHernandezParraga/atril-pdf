@@ -28,7 +28,11 @@ export interface AtrilNativeModuleType {
   canReadOutline: boolean;
   supportsVolumeKeys: boolean;
   openDocument(path: string, password: string | null): Promise<NativeOpenResult>;
-  renderPage(handle: string, pageIndex: number, widthPx: number): Promise<{ uri: string; width: number; height: number }>;
+  renderPage(
+    handle: string,
+    pageIndex: number,
+    widthPx: number,
+  ): Promise<{ uri: string; width: number; height: number }>;
   /** Bytes 0-3: width, 4-7: height (little endian), then one gray byte per pixel. */
   renderPageGray(handle: string, pageIndex: number, widthPx: number): Promise<Uint8Array>;
   searchText(handle: string, query: string): Promise<{ pageIndex: number; count: number }[] | null>;

@@ -28,9 +28,11 @@ export async function migrate(executor: SqlExecutor): Promise<void> {
 export async function openDatabase(executor: SqlExecutor): Promise<OpenedDatabase> {
   await migrate(executor);
   const db = drizzle(
-    async (sql, params, method) => (await executor.query({ sql, params, method })) as { rows: any[] }, 
+    async (sql, params, method) => (await executor.query({ sql, params, method })) as { rows: any[] },
     async (queries) =>
-      (await executor.batch(queries.map((q) => ({ sql: q.sql, params: q.params, method: q.method })))) as { rows: any[] }[],
+      (await executor.batch(queries.map((q) => ({ sql: q.sql, params: q.params, method: q.method })))) as {
+        rows: any[];
+      }[],
     { schema },
   );
   return { db, executor };

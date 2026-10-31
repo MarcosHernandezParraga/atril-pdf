@@ -17,7 +17,11 @@ function subscribe<T>(channel: string, cb: (value: T) => void): () => void {
 
 const bridge: DesktopBridge = {
   platform: process.platform,
-  versions: { app: appVersion, electron: process.versions.electron ?? '', chrome: process.versions.chrome ?? '' },
+  versions: {
+    app: appVersion,
+    electron: process.versions.electron ?? '',
+    chrome: process.versions.chrome ?? '',
+  },
   db: {
     query: (q) => ipcRenderer.invoke('db:query', q),
     batch: (q) => ipcRenderer.invoke('db:batch', q),

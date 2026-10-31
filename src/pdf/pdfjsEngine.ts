@@ -7,7 +7,14 @@ import { rgbaToGray, type GrayImage } from '../core/contentDetection';
 import type { Size } from '../core/model';
 import { loadScript } from '../platform/loadScript';
 import type { StorageAdapter } from '../storage/types';
-import { PdfError, type OutlineItem, type PdfDocumentHandle, type PdfEngine, type RenderedPage, type SearchHit } from './types';
+import {
+  PdfError,
+  type OutlineItem,
+  type PdfDocumentHandle,
+  type PdfEngine,
+  type RenderedPage,
+  type SearchHit,
+} from './types';
 
 // Minimal typing of the parts of pdf.js used here.
 interface PdfJsViewport {
@@ -69,7 +76,10 @@ async function renderToCanvas(page: PdfJsPage, widthPx: number): Promise<HTMLCan
   const base = page.getViewport({ scale: 1 });
   const scale = widthPx / base.width;
   const viewport = page.getViewport({ scale });
-  const canvas = makeCanvas(Math.max(1, Math.round(viewport.width)), Math.max(1, Math.round(viewport.height)));
+  const canvas = makeCanvas(
+    Math.max(1, Math.round(viewport.width)),
+    Math.max(1, Math.round(viewport.height)),
+  );
   await page.render({ canvas, viewport, background: 'rgb(255,255,255)' }).promise;
   return canvas;
 }
@@ -180,7 +190,10 @@ class PdfJsHandle implements PdfDocumentHandle {
     const hits: SearchHit[] = [];
     for (let i = 0; i < this.pageCount; i++) {
       const page = await this.doc.getPage(i + 1);
-      const text = (await page.getTextContent()).items.map((it) => it.str ?? '').join(' ').toLocaleLowerCase();
+      const text = (await page.getTextContent()).items
+        .map((it) => it.str ?? '')
+        .join(' ')
+        .toLocaleLowerCase();
       let count = 0;
       for (let at = text.indexOf(q); at >= 0; at = text.indexOf(q, at + q.length)) count++;
       if (count > 0) hits.push({ pageIndex: i, count });

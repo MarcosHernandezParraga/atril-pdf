@@ -25,7 +25,8 @@ export async function pickFiles(): Promise<ExternalFile[]> {
       input.remove();
       resolve(files);
     };
-    input.onchange = () => done([...(input.files ?? [])].map((f) => ({ kind: 'blob', blob: f, name: f.name })));
+    input.onchange = () =>
+      done([...(input.files ?? [])].map((f) => ({ kind: 'blob', blob: f, name: f.name })));
     input.addEventListener('cancel', () => done([]));
     document.body.appendChild(input);
     input.click();

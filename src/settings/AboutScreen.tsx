@@ -22,9 +22,21 @@ export function AboutScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'left', 'right']}>
       <Header title={t('about.title')} onBack={() => router.back()} backLabel={t('common.back')} />
-      <ScrollView contentContainerStyle={{ padding: SPACING.lg, paddingBottom: 80, maxWidth: 820, width: '100%', alignSelf: 'center' }}>
+      <ScrollView
+        contentContainerStyle={{
+          padding: SPACING.lg,
+          paddingBottom: 80,
+          maxWidth: 820,
+          width: '100%',
+          alignSelf: 'center',
+        }}
+      >
         <View style={{ alignItems: 'center', paddingVertical: SPACING.xl }} testID="about">
-          <Image source={require('../../assets/images/icon.png')} style={{ width: 96, height: 96, borderRadius: 22 }} accessibilityIgnoresInvertColors />
+          <Image
+            source={require('../../assets/images/icon.png')}
+            style={{ width: 96, height: 96, borderRadius: 22 }}
+            accessibilityIgnoresInvertColors
+          />
           <AppText variant="title" style={{ marginTop: SPACING.md }}>
             {APP_NAME}
           </AppText>
@@ -32,14 +44,22 @@ export function AboutScreen() {
           <AppText variant="label" style={{ marginTop: SPACING.lg }} testID="about-author">
             {t('about.developedBy', { author: APP_AUTHOR })}
           </AppText>
-          <AppText style={{ marginTop: SPACING.md, textAlign: 'center', maxWidth: 520 }}>{t('about.mission')}</AppText>
+          <AppText style={{ marginTop: SPACING.md, textAlign: 'center', maxWidth: 520 }}>
+            {t('about.mission')}
+          </AppText>
           <AppText secondary style={{ marginTop: SPACING.md, textAlign: 'center', maxWidth: 520 }}>
             {t('about.privacy')}
           </AppText>
         </View>
         <Section>
           <Row title={t('about.license')} subtitle={APP_COPYRIGHT} icon="scale-balance" />
-          <Row title={t('about.sourceCode')} subtitle={APP_REPOSITORY_URL} icon="source-branch" onPress={() => openUrl(APP_REPOSITORY_URL)} last />
+          <Row
+            title={t('about.sourceCode')}
+            subtitle={APP_REPOSITORY_URL}
+            icon="source-branch"
+            onPress={() => openUrl(APP_REPOSITORY_URL)}
+            last
+          />
         </Section>
         <Section title={t('about.thirdParty')}>
           {THIRD_PARTY.map((p, i) => (

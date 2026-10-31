@@ -122,7 +122,12 @@ describe('page commands', () => {
       pageId: 'p0',
       annotations: [ink('a'), ink('b'), ink('c')],
     });
-    m = applyCommand(m, { type: 'replaceAnnotations', pageId: 'p0', remove: ['b'], add: [ink('b1'), ink('b2')] });
+    m = applyCommand(m, {
+      type: 'replaceAnnotations',
+      pageId: 'p0',
+      remove: ['b'],
+      add: [ink('b1'), ink('b2')],
+    });
     expect(m.annotations.p0!.map((a) => a.id)).toEqual(['a', 'b1', 'b2', 'c']);
   });
 

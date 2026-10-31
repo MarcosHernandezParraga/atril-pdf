@@ -56,19 +56,31 @@ export function AnnotationToolbar({
         onPress={() => setTool(tool)}
         style={({ pressed }) => [
           styles.tool,
-          { backgroundColor: active ? theme.primary : 'transparent', transform: [{ scale: pressed ? 0.92 : active ? 1.06 : 1 }] },
+          {
+            backgroundColor: active ? theme.primary : 'transparent',
+            transform: [{ scale: pressed ? 0.92 : active ? 1.06 : 1 }],
+          },
         ]}
       >
         <Icon name={icon} size={24} color={active ? theme.onPrimary : theme.text} />
-        <Text style={[styles.toolLabel, { color: active ? theme.onPrimary : theme.textSecondary }]} numberOfLines={1}>
+        <Text
+          style={[styles.toolLabel, { color: active ? theme.onPrimary : theme.textSecondary }]}
+          numberOfLines={1}
+        >
           {label}
         </Text>
       </Pressable>
     );
   };
 
-  const colors = tools.tool === 'highlighter' ? HIGHLIGHTER_COLORS : tools.tool === 'eraser' ? [] : PEN_COLORS;
-  const current = tools.tool === 'highlighter' ? tools.highlighterColor : tools.tool === 'text' ? tools.textColor : tools.penColor;
+  const colors =
+    tools.tool === 'highlighter' ? HIGHLIGHTER_COLORS : tools.tool === 'eraser' ? [] : PEN_COLORS;
+  const current =
+    tools.tool === 'highlighter'
+      ? tools.highlighterColor
+      : tools.tool === 'text'
+        ? tools.textColor
+        : tools.penColor;
 
   return (
     <Animated.View
@@ -80,7 +92,13 @@ export function AnnotationToolbar({
     >
       <View style={[styles.bar, cardShadow(theme, 3)]}>
         <BlurView intensity={60} tint={theme.glassTint} style={[StyleSheet.absoluteFill, styles.blur]} />
-        <View style={[StyleSheet.absoluteFill, styles.blur, { backgroundColor: theme.scheme === 'dark' ? 'rgba(30,28,26,0.72)' : 'rgba(255,255,255,0.78)' }]} />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.blur,
+            { backgroundColor: theme.scheme === 'dark' ? 'rgba(30,28,26,0.72)' : 'rgba(255,255,255,0.78)' },
+          ]}
+        />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
           {toolButton('pen', 'pen', t('annotate.pen'))}
           {toolButton('highlighter', 'marker', t('annotate.highlighter'))}
@@ -101,7 +119,14 @@ export function AnnotationToolbar({
                       : { ...tools, penColor: c },
                 )
               }
-              style={[styles.swatch, { backgroundColor: c, borderColor: c === current ? theme.primary : 'rgba(0,0,0,0.12)', borderWidth: c === current ? 3 : 1 }]}
+              style={[
+                styles.swatch,
+                {
+                  backgroundColor: c,
+                  borderColor: c === current ? theme.primary : 'rgba(0,0,0,0.12)',
+                  borderWidth: c === current ? 3 : 1,
+                },
+              ]}
             />
           ))}
           {tools.tool === 'pen'
@@ -111,9 +136,14 @@ export function AnnotationToolbar({
                   accessibilityRole="button"
                   accessibilityLabel={`${t('annotate.width')} ${wd}`}
                   onPress={() => onChange({ ...tools, penWidth: wd })}
-                  style={[styles.widthBtn, { backgroundColor: tools.penWidth === wd ? theme.surfaceAlt : 'transparent' }]}
+                  style={[
+                    styles.widthBtn,
+                    { backgroundColor: tools.penWidth === wd ? theme.surfaceAlt : 'transparent' },
+                  ]}
                 >
-                  <View style={{ width: 22, height: wd * 2 + 1, borderRadius: 4, backgroundColor: theme.text }} />
+                  <View
+                    style={{ width: 22, height: wd * 2 + 1, borderRadius: 4, backgroundColor: theme.text }}
+                  />
                 </Pressable>
               ))
             : null}
@@ -126,14 +156,34 @@ export function AnnotationToolbar({
             onPress={() => onInputMode(fingerOn ? 'stylus' : 'both')}
             style={[styles.tool, { backgroundColor: fingerOn ? 'transparent' : theme.accent }]}
           >
-            <Icon name={fingerOn ? 'gesture-tap' : 'draw-pen'} size={24} color={fingerOn ? theme.text : '#FFFFFF'} />
-            <Text style={[styles.toolLabel, { color: fingerOn ? theme.textSecondary : '#FFFFFF' }]} numberOfLines={1}>
+            <Icon
+              name={fingerOn ? 'gesture-tap' : 'draw-pen'}
+              size={24}
+              color={fingerOn ? theme.text : '#FFFFFF'}
+            />
+            <Text
+              style={[styles.toolLabel, { color: fingerOn ? theme.textSecondary : '#FFFFFF' }]}
+              numberOfLines={1}
+            >
               {fingerOn ? t('annotate.fingerOn') : t('annotate.stylusOnly')}
             </Text>
           </Pressable>
-          <IconButton icon="undo" label={t('common.undo')} onPress={onUndo} disabled={!canUndo} testID="annotate-undo" />
+          <IconButton
+            icon="undo"
+            label={t('common.undo')}
+            onPress={onUndo}
+            disabled={!canUndo}
+            testID="annotate-undo"
+          />
           <IconButton icon="redo" label={t('common.redo')} onPress={onRedo} disabled={!canRedo} />
-          <IconButton icon="check-circle" label={t('common.done')} onPress={onClose} color={theme.primary} size={30} testID="annotate-done" />
+          <IconButton
+            icon="check-circle"
+            label={t('common.done')}
+            onPress={onClose}
+            color={theme.primary}
+            size={30}
+            testID="annotate-done"
+          />
         </ScrollView>
       </View>
     </Animated.View>
@@ -145,7 +195,14 @@ const styles = StyleSheet.create({
   bar: { borderRadius: RADIUS.xl, maxWidth: '100%' },
   blur: { borderRadius: RADIUS.xl, overflow: 'hidden' },
   row: { alignItems: 'center', paddingHorizontal: SPACING.sm, paddingVertical: SPACING.xs, gap: 2 },
-  tool: { minWidth: 58, minHeight: 52, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  tool: {
+    minWidth: 58,
+    minHeight: 52,
+    borderRadius: RADIUS.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
   toolLabel: { fontSize: 10.5, fontWeight: '600', marginTop: 1 },
   divider: { width: 1, height: 32, marginHorizontal: SPACING.xs },
   swatch: { width: 30, height: 30, borderRadius: 15, marginHorizontal: 3 },

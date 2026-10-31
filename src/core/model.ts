@@ -147,12 +147,7 @@ export interface ImageAnnotation extends AnnotationBase {
 }
 
 export type Annotation =
-  | InkAnnotation
-  | TextAnnotation
-  | ShapeAnnotation
-  | StampAnnotation
-  | StaffAnnotation
-  | ImageAnnotation;
+  InkAnnotation | TextAnnotation | ShapeAnnotation | StampAnnotation | StaffAnnotation | ImageAnnotation;
 
 export interface AnnotationLayer {
   id: string;

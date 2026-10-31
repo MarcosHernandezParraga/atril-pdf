@@ -45,7 +45,14 @@ export const DEFAULT_KEYMAP: KeyMap = {
 };
 
 /** Actions that move through the score (subject to the anti-bounce filter). */
-const NAVIGATION_ACTIONS = new Set<KeyAction>(['next', 'previous', 'first', 'last', 'nextPiece', 'previousPiece']);
+const NAVIGATION_ACTIONS = new Set<KeyAction>([
+  'next',
+  'previous',
+  'first',
+  'last',
+  'nextPiece',
+  'previousPiece',
+]);
 
 const ALIASES: Record<string, KeyName> = {
   ' ': 'Space',
@@ -120,7 +127,8 @@ export function sanitizeKeymap(value: unknown): KeyMap {
   if (value && typeof value === 'object') {
     for (const a of KEY_ACTIONS) {
       const list = (value as Record<string, unknown>)[a];
-      if (Array.isArray(list)) out[a] = unique(list.filter((k): k is string => typeof k === 'string').map(normalizeKey));
+      if (Array.isArray(list))
+        out[a] = unique(list.filter((k): k is string => typeof k === 'string').map(normalizeKey));
     }
   }
   return out;

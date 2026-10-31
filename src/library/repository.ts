@@ -75,7 +75,11 @@ export function parseStoredPages(json: string): StoredPages {
 }
 
 /** True if `folderId` is `ancestorId` or lies somewhere inside it. */
-export function isInside(all: Pick<FolderRow, 'id' | 'parentId'>[], folderId: string | null, ancestorId: string): boolean {
+export function isInside(
+  all: Pick<FolderRow, 'id' | 'parentId'>[],
+  folderId: string | null,
+  ancestorId: string,
+): boolean {
   const byId = new Map(all.map((f) => [f.id, f]));
   let cur = folderId;
   const seen = new Set<string>();
@@ -169,13 +173,15 @@ export class LibraryRepository {
     return this.db.select().from(documents).where(eq(documents.id, id)).get();
   }
 
-  async listDocuments(opts: {
-    folderId?: string | null;
-    search?: string;
-    sort?: DocumentSort;
-    favoritesOnly?: boolean;
-    trash?: boolean;
-  } = {}): Promise<DocumentRow[]> {
+  async listDocuments(
+    opts: {
+      folderId?: string | null;
+      search?: string;
+      sort?: DocumentSort;
+      favoritesOnly?: boolean;
+      trash?: boolean;
+    } = {},
+  ): Promise<DocumentRow[]> {
     const conds = [opts.trash ? isNotNull(documents.deletedAt) : isNull(documents.deletedAt)];
     if (opts.folderId !== undefined) {
       conds.push(opts.folderId === null ? isNull(documents.folderId) : eq(documents.folderId, opts.folderId));
@@ -334,16 +340,25 @@ export class LibraryRepository {
         this.db
           .insert(annotations)
           .values({ pageId, documentId: id, json: JSON.stringify(list), updatedAt: t })
-          .onConflictDoUpdate({ target: annotations.pageId, set: { json: JSON.stringify(list), updatedAt: t } }),
+          .onConflictDoUpdate({
+            target: annotations.pageId,
+            set: { json: JSON.stringify(list), updatedAt: t },
+          }),
       );
     }
     // Annotation lists that disappeared (all erased, or page deleted).
     const removed = prev
       ? Object.keys(prev).filter((k) => !model.annotations[k])
-      : (await this.db.select({ pageId: annotations.pageId }).from(annotations).where(eq(annotations.documentId, id)))
+      : (
+          await this.db
+            .select({ pageId: annotations.pageId })
+            .from(annotations)
+            .where(eq(annotations.documentId, id))
+        )
           .map((r) => r.pageId)
           .filter((k) => !model.annotations[k]);
-    if (removed.length > 0) statements.push(this.db.delete(annotations).where(inArray(annotations.pageId, removed)));
+    if (removed.length > 0)
+      statements.push(this.db.delete(annotations).where(inArray(annotations.pageId, removed)));
     await this.batch(statements as BatchItem<'sqlite'>[]);
   }
 
@@ -378,10 +393,19 @@ export class LibraryRepository {
   // ------------------------------------------------------------------ folders
 
   async allFolders(): Promise<FolderRow[]> {
-    return this.db.select().from(folders).where(isNull(folders.deletedAt)).orderBy(asc(sql`lower(${folders.name})`));
+    return this.db
+      .select()
+      .from(folders)
+      .where(isNull(folders.deletedAt))
+      .orderBy(asc(sql`lower(${folders.name})`));
   }
 
-  async createFolder(id: string, name: string, parentId: string | null, color: string | null = null): Promise<void> {
+  async createFolder(
+    id: string,
+    name: string,
+    parentId: string | null,
+    color: string | null = null,
+  ): Promise<void> {
     const t = this.now();
     await this.db.insert(folders).values({ id, name, parentId, color, createdAt: t, updatedAt: t });
   }
@@ -398,10 +422,7 @@ export class LibraryRepository {
     const all = await this.allFolders();
     if (parentId && ids.some((id) => isInside(all, parentId, id))) return false;
     if (ids.length === 0) return true;
-    await this.db
-      .update(folders)
-      .set({ parentId, updatedAt: this.now() })
-      .where(inArray(folders.id, ids));
+    await this.db.update(folders).set({ parentId, updatedAt: this.now() }).where(inArray(folders.id, ids));
     return true;
   }
 
@@ -464,7 +485,9 @@ export class LibraryRepository {
     let pos = existing.reduce((m, e) => Math.max(m, e.position), 0);
     const toAdd = documentIds.filter((d, i) => !present.has(d) && documentIds.indexOf(d) === i);
     await this.batch(
-      toAdd.map((documentId) => this.db.insert(folderItems).values({ id: newId(), folderId, documentId, position: ++pos })),
+      toAdd.map((documentId) =>
+        this.db.insert(folderItems).values({ id: newId(), folderId, documentId, position: ++pos }),
+      ),
     );
     return toAdd.length;
   }
@@ -498,7 +521,11 @@ export class LibraryRepository {
   // ---------------------------------------------------------------- bookmarks
 
   async listBookmarks(documentId: string): Promise<BookmarkRow[]> {
-    return this.db.select().from(bookmarks).where(eq(bookmarks.documentId, documentId)).orderBy(asc(bookmarks.createdAt));
+    return this.db
+      .select()
+      .from(bookmarks)
+      .where(eq(bookmarks.documentId, documentId))
+      .orderBy(asc(bookmarks.createdAt));
   }
 
   async addBookmark(row: Omit<BookmarkRow, 'createdAt'>): Promise<void> {
@@ -516,7 +543,10 @@ export class LibraryRepository {
   // ---------------------------------------------------------------- set lists
 
   async listSetlists(): Promise<SetlistRow[]> {
-    return this.db.select().from(setlists).orderBy(asc(sql`lower(${setlists.name})`));
+    return this.db
+      .select()
+      .from(setlists)
+      .orderBy(asc(sql`lower(${setlists.name})`));
   }
 
   async createSetlist(id: string, name: string): Promise<void> {

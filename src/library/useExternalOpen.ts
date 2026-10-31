@@ -18,8 +18,7 @@ import { useLibraryRefresh } from './libraryEvents';
 
 export function reportImport(result: ImportResult) {
   for (const f of result.failures) {
-    const reason =
-      f.reason === 'password' ? i18n.t('library.passwordProtected') : i18n.t('library.notPdf');
+    const reason = f.reason === 'password' ? i18n.t('library.passwordProtected') : i18n.t('library.notPdf');
     dialogs.toast(i18n.t('library.importFailed', { name: f.name, reason }));
   }
   if (result.documentIds.length > 0 && result.failures.length === 0) {
@@ -34,9 +33,14 @@ export async function importAndReport(files: ExternalFile[], folderId: string | 
       message: i18n.t(retry ? 'library.passwordWrong' : 'library.passwordPrompt', { name }),
       secure: true,
     });
-  const result = await importFiles({ repo: s.repo, storage: s.storage, engine: s.engine, askPassword }, files, null);
+  const result = await importFiles(
+    { repo: s.repo, storage: s.storage, engine: s.engine, askPassword },
+    files,
+    null,
+  );
   // Imported inside a concert folder: the new pieces go at the end of the concert.
-  if (folderId && result.documentIds.length > 0) await s.repo.addToFolder(folderId, result.documentIds, newId);
+  if (folderId && result.documentIds.length > 0)
+    await s.repo.addToFolder(folderId, result.documentIds, newId);
   useLibraryRefresh.getState().bump();
   reportImport(result);
   return result;

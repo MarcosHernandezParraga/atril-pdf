@@ -51,7 +51,13 @@ export default function RootLayout() {
           <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
           {state === 'ready' ? (
             <>
-              <Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: theme.background } }} />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'fade',
+                  contentStyle: { backgroundColor: theme.background },
+                }}
+              />
               <ExternalOpenListener />
             </>
           ) : state === 'loading' ? (

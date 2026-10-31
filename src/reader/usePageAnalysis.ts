@@ -5,7 +5,12 @@
 
 import { useEffect, useState } from 'react';
 
-import { detectContentMargins, detectFirstSystemEnd, detectSplitPoint, type GrayImage } from '../core/contentDetection';
+import {
+  detectContentMargins,
+  detectFirstSystemEnd,
+  detectSplitPoint,
+  type GrayImage,
+} from '../core/contentDetection';
 import type { Margins, PageRef } from '../core/model';
 import { getServices } from '../services';
 
@@ -37,7 +42,11 @@ export function analysePage(page: PageRef): Promise<PageAnalysis> {
       .renderer.gray(page)
       .then((g: GrayImage | null) =>
         g
-          ? { split: detectSplitPoint(g), firstSystemEnd: detectFirstSystemEnd(g), margins: detectContentMargins(g) }
+          ? {
+              split: detectSplitPoint(g),
+              firstSystemEnd: detectFirstSystemEnd(g),
+              margins: detectContentMargins(g),
+            }
           : { split: null, firstSystemEnd: null, margins: null },
       )
       .catch(() => ({ split: null, firstSystemEnd: null, margins: null }));

@@ -18,6 +18,8 @@ module.exports = defineConfig([
   },
   {
     files: ['scripts/**', 'e2e/**', 'desktop/**', '*.config.js', 'modules/atril-native/plugin/**'],
-    languageOptions: { globals: { require: 'readonly', module: 'writable', process: 'readonly', __dirname: 'readonly' } },
+    languageOptions: {
+      globals: { require: 'readonly', module: 'writable', process: 'readonly', __dirname: 'readonly' },
+    },
   },
 ]);

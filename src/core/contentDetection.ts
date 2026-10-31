@@ -47,7 +47,12 @@ export function rowInkProfile(img: GrayImage, opts = DEFAULT_DETECTION, x0 = 0, 
   return out;
 }
 
-export function columnInkProfile(img: GrayImage, opts = DEFAULT_DETECTION, y0 = 0, y1 = img.height): Uint32Array {
+export function columnInkProfile(
+  img: GrayImage,
+  opts = DEFAULT_DETECTION,
+  y0 = 0,
+  y1 = img.height,
+): Uint32Array {
   const out = new Uint32Array(img.width);
   for (let y = y0; y < y1; y++) {
     const base = y * img.width;
@@ -70,7 +75,11 @@ function lastAbove(profile: Uint32Array, min: number): number {
  * Margins (fractions of the page) that can be removed without losing content.
  * Returns null for a blank page. A small padding is kept around the content.
  */
-export function detectContentMargins(img: GrayImage, opts = DEFAULT_DETECTION, padding = 0.012): Margins | null {
+export function detectContentMargins(
+  img: GrayImage,
+  opts = DEFAULT_DETECTION,
+  padding = 0.012,
+): Margins | null {
   const rows = rowInkProfile(img, opts);
   const rowNoise = Math.max(1, Math.floor(img.width * opts.noiseFraction));
   const top = firstAbove(rows, rowNoise);

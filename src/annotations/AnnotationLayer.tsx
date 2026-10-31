@@ -28,9 +28,21 @@ export function inkPaths(page: PageRef, viewWidth: number, inks: InkAnnotation[]
       return [v.x, v.y, p] as [number, number, number];
     });
     if (a.tool === 'highlighter') {
-      return { id: a.id, d: polylinePath(pts.map(([x, y]) => ({ x, y }))), color: a.color, highlighter: true, strokeWidth: a.width * s };
+      return {
+        id: a.id,
+        d: polylinePath(pts.map(([x, y]) => ({ x, y }))),
+        color: a.color,
+        highlighter: true,
+        strokeWidth: a.width * s,
+      };
     }
-    return { id: a.id, d: penOutlinePath(pts, Math.max(1, a.width * s), hasRealPressure(a.points)), color: a.color, highlighter: false, strokeWidth: 0 };
+    return {
+      id: a.id,
+      d: penOutlinePath(pts, Math.max(1, a.width * s), hasRealPressure(a.points)),
+      color: a.color,
+      highlighter: false,
+      strokeWidth: 0,
+    };
   });
 }
 
@@ -39,7 +51,10 @@ export function InkCanvas({ paths, width, height }: { paths: InkPathSpec[]; widt
     () =>
       paths
         .map((p) => ({ ...p, path: p.d ? Skia.Path.MakeFromSVGString(p.d) : null }))
-        .filter((p): p is InkPathSpec & { path: NonNullable<ReturnType<typeof Skia.Path.MakeFromSVGString>> } => p.path !== null),
+        .filter(
+          (p): p is InkPathSpec & { path: NonNullable<ReturnType<typeof Skia.Path.MakeFromSVGString>> } =>
+            p.path !== null,
+        ),
     [paths],
   );
   if (skPaths.length === 0) return null;

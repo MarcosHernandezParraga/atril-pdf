@@ -7,10 +7,23 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
-import { GestureDetector, PointerType, useCompetingGestures, usePanGesture, useTapGesture } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  PointerType,
+  useCompetingGestures,
+  usePanGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 
 import { newId } from '../core/ids';
-import { DEFAULT_LAYER_ID, type Annotation, type InkAnnotation, type InkPoint, type PageRef, type TextAnnotation } from '../core/model';
+import {
+  DEFAULT_LAYER_ID,
+  type Annotation,
+  type InkAnnotation,
+  type InkPoint,
+  type PageRef,
+  type TextAnnotation,
+} from '../core/model';
 import { pageToView, viewScale, viewToPage } from '../core/pageTransform';
 import type { DisplayFilter, InputMode } from '../settings/defaults';
 import { RADIUS, SPACING, useTheme } from '../theme';
@@ -18,7 +31,15 @@ import { IconButton } from '../ui/primitives';
 import { fitWidth, PageView, pageHeightForWidth } from '../reader/PageView';
 import { InkCanvas } from './AnnotationLayer';
 import { pointerAllowed } from './input';
-import { hasRealPressure, measureText, penOutlinePath, polylinePath, simplify, strokesHit, textHit } from './ink';
+import {
+  hasRealPressure,
+  measureText,
+  penOutlinePath,
+  polylinePath,
+  simplify,
+  strokesHit,
+  textHit,
+} from './ink';
 
 export type AnnotationTool = 'pen' | 'highlighter' | 'eraser' | 'text';
 
@@ -86,7 +107,10 @@ export function AnnotateView({
   const raf = useRef<number | null>(null);
 
   const inks = useMemo(() => annotations.filter((a): a is InkAnnotation => a.type === 'ink'), [annotations]);
-  const texts = useMemo(() => annotations.filter((a): a is TextAnnotation => a.type === 'text'), [annotations]);
+  const texts = useMemo(
+    () => annotations.filter((a): a is TextAnnotation => a.type === 'text'),
+    [annotations],
+  );
 
   // Saves the text being written (empty text = nothing / removed).
   const commit = () => {
@@ -248,16 +272,29 @@ export function AnnotateView({
 
   const hidden = new Set([...erasing, ...(editing && !editing.isNew ? [editing.ann.id] : [])]);
   const editPos = editing ? pageToView(page, w, { x: editing.ann.x, y: editing.ann.y }) : null;
-  const setEdit = (patch: Partial<TextAnnotation>) => setEditing((e) => (e ? { ...e, ann: { ...e.ann, ...patch } } : e));
+  const setEdit = (patch: Partial<TextAnnotation>) =>
+    setEditing((e) => (e ? { ...e, ann: { ...e.ann, ...patch } } : e));
 
   return (
     <View style={styles.center} testID="annotate-view">
       <View style={{ width: w, height: h }}>
-        <PageView page={page} width={w} filter={filter} brightness={brightness} annotations={annotations} hiddenIds={hidden} />
+        <PageView
+          page={page}
+          width={w}
+          filter={filter}
+          brightness={brightness}
+          annotations={annotations}
+          hiddenIds={hidden}
+        />
         <GestureDetector gesture={gestures}>
           <View
             testID="annotate-surface"
-            style={[StyleSheet.absoluteFill, Platform.OS === 'web' ? ({ cursor: tools.tool === 'text' ? 'text' : 'crosshair', touchAction: 'none' } as object) : null]}
+            style={[
+              StyleSheet.absoluteFill,
+              Platform.OS === 'web'
+                ? ({ cursor: tools.tool === 'text' ? 'text' : 'crosshair', touchAction: 'none' } as object)
+                : null,
+            ]}
             collapsable={false}
           >
             <InkCanvas paths={livePath} width={w} height={h} />
@@ -266,11 +303,36 @@ export function AnnotateView({
         {editing && editPos ? (
           <View style={[styles.editor, { left: Math.min(editPos.x, w - 160), top: editPos.y }]}>
             <View style={[styles.editBar, { backgroundColor: theme.overlay }]}>
-              <IconButton icon="format-font-size-decrease" label="A-" color="#FFFFFF" size={20} onPress={() => setEdit({ fontSize: Math.max(8, editing.ann.fontSize - 2) })} />
-              <IconButton icon="format-font-size-increase" label="A+" color="#FFFFFF" size={20} onPress={() => setEdit({ fontSize: Math.min(72, editing.ann.fontSize + 2) })} />
-              <IconButton icon="format-bold" label={t('annotate.bold')} color={editing.ann.bold ? theme.primary : '#FFFFFF'} size={20} onPress={() => setEdit({ bold: !editing.ann.bold })} />
+              <IconButton
+                icon="format-font-size-decrease"
+                label="A-"
+                color="#FFFFFF"
+                size={20}
+                onPress={() => setEdit({ fontSize: Math.max(8, editing.ann.fontSize - 2) })}
+              />
+              <IconButton
+                icon="format-font-size-increase"
+                label="A+"
+                color="#FFFFFF"
+                size={20}
+                onPress={() => setEdit({ fontSize: Math.min(72, editing.ann.fontSize + 2) })}
+              />
+              <IconButton
+                icon="format-bold"
+                label={t('annotate.bold')}
+                color={editing.ann.bold ? theme.primary : '#FFFFFF'}
+                size={20}
+                onPress={() => setEdit({ bold: !editing.ann.bold })}
+              />
               {['#111111', '#D32F2F', '#1565C0', '#2E7D32'].map((c) => (
-                <IconButton key={c} icon={editing.ann.color === c ? 'checkbox-blank-circle' : 'circle'} label={c} color={c === '#111111' ? '#FFFFFF' : c} size={18} onPress={() => setEdit({ color: c })} />
+                <IconButton
+                  key={c}
+                  icon={editing.ann.color === c ? 'checkbox-blank-circle' : 'circle'}
+                  label={c}
+                  color={c === '#111111' ? '#FFFFFF' : c}
+                  size={18}
+                  onPress={() => setEdit({ color: c })}
+                />
               ))}
               <IconButton
                 icon="trash-can-outline"
@@ -282,7 +344,14 @@ export function AnnotateView({
                   setEditing(null);
                 }}
               />
-              <IconButton icon="check" label={t('common.done')} color="#FFFFFF" size={22} onPress={commit} testID="text-done" />
+              <IconButton
+                icon="check"
+                label={t('common.done')}
+                color="#FFFFFF"
+                size={22}
+                onPress={commit}
+                testID="text-done"
+              />
             </View>
             <TextInput
               testID="annotation-text-input"
@@ -314,7 +383,14 @@ export function AnnotateView({
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   editor: { position: 'absolute' },
-  editBar: { position: 'absolute', bottom: '100%', marginBottom: SPACING.xs, flexDirection: 'row', borderRadius: RADIUS.pill, paddingHorizontal: SPACING.xs },
+  editBar: {
+    position: 'absolute',
+    bottom: '100%',
+    marginBottom: SPACING.xs,
+    flexDirection: 'row',
+    borderRadius: RADIUS.pill,
+    paddingHorizontal: SPACING.xs,
+  },
   input: {
     borderWidth: 1.5,
     borderStyle: 'dashed',

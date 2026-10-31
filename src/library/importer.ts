@@ -29,10 +29,15 @@ export function fileKind(name: string, mimeType?: string): 'pdf' | 'image' | nul
   return null;
 }
 
-async function imageSize(storage: StorageAdapter, relPath: string): Promise<{ width: number; height: number }> {
+async function imageSize(
+  storage: StorageAdapter,
+  relPath: string,
+): Promise<{ width: number; height: number }> {
   const native = storage.nativeUri(relPath);
   if (native && Platform.OS !== 'web') {
-    return new Promise((resolve, reject) => Image.getSize(native, (width, height) => resolve({ width, height }), reject));
+    return new Promise((resolve, reject) =>
+      Image.getSize(native, (width, height) => resolve({ width, height }), reject),
+    );
   }
   const bytes = await storage.read(relPath);
   const bitmap = await createImageBitmap(new Blob([bytes as BlobPart]));
@@ -158,7 +163,13 @@ export async function importFiles(
       const { source, pages } = await importSource(deps, file);
       const model: DocumentModel = { ...emptyModel(), pages };
       const id = newId();
-      await deps.repo.createDocument({ id, title: titleFromFileName(file.name), folderId, model, sources: [source] });
+      await deps.repo.createDocument({
+        id,
+        title: titleFromFileName(file.name),
+        folderId,
+        model,
+        sources: [source],
+      });
       result.documentIds.push(id);
     } catch (e) {
       console.warn(`[import] ${file.name}:`, e);

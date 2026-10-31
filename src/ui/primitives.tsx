@@ -50,15 +50,29 @@ export function AppText({
   return (
     <Text
       {...rest}
-      style={[TEXT_STYLES[variant], { color: secondary ? t.textSecondary : t.text }, style as StyleProp<TextStyle>]}
+      style={[
+        TEXT_STYLES[variant],
+        { color: secondary ? t.textSecondary : t.text },
+        style as StyleProp<TextStyle>,
+      ]}
     />
   );
 }
 
-export function Screen({ children, scroll, style }: { children: ReactNode; scroll?: boolean; style?: ViewStyle }) {
+export function Screen({
+  children,
+  scroll,
+  style,
+}: {
+  children: ReactNode;
+  scroll?: boolean;
+  style?: ViewStyle;
+}) {
   const t = useTheme();
   const body = scroll ? (
-    <ScrollView contentContainerStyle={[{ padding: SPACING.lg, paddingBottom: SPACING.xxl }, style]}>{children}</ScrollView>
+    <ScrollView contentContainerStyle={[{ padding: SPACING.lg, paddingBottom: SPACING.xxl }, style]}>
+      {children}
+    </ScrollView>
   ) : (
     <View style={[{ flex: 1 }, style]}>{children}</View>
   );
@@ -90,7 +104,13 @@ export function Button({
 }) {
   const t = useTheme();
   const bg =
-    variant === 'primary' ? t.primary : variant === 'secondary' ? t.surfaceAlt : variant === 'danger' ? t.danger : 'transparent';
+    variant === 'primary'
+      ? t.primary
+      : variant === 'secondary'
+        ? t.surfaceAlt
+        : variant === 'danger'
+          ? t.danger
+          : 'transparent';
   const fg = variant === 'primary' ? t.onPrimary : variant === 'danger' ? '#FFFFFF' : t.text;
   return (
     <Pressable3D
@@ -196,8 +216,14 @@ export function Header({
   const t = useTheme();
   return (
     <View style={[styles.header, { borderBottomColor: t.border, backgroundColor: t.background }]}>
-      {onBack ? <IconButton icon="arrow-left" label={backLabel ?? 'Back'} onPress={onBack} testID="header-back" /> : null}
-      <AppText variant="heading" style={{ flex: 1, marginLeft: onBack ? SPACING.xs : SPACING.sm }} numberOfLines={1}>
+      {onBack ? (
+        <IconButton icon="arrow-left" label={backLabel ?? 'Back'} onPress={onBack} testID="header-back" />
+      ) : null}
+      <AppText
+        variant="heading"
+        style={{ flex: 1, marginLeft: onBack ? SPACING.xs : SPACING.sm }}
+        numberOfLines={1}
+      >
         {title}
       </AppText>
       {right}
@@ -210,11 +236,17 @@ export function Section({ title, children }: { title?: string; children: ReactNo
   return (
     <View style={{ marginBottom: SPACING.xl }}>
       {title ? (
-        <AppText variant="label" secondary style={{ marginBottom: SPACING.sm, textTransform: 'uppercase', fontSize: 13 }}>
+        <AppText
+          variant="label"
+          secondary
+          style={{ marginBottom: SPACING.sm, textTransform: 'uppercase', fontSize: 13 }}
+        >
           {title}
         </AppText>
       ) : null}
-      <View style={[styles.card, { backgroundColor: t.surface, borderColor: t.border }, cardShadow(t, 1)]}>{children}</View>
+      <View style={[styles.card, { backgroundColor: t.surface, borderColor: t.border }, cardShadow(t, 1)]}>
+        {children}
+      </View>
     </View>
   );
 }
@@ -256,7 +288,10 @@ export function Row({
       {onPress && !right ? <Icon name="chevron-right" color={t.textSecondary} /> : null}
     </>
   );
-  const style = [styles.row, !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: t.border }];
+  const style = [
+    styles.row,
+    !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: t.border },
+  ];
   return onPress ? (
     <Pressable
       testID={testID}
@@ -321,7 +356,11 @@ export function Segmented<T extends string>({
 }) {
   const t = useTheme();
   return (
-    <View testID={testID} style={[styles.segmented, { borderColor: t.border }]} accessibilityRole="radiogroup">
+    <View
+      testID={testID}
+      style={[styles.segmented, { borderColor: t.border }]}
+      accessibilityRole="radiogroup"
+    >
       {options.map((o) => {
         const selected = o.value === value;
         return (
@@ -332,7 +371,13 @@ export function Segmented<T extends string>({
             onPress={() => onChange(o.value)}
             style={[styles.segment, selected && { backgroundColor: t.primary }]}
           >
-            <Text style={{ color: selected ? t.onPrimary : t.text, fontWeight: selected ? '700' : '500', textAlign: 'center' }}>
+            <Text
+              style={{
+                color: selected ? t.onPrimary : t.text,
+                fontWeight: selected ? '700' : '500',
+                textAlign: 'center',
+              }}
+            >
               {o.label}
             </Text>
           </Pressable>
@@ -362,7 +407,12 @@ export function ChoiceList<T extends string>({
           subtitle={o.subtitle}
           last={i === options.length - 1}
           onPress={() => onChange(o.value)}
-          right={<Icon name={o.value === value ? 'check-circle' : 'circle-outline'} color={o.value === value ? t.primary : t.border} />}
+          right={
+            <Icon
+              name={o.value === value ? 'check-circle' : 'circle-outline'}
+              color={o.value === value ? t.primary : t.border}
+            />
+          }
         />
       ))}
     </>
@@ -389,11 +439,21 @@ export function Stepper({
   const clamp = (v: number) => Math.max(min, Math.min(max, Math.round(v / step) * step));
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <IconButton icon="minus" label={`${label} −`} onPress={() => onChange(clamp(value - step))} disabled={value <= min} />
+      <IconButton
+        icon="minus"
+        label={`${label} −`}
+        onPress={() => onChange(clamp(value - step))}
+        disabled={value <= min}
+      />
       <AppText variant="label" style={{ minWidth: 72, textAlign: 'center' }} accessibilityLiveRegion="polite">
         {format(value)}
       </AppText>
-      <IconButton icon="plus" label={`${label} +`} onPress={() => onChange(clamp(value + step))} disabled={value >= max} />
+      <IconButton
+        icon="plus"
+        label={`${label} +`}
+        onPress={() => onChange(clamp(value + step))}
+        disabled={value >= max}
+      />
     </View>
   );
 }
@@ -429,6 +489,20 @@ const styles = StyleSheet.create({
   },
   card: { borderRadius: RADIUS.lg, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: SPACING.lg },
   row: { flexDirection: 'row', alignItems: 'center', minHeight: TOUCH + 8 },
-  segmented: { flexDirection: 'row', borderWidth: 1, borderRadius: RADIUS.pill, overflow: 'hidden', marginVertical: SPACING.sm, padding: 3 },
-  segment: { flex: 1, minHeight: TOUCH - 4, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SPACING.sm, borderRadius: RADIUS.pill },
+  segmented: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderRadius: RADIUS.pill,
+    overflow: 'hidden',
+    marginVertical: SPACING.sm,
+    padding: 3,
+  },
+  segment: {
+    flex: 1,
+    minHeight: TOUCH - 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.pill,
+  },
 });

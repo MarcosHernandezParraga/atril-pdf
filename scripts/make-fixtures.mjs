@@ -25,17 +25,29 @@ function staff(page, x0, x1, yTop, spacing) {
   const bars = 4;
   for (let b = 0; b <= bars; b++) {
     const x = x0 + ((x1 - x0) * b) / bars;
-    page.drawLine({ start: { x, y: yTop }, end: { x, y: yTop - 4 * spacing }, thickness: b === bars ? 1.6 : 0.8, color: black });
+    page.drawLine({
+      start: { x, y: yTop },
+      end: { x, y: yTop - 4 * spacing },
+      thickness: b === bars ? 1.6 : 0.8,
+      color: black,
+    });
   }
 }
 
 function notes(page, x0, x1, yTop, spacing, seed) {
   let s = seed;
-  const rand = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+  const rand = () => (s = (s * 9301 + 49297) % 233280) / 233280;
   for (let x = x0 + 18; x < x1 - 10; x += 22) {
     const step = Math.floor(rand() * 9) - 1;
     const y = yTop - 4 * spacing + step * (spacing / 2);
-    page.drawEllipse({ x, y, xScale: spacing * 0.62, yScale: spacing * 0.45, color: black, rotate: { type: 'degrees', angle: -20 } });
+    page.drawEllipse({
+      x,
+      y,
+      xScale: spacing * 0.62,
+      yScale: spacing * 0.45,
+      color: black,
+      rotate: { type: 'degrees', angle: -20 },
+    });
     const up = y < yTop - 2 * spacing;
     page.drawLine({
       start: { x: up ? x + spacing * 0.58 : x - spacing * 0.58, y },
@@ -60,7 +72,12 @@ async function score(file, pages, piano, password) {
     let y = h - 70;
     if (p === 0) {
       const title = piano ? 'Estudio para piano' : 'Melodía de prueba';
-      page.drawText(title, { x: w / 2 - bold.widthOfTextAtSize(title, 22) / 2, y: h - 70, size: 22, font: bold });
+      page.drawText(title, {
+        x: w / 2 - bold.widthOfTextAtSize(title, 22) / 2,
+        y: h - 70,
+        size: 22,
+        font: bold,
+      });
       page.drawText('M. H. P.', { x: w - 110, y: h - 100, size: 11, font });
       y = h - 140;
     }
@@ -74,7 +91,12 @@ async function score(file, pages, piano, password) {
         const y2 = y - 4 * spacing - 34;
         staff(page, 50, w - 45, y2, spacing);
         notes(page, 50, w - 45, y2, spacing, p * 100 + i * 7 + 3);
-        page.drawLine({ start: { x: 50, y }, end: { x: 50, y: y2 - 4 * spacing }, thickness: 1.2, color: black });
+        page.drawLine({
+          start: { x: 50, y },
+          end: { x: 50, y: y2 - 4 * spacing },
+          thickness: 1.2,
+          color: black,
+        });
         y = y2 - 4 * spacing - systemGap;
       } else {
         y -= 4 * spacing + systemGap;

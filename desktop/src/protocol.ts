@@ -67,7 +67,8 @@ export function resolveWebPath(webRoot: string, urlPath: string): string {
     decoded = '/';
   }
   // See scripts/desktop.mjs: library assets are stored in assets/__nm.
-  if (decoded.startsWith('/assets/node_modules/')) decoded = `/assets/__nm/${decoded.slice('/assets/node_modules/'.length)}`;
+  if (decoded.startsWith('/assets/node_modules/'))
+    decoded = `/assets/__nm/${decoded.slice('/assets/node_modules/'.length)}`;
   const target = normalize(join(webRoot, decoded));
   const rootWithSep = webRoot.endsWith(sep) ? webRoot : webRoot + sep;
   if (target.startsWith(rootWithSep) && existsSync(target) && statSync(target).isFile()) return target;

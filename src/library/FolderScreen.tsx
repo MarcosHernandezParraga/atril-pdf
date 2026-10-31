@@ -7,7 +7,16 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -80,13 +89,20 @@ export function FolderScreen() {
     const next = [...pieces];
     [next[index], next[target]] = [next[target]!, next[index]!];
     setPieces(next);
-    await getServices().repo.reorderFolder(id, next.map((p) => p.itemId));
+    await getServices().repo.reorderFolder(
+      id,
+      next.map((p) => p.itemId),
+    );
   };
 
   const pieceMenu = (piece: FolderPiece) =>
     void dialogs.menu(
       documentMenuItems(piece.doc, [
-        { label: t('library.openPiece'), icon: 'book-open-variant', onPress: () => openDocument(piece.doc.id) },
+        {
+          label: t('library.openPiece'),
+          icon: 'book-open-variant',
+          onPress: () => openDocument(piece.doc.id),
+        },
         {
           label: t('library.removeFromFolder'),
           icon: 'playlist-remove',
@@ -109,7 +125,12 @@ export function FolderScreen() {
 
   if (!folder && pieces !== null) {
     return (
-      <SafeAreaView style={[styles.fill, { backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' }]}>
+      <SafeAreaView
+        style={[
+          styles.fill,
+          { backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' },
+        ]}
+      >
         <Button label={t('common.back')} icon="arrow-left" onPress={() => router.back()} />
       </SafeAreaView>
     );
@@ -121,12 +142,22 @@ export function FolderScreen() {
 
   const header = (
     <View>
-      <Animated.View entering={ZoomIn.springify().damping(16)} style={[styles.hero, { backgroundColor: color }, cardShadow(theme, 3)]}>
+      <Animated.View
+        entering={ZoomIn.springify().damping(16)}
+        style={[styles.hero, { backgroundColor: color }, cardShadow(theme, 3)]}
+      >
         <Icon name="folder-music" size={40} color="#FFFFFF" />
-        <AppText variant="title" style={{ color: '#FFFFFF', marginTop: SPACING.sm }} numberOfLines={2} testID="folder-title">
+        <AppText
+          variant="title"
+          style={{ color: '#FFFFFF', marginTop: SPACING.sm }}
+          numberOfLines={2}
+          testID="folder-title"
+        >
           {folder?.name ?? ''}
         </AppText>
-        <AppText style={{ color: 'rgba(255,255,255,0.9)' }}>{t('library.pieces', { count: pieces?.length ?? 0 })}</AppText>
+        <AppText style={{ color: 'rgba(255,255,255,0.9)' }}>
+          {t('library.pieces', { count: pieces?.length ?? 0 })}
+        </AppText>
         <Button
           testID="start-concert"
           icon="play"
@@ -138,8 +169,19 @@ export function FolderScreen() {
         />
       </Animated.View>
       <View style={styles.actions}>
-        <Button testID="add-pieces" icon="playlist-plus" label={t('library.addPieces')} variant="secondary" onPress={() => setPicking(true)} />
-        <Button icon="file-plus-outline" label={t('library.importHere')} variant="secondary" onPress={() => void importHere()} />
+        <Button
+          testID="add-pieces"
+          icon="playlist-plus"
+          label={t('library.addPieces')}
+          variant="secondary"
+          onPress={() => setPicking(true)}
+        />
+        <Button
+          icon="file-plus-outline"
+          label={t('library.importHere')}
+          variant="secondary"
+          onPress={() => void importHere()}
+        />
         {pieces && pieces.length > 1 ? (
           <Button
             testID="reorder"
@@ -181,16 +223,33 @@ export function FolderScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.fill, { backgroundColor: theme.background }]} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={[styles.fill, { backgroundColor: theme.background }]}
+      edges={['top', 'left', 'right']}
+    >
       <View style={[styles.topBar, { paddingHorizontal: pad - SPACING.sm }]}>
-        <IconButton icon="arrow-left" label={t('common.back')} onPress={() => router.back()} testID="folder-back" />
+        <IconButton
+          icon="arrow-left"
+          label={t('common.back')}
+          onPress={() => router.back()}
+          testID="folder-back"
+        />
         <View style={{ flex: 1 }} />
-        <IconButton icon="folder-plus-outline" label={t('library.newSubfolder')} onPress={() => void createFolder(id)} />
+        <IconButton
+          icon="folder-plus-outline"
+          label={t('library.newSubfolder')}
+          onPress={() => void createFolder(id)}
+        />
         {folder ? (
           <IconButton
             icon="dots-horizontal-circle-outline"
             label={t('library.color')}
-            onPress={() => void dialogs.menu(folderMenuItems(folder, () => router.back()), folder.name)}
+            onPress={() =>
+              void dialogs.menu(
+                folderMenuItems(folder, () => router.back()),
+                folder.name,
+              )
+            }
           />
         ) : null}
       </View>
@@ -201,7 +260,13 @@ export function FolderScreen() {
           data={pieces}
           keyExtractor={(p) => p.itemId}
           ListHeaderComponent={header}
-          contentContainerStyle={{ padding: pad, paddingBottom: 120, maxWidth: 900, width: '100%', alignSelf: 'center' }}
+          contentContainerStyle={{
+            padding: pad,
+            paddingBottom: 120,
+            maxWidth: 900,
+            width: '100%',
+            alignSelf: 'center',
+          }}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Icon name="playlist-music-outline" size={48} color={theme.textSecondary} />
@@ -240,7 +305,13 @@ export function FolderScreen() {
                 </View>
                 {reordering ? (
                   <>
-                    <IconButton icon="chevron-up" label={t('library.moveUp')} disabled={index === 0} onPress={() => void move(index, -1)} testID={`up-${index + 1}`} />
+                    <IconButton
+                      icon="chevron-up"
+                      label={t('library.moveUp')}
+                      disabled={index === 0}
+                      onPress={() => void move(index, -1)}
+                      testID={`up-${index + 1}`}
+                    />
                     <IconButton
                       icon="chevron-down"
                       label={t('library.moveDown')}
@@ -250,7 +321,11 @@ export function FolderScreen() {
                     />
                   </>
                 ) : (
-                  <IconButton icon="dots-horizontal" label={t('common.rename')} onPress={() => pieceMenu(item)} />
+                  <IconButton
+                    icon="dots-horizontal"
+                    label={t('common.rename')}
+                    onPress={() => pieceMenu(item)}
+                  />
                 )}
               </Pressable3D>
             </Animated.View>
@@ -269,7 +344,12 @@ export function FolderScreen() {
         }}
       />
       {busy ? (
-        <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', backgroundColor: theme.dropHighlight }]}>
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { alignItems: 'center', justifyContent: 'center', backgroundColor: theme.dropHighlight },
+          ]}
+        >
           <ActivityIndicator color={theme.primary} size="large" />
         </View>
       ) : null}
@@ -306,7 +386,8 @@ function PickDocuments({
     };
   }, [visible, search]);
 
-  const toggle = (id: string) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  const toggle = (id: string) =>
+    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   const close = () => {
     setSelected([]);
     setSearch('');
@@ -330,7 +411,13 @@ function PickDocuments({
               onChangeText={setSearch}
               placeholder={t('library.search')}
               placeholderTextColor={theme.textSecondary}
-              style={{ flex: 1, color: theme.text, fontSize: 16, minHeight: TOUCH, paddingHorizontal: SPACING.sm }}
+              style={{
+                flex: 1,
+                color: theme.text,
+                fontSize: 16,
+                minHeight: TOUCH,
+                paddingHorizontal: SPACING.sm,
+              }}
             />
           </View>
           <FlatList
@@ -348,8 +435,18 @@ function PickDocuments({
                   onPress={() => toggle(item.id)}
                   style={[styles.pickRow, { backgroundColor: on ? theme.dropHighlight : 'transparent' }]}
                 >
-                  <View style={[styles.check, { borderColor: on ? theme.primary : theme.border, backgroundColor: on ? theme.primary : 'transparent' }]}>
-                    {on ? <AppText style={{ color: theme.onPrimary, fontWeight: '700' }}>{order}</AppText> : null}
+                  <View
+                    style={[
+                      styles.check,
+                      {
+                        borderColor: on ? theme.primary : theme.border,
+                        backgroundColor: on ? theme.primary : 'transparent',
+                      },
+                    ]}
+                  >
+                    {on ? (
+                      <AppText style={{ color: theme.onPrimary, fontWeight: '700' }}>{order}</AppText>
+                    ) : null}
                   </View>
                   <Thumbnail doc={item} width={36} height={48} radius={6} />
                   <AppText style={{ flex: 1, marginLeft: SPACING.md }} numberOfLines={2}>
@@ -384,13 +481,49 @@ const styles = StyleSheet.create({
   hero: { borderRadius: RADIUS.xl, padding: SPACING.xl, marginBottom: SPACING.lg },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginBottom: SPACING.md },
   piece: { borderRadius: RADIUS.lg, marginBottom: SPACING.sm },
-  pieceContent: { flexDirection: 'row', alignItems: 'center', padding: SPACING.sm, paddingLeft: SPACING.md, gap: SPACING.sm },
+  pieceContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SPACING.sm,
+    paddingLeft: SPACING.md,
+    gap: SPACING.sm,
+  },
   number: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   empty: { alignItems: 'center', paddingVertical: 40 },
-  sheetBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end', alignItems: 'center' },
-  sheet: { width: '100%', maxWidth: 640, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: SPACING.xl },
+  sheetBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  sheet: {
+    width: '100%',
+    maxWidth: 640,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.xl,
+  },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md },
-  search: { flexDirection: 'row', alignItems: 'center', borderRadius: RADIUS.pill, paddingLeft: SPACING.lg, marginBottom: SPACING.md },
-  pickRow: { flexDirection: 'row', alignItems: 'center', padding: SPACING.sm, borderRadius: RADIUS.md, gap: SPACING.sm },
-  check: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  search: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: RADIUS.pill,
+    paddingLeft: SPACING.lg,
+    marginBottom: SPACING.md,
+  },
+  pickRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SPACING.sm,
+    borderRadius: RADIUS.md,
+    gap: SPACING.sm,
+  },
+  check: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

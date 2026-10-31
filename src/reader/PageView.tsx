@@ -57,7 +57,9 @@ export function filterStyle(filter: DisplayFilter, brightness = 1): ViewStyle {
 function usePageImage(page: PageRef, pixelWidth: number): RenderedPage | null | 'error' {
   const renderer = getServices().renderer;
   const cached = pixelWidth > 0 ? renderer.peek(page, pixelWidth) : undefined;
-  const [loaded, setLoaded] = useState<{ page: PageRef; width: number; img: RenderedPage | 'error' } | null>(null);
+  const [loaded, setLoaded] = useState<{ page: PageRef; width: number; img: RenderedPage | 'error' } | null>(
+    null,
+  );
   useEffect(() => {
     if (cached || pixelWidth <= 0) return;
     let alive = true;
@@ -75,7 +77,15 @@ function usePageImage(page: PageRef, pixelWidth: number): RenderedPage | null | 
 }
 
 /** Five-line staves drawn as vectors (staff paper pages). */
-function StaffPaper({ page, width, height }: { page: Extract<PageRef, { kind: 'staff' }>; width: number; height: number }) {
+function StaffPaper({
+  page,
+  width,
+  height,
+}: {
+  page: Extract<PageRef, { kind: 'staff' }>;
+  width: number;
+  height: number;
+}) {
   const { staves, piano } = page.staff;
   const blocks = Math.max(1, staves);
   const marginX = width * 0.07;
@@ -87,7 +97,11 @@ function StaffPaper({ page, width, height }: { page: Extract<PageRef, { kind: 's
   for (let b = 0; b < blocks; b++) {
     const staffCount = piano ? 2 : 1;
     for (let s = 0; s < staffCount; s++) {
-      const y0 = top + b * blockH + (blockH - (staffCount * 4 * spacing + (staffCount - 1) * spacing * 5)) / 2 + s * spacing * 9;
+      const y0 =
+        top +
+        b * blockH +
+        (blockH - (staffCount * 4 * spacing + (staffCount - 1) * spacing * 5)) / 2 +
+        s * spacing * 9;
       for (let l = 0; l < 5; l++) lines.push({ y: y0 + l * spacing });
     }
   }
@@ -95,7 +109,17 @@ function StaffPaper({ page, width, height }: { page: Extract<PageRef, { kind: 's
   return (
     <View style={{ width, height, backgroundColor: '#FFFFFF' }}>
       {lines.map((l, i) => (
-        <View key={i} style={{ position: 'absolute', left: marginX, right: marginX, top: l.y, height: lw, backgroundColor: '#1A1A1A' }} />
+        <View
+          key={i}
+          style={{
+            position: 'absolute',
+            left: marginX,
+            right: marginX,
+            top: l.y,
+            height: lw,
+            backgroundColor: '#1A1A1A',
+          }}
+        />
       ))}
     </View>
   );
@@ -164,7 +188,15 @@ export const PageView = memo(function PageView({
     );
   } else {
     content = (
-      <View style={{ width: fullW, height: fullH, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          width: fullW,
+          height: fullH,
+          backgroundColor: '#FFFFFF',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActivityIndicator color="#8A4B1C" />
       </View>
     );
@@ -186,7 +218,10 @@ export const PageView = memo(function PageView({
   return (
     <View
       testID={testID}
-      style={[{ width, height: visibleH, overflow: 'hidden', backgroundColor: '#FFFFFF' }, filterStyle(filter, brightness)]}
+      style={[
+        { width, height: visibleH, overflow: 'hidden', backgroundColor: '#FFFFFF' },
+        filterStyle(filter, brightness),
+      ]}
     >
       <View style={{ position: 'absolute', left: 0, top: -b0 * height, width, height }}>
         <View
@@ -200,10 +235,18 @@ export const PageView = memo(function PageView({
             transform: page.rotation ? [{ rotate: `${page.rotation}deg` }] : undefined,
           }}
         >
-          <View style={{ position: 'absolute', left: -crop.left * fullW, top: -crop.top * fullH }}>{content}</View>
+          <View style={{ position: 'absolute', left: -crop.left * fullW, top: -crop.top * fullH }}>
+            {content}
+          </View>
         </View>
         {pageAnnotations && pageAnnotations.length > 0 ? (
-          <AnnotationLayer page={page} viewWidth={width} viewHeight={height} annotations={pageAnnotations} hiddenIds={hiddenIds} />
+          <AnnotationLayer
+            page={page}
+            viewWidth={width}
+            viewHeight={height}
+            annotations={pageAnnotations}
+            hiddenIds={hiddenIds}
+          />
         ) : null}
       </View>
       {iosOverlay}

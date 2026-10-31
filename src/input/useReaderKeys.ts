@@ -6,7 +6,14 @@
 
 import { useEffect, useEffectEvent } from 'react';
 
-import { actionForKey, consumedKeys, effectiveKeymap, KeyFilter, type KeyAction, type RawKeyEvent } from '../core/keymap';
+import {
+  actionForKey,
+  consumedKeys,
+  effectiveKeymap,
+  KeyFilter,
+  type KeyAction,
+  type RawKeyEvent,
+} from '../core/keymap';
 import { useSettings } from '../settings/store';
 import { subscribeKeys } from './keySource';
 

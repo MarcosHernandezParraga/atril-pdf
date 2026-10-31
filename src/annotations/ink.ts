@@ -45,7 +45,8 @@ export function outlineToPath(outline: number[][]): string {
 export function polylinePath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return '';
   const [first, ...rest] = points;
-  if (rest.length === 0) return `M ${fmt(first!.x)} ${fmt(first!.y)} L ${fmt(first!.x + 0.1)} ${fmt(first!.y)}`;
+  if (rest.length === 0)
+    return `M ${fmt(first!.x)} ${fmt(first!.y)} L ${fmt(first!.x + 0.1)} ${fmt(first!.y)}`;
   return `M ${fmt(first!.x)} ${fmt(first!.y)} ${rest.map((p) => `L ${fmt(p.x)} ${fmt(p.y)}`).join(' ')}`;
 }
 
@@ -89,7 +90,8 @@ export function strokesHit(strokes: InkAnnotation[], x: number, y: number, radiu
 export function textHit(texts: TextAnnotation[], x: number, y: number, margin = 4): TextAnnotation | null {
   for (let i = texts.length - 1; i >= 0; i--) {
     const t = texts[i]!;
-    if (x >= t.x - margin && x <= t.x + t.width + margin && y >= t.y - margin && y <= t.y + t.height + margin) return t;
+    if (x >= t.x - margin && x <= t.x + t.width + margin && y >= t.y - margin && y <= t.y + t.height + margin)
+      return t;
   }
   return null;
 }

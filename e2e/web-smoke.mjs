@@ -22,7 +22,12 @@ const step = async (name, fn) => {
 
 const indicator = async () => (await page.getByTestId('page-indicator').textContent())?.trim();
 const showBars = async () => {
-  if (!(await page.getByTestId('reader-top-bar').isVisible().catch(() => false))) {
+  if (
+    !(await page
+      .getByTestId('reader-top-bar')
+      .isVisible()
+      .catch(() => false))
+  ) {
     await page.getByTestId('reader').click({ position: { x: 640, y: 430 } });
     await page.getByTestId('reader-top-bar').waitFor();
   }
@@ -190,7 +195,8 @@ await step('concert folder: create, add pieces, reorder, play in a row', async (
   await page.keyboard.press('ArrowLeft');
   await page.waitForTimeout(1500);
   await showBars();
-  if ((await page.getByTestId('piece-indicator').textContent()) !== 'Obra 1 de 2') throw new Error('previous piece');
+  if ((await page.getByTestId('piece-indicator').textContent()) !== 'Obra 1 de 2')
+    throw new Error('previous piece');
   if ((await indicator()) !== 'Página 3 de 3') throw new Error(`unexpected ${await indicator()}`);
   await page.getByTestId('reader-back').click();
   await page.getByTestId('folder-title').waitFor();
@@ -211,7 +217,8 @@ await step('settings, pedal test and about', async () => {
   await page.getByTestId('header-back').last().click();
   await page.getByTestId('open-about').click();
   await page.getByTestId('about-author').waitFor();
-  if (!(await page.getByTestId('about-author').textContent())?.includes('Marcos Hernández Párraga')) throw new Error('author');
+  if (!(await page.getByTestId('about-author').textContent())?.includes('Marcos Hernández Párraga'))
+    throw new Error('author');
   await page.screenshot({ path: `${shots}/09-acerca-de.png` });
 });
 

@@ -24,7 +24,15 @@ export function SettingsScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'left', 'right']}>
       <Header title={t('settings.title')} onBack={() => router.back()} backLabel={t('common.back')} />
-      <ScrollView contentContainerStyle={{ padding: SPACING.lg, paddingBottom: 80, maxWidth: 820, width: '100%', alignSelf: 'center' }}>
+      <ScrollView
+        contentContainerStyle={{
+          padding: SPACING.lg,
+          paddingBottom: 80,
+          maxWidth: 820,
+          width: '100%',
+          alignSelf: 'center',
+        }}
+      >
         <Section title={t('settings.reading')}>
           <AppText variant="label" style={{ marginTop: SPACING.md }}>
             {t('settings.defaultMode')}
@@ -189,7 +197,14 @@ export function SettingsScreen() {
         </Section>
 
         <Section title={t('settings.pedal')}>
-          <Row title={t('settings.pedal')} subtitle={t('settings.testKeysHint')} icon="foot-print" onPress={() => router.push('/settings/pedal')} testID="open-pedal" last />
+          <Row
+            title={t('settings.pedal')}
+            subtitle={t('settings.testKeysHint')}
+            icon="foot-print"
+            onPress={() => router.push('/settings/pedal')}
+            testID="open-pedal"
+            last
+          />
         </Section>
 
         <Section title={t('settings.thumbnails')}>
@@ -262,7 +277,13 @@ export function SettingsScreen() {
         </Section>
 
         <Section>
-          <Row title={t('settings.about')} icon="information-outline" onPress={() => router.push('/about')} testID="open-about" last />
+          <Row
+            title={t('settings.about')}
+            icon="information-outline"
+            onPress={() => router.push('/about')}
+            testID="open-about"
+            last
+          />
         </Section>
       </ScrollView>
     </SafeAreaView>
