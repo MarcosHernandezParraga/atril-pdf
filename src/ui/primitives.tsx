@@ -1,0 +1,418 @@
+// Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
+//
+// Basic building blocks shared by every screen: large touch targets (min.
+// 44 pt), clear icons with text and good contrast in light and dark themes.
+
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import type { ComponentProps, ReactNode } from 'react';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+  type StyleProp,
+  type TextProps,
+  type TextStyle,
+  type ViewStyle,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { RADIUS, SPACING, TOUCH, useTheme } from '../theme';
+
+export type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
+
+export function Icon({ name, size = 24, color }: { name: IconName; size?: number; color?: string }) {
+  const t = useTheme();
+  return <MaterialCommunityIcons name={name} size={size} color={color ?? t.text} />;
+}
+
+type TextVariant = 'title' | 'heading' | 'body' | 'caption' | 'label';
+
+const TEXT_STYLES: Record<TextVariant, TextStyle> = {
+  title: { fontSize: 26, fontWeight: '700', letterSpacing: -0.3 },
+  heading: { fontSize: 18, fontWeight: '700' },
+  body: { fontSize: 16 },
+  caption: { fontSize: 13 },
+  label: { fontSize: 15, fontWeight: '600' },
+};
+
+export function AppText({
+  variant = 'body',
+  secondary,
+  style,
+  ...rest
+}: TextProps & { variant?: TextVariant; secondary?: boolean }) {
+  const t = useTheme();
+  return (
+    <Text
+      {...rest}
+      style={[TEXT_STYLES[variant], { color: secondary ? t.textSecondary : t.text }, style as StyleProp<TextStyle>]}
+    />
+  );
+}
+
+export function Screen({ children, scroll, style }: { children: ReactNode; scroll?: boolean; style?: ViewStyle }) {
+  const t = useTheme();
+  const body = scroll ? (
+    <ScrollView contentContainerStyle={[{ padding: SPACING.lg, paddingBottom: SPACING.xxl }, style]}>{children}</ScrollView>
+  ) : (
+    <View style={[{ flex: 1 }, style]}>{children}</View>
+  );
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: t.background }} edges={['top', 'left', 'right']}>
+      {body}
+    </SafeAreaView>
+  );
+}
+
+export function Button({
+  label,
+  icon,
+  onPress,
+  variant = 'primary',
+  disabled,
+  style,
+  testID,
+  accessibilityHint,
+}: {
+  label: string;
+  icon?: IconName;
+  onPress: () => void;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  testID?: string;
+  accessibilityHint?: string;
+}) {
+  const t = useTheme();
+  const bg =
+    variant === 'primary' ? t.primary : variant === 'secondary' ? t.surfaceAlt : variant === 'danger' ? t.danger : 'transparent';
+  const fg = variant === 'primary' ? t.onPrimary : variant === 'danger' ? t.surface : t.text;
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.button,
+        { backgroundColor: bg, opacity: disabled ? 0.45 : pressed ? 0.8 : 1 },
+        variant === 'ghost' && { paddingHorizontal: SPACING.sm },
+        style,
+      ]}
+    >
+      {icon ? <Icon name={icon} size={22} color={fg} /> : null}
+      <Text style={[styles.buttonText, { color: fg }]} numberOfLines={1}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+export function IconButton({
+  icon,
+  label,
+  onPress,
+  onLongPress,
+  showLabel,
+  active,
+  color,
+  size = 24,
+  disabled,
+  testID,
+  style,
+}: {
+  icon: IconName;
+  label: string;
+  onPress: () => void;
+  onLongPress?: () => void;
+  showLabel?: boolean;
+  active?: boolean;
+  color?: string;
+  size?: number;
+  disabled?: boolean;
+  testID?: string;
+  style?: StyleProp<ViewStyle>;
+}) {
+  const t = useTheme();
+  const fg = color ?? (active ? t.primary : t.text);
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active, disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      hitSlop={4}
+      style={({ pressed }) => [
+        styles.iconButton,
+        active && { backgroundColor: t.surfaceAlt },
+        { opacity: disabled ? 0.4 : pressed ? 0.6 : 1 },
+        style,
+      ]}
+    >
+      <Icon name={icon} size={size} color={fg} />
+      {showLabel ? (
+        <Text style={[styles.iconLabel, { color: fg }]} numberOfLines={1}>
+          {label}
+        </Text>
+      ) : null}
+    </Pressable>
+  );
+}
+
+export function Header({
+  title,
+  onBack,
+  backLabel,
+  right,
+}: {
+  title: string;
+  onBack?: () => void;
+  backLabel?: string;
+  right?: ReactNode;
+}) {
+  const t = useTheme();
+  return (
+    <View style={[styles.header, { borderBottomColor: t.border, backgroundColor: t.background }]}>
+      {onBack ? <IconButton icon="arrow-left" label={backLabel ?? 'Back'} onPress={onBack} testID="header-back" /> : null}
+      <AppText variant="heading" style={{ flex: 1, marginLeft: onBack ? SPACING.xs : SPACING.sm }} numberOfLines={1}>
+        {title}
+      </AppText>
+      {right}
+    </View>
+  );
+}
+
+export function Section({ title, children }: { title?: string; children: ReactNode }) {
+  const t = useTheme();
+  return (
+    <View style={{ marginBottom: SPACING.xl }}>
+      {title ? (
+        <AppText variant="label" secondary style={{ marginBottom: SPACING.sm, textTransform: 'uppercase', fontSize: 13 }}>
+          {title}
+        </AppText>
+      ) : null}
+      <View style={[styles.card, { backgroundColor: t.surface, borderColor: t.border }]}>{children}</View>
+    </View>
+  );
+}
+
+export function Row({
+  title,
+  subtitle,
+  icon,
+  right,
+  onPress,
+  testID,
+  last,
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: IconName;
+  right?: ReactNode;
+  onPress?: () => void;
+  testID?: string;
+  last?: boolean;
+}) {
+  const t = useTheme();
+  const content = (
+    <>
+      {icon ? (
+        <View style={{ marginRight: SPACING.md }}>
+          <Icon name={icon} color={t.textSecondary} />
+        </View>
+      ) : null}
+      <View style={{ flex: 1, paddingVertical: SPACING.md }}>
+        <AppText>{title}</AppText>
+        {subtitle ? (
+          <AppText variant="caption" secondary style={{ marginTop: 2 }}>
+            {subtitle}
+          </AppText>
+        ) : null}
+      </View>
+      {right}
+      {onPress && !right ? <Icon name="chevron-right" color={t.textSecondary} /> : null}
+    </>
+  );
+  const style = [styles.row, !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: t.border }];
+  return onPress ? (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [...style, pressed && { backgroundColor: t.surfaceAlt }]}
+    >
+      {content}
+    </Pressable>
+  ) : (
+    <View testID={testID} style={style}>
+      {content}
+    </View>
+  );
+}
+
+export function SwitchRow({
+  title,
+  subtitle,
+  value,
+  onChange,
+  last,
+  testID,
+}: {
+  title: string;
+  subtitle?: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+  last?: boolean;
+  testID?: string;
+}) {
+  const t = useTheme();
+  return (
+    <Row
+      title={title}
+      subtitle={subtitle}
+      last={last}
+      testID={testID}
+      right={
+        <Switch
+          value={value}
+          onValueChange={onChange}
+          accessibilityLabel={title}
+          trackColor={{ true: t.primary, false: t.border }}
+          thumbColor={t.surface}
+        />
+      }
+    />
+  );
+}
+
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+  testID,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+  testID?: string;
+}) {
+  const t = useTheme();
+  return (
+    <View testID={testID} style={[styles.segmented, { borderColor: t.border }]} accessibilityRole="radiogroup">
+      {options.map((o) => {
+        const selected = o.value === value;
+        return (
+          <Pressable
+            key={o.value}
+            accessibilityRole="radio"
+            accessibilityState={{ selected }}
+            onPress={() => onChange(o.value)}
+            style={[styles.segment, selected && { backgroundColor: t.primary }]}
+          >
+            <Text style={{ color: selected ? t.onPrimary : t.text, fontWeight: selected ? '700' : '500', textAlign: 'center' }}>
+              {o.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+/** Choice list shown as rows with a check mark (good for long labels). */
+export function ChoiceList<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: T; label: string; subtitle?: string }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  const t = useTheme();
+  return (
+    <>
+      {options.map((o, i) => (
+        <Row
+          key={o.value}
+          title={o.label}
+          subtitle={o.subtitle}
+          last={i === options.length - 1}
+          onPress={() => onChange(o.value)}
+          right={<Icon name={o.value === value ? 'check-circle' : 'circle-outline'} color={o.value === value ? t.primary : t.border} />}
+        />
+      ))}
+    </>
+  );
+}
+
+export function Stepper({
+  value,
+  onChange,
+  step,
+  min,
+  max,
+  format,
+  label,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  step: number;
+  min: number;
+  max: number;
+  format: (v: number) => string;
+  label: string;
+}) {
+  const clamp = (v: number) => Math.max(min, Math.min(max, Math.round(v / step) * step));
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <IconButton icon="minus" label={`${label} −`} onPress={() => onChange(clamp(value - step))} disabled={value <= min} />
+      <AppText variant="label" style={{ minWidth: 72, textAlign: 'center' }} accessibilityLiveRegion="polite">
+        {format(value)}
+      </AppText>
+      <IconButton icon="plus" label={`${label} +`} onPress={() => onChange(clamp(value + step))} disabled={value >= max} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    minHeight: TOUCH + 4,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: RADIUS.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+  },
+  buttonText: { fontSize: 16, fontWeight: '700' },
+  iconButton: {
+    minWidth: TOUCH,
+    minHeight: TOUCH,
+    borderRadius: RADIUS.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
+  iconLabel: { fontSize: 11, marginTop: 1, fontWeight: '600' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 56,
+    paddingHorizontal: SPACING.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  card: { borderRadius: RADIUS.lg, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: SPACING.lg, overflow: 'hidden' },
+  row: { flexDirection: 'row', alignItems: 'center', minHeight: TOUCH + 8 },
+  segmented: { flexDirection: 'row', borderWidth: 1, borderRadius: RADIUS.md, overflow: 'hidden', marginVertical: SPACING.sm },
+  segment: { flex: 1, minHeight: TOUCH, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SPACING.sm },
+});

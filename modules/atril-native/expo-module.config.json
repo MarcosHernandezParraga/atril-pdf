@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["AtrilNativeModule"]
+  },
+  "android": {
+    "modules": ["com.marcoshernandez.atrilnative.AtrilNativeModule"]
+  }
+}

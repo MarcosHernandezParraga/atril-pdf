@@ -1,0 +1,69 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Generated native folders (Continuous Native Generation)
+/ios
+/android
+
+# Desktop build output
+desktop/app/main.js
+desktop/app/preload.js
+desktop/app/web/
+desktop/app/*.map
+desktop/release/
+
+# Vendor files copied from node_modules on install
+public/vendor/
+
+# Native build leftovers
+.kotlin/
+*.orig.*
+
+# Secrets and signing material: never commit
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+*.der
+google-play-service-account*.json
+credentials.json
+.env
+.env*.local
+secrets/
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+coverage/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# typescript
+*.tsbuildinfo
+
+# Local assistant/editor configuration (never published)
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+.claude/
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+.aider*

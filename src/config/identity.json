@@ -1,0 +1,12 @@
+{
+  "name": "Atril Musical",
+  "shortName": "Atril Musical",
+  "slug": "atril-musical",
+  "scheme": "atrilmusical",
+  "appId": "com.marcoshernandez.atrilmusical",
+  "author": "Marcos Hernández Párraga",
+  "copyrightYear": 2026,
+  "license": "MIT",
+  "repositoryUrl": "https://github.com/MarcosHernandezParraga/atril-musical",
+  "backupExtension": "atril"
+}
