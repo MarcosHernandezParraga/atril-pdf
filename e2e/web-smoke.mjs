@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 // Browser test of the main user journeys: import, read, turn pages with pedal keys,
-// view modes, write on the PDF (pen and text), concert folders, dragging pieces
-// onto folders and reordering them, settings, protected PDFs.
+// zoom (wheel, keys, pinch), view modes, write on the PDF (pen and text), concert
+// folders, dragging pieces onto folders and reordering them, settings, protected PDFs.
 import { createRequire } from 'node:module';
 
 // Uses the Playwright installed in the project (or on the machine).
@@ -121,6 +121,45 @@ await step('write on the PDF: pen stroke and text', async () => {
   await page.getByText('Respirar aquí', { exact: true }).waitFor();
 });
 
+const zoomOf = async () =>
+  page
+    .getByTestId('zoom-layer')
+    .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform))
+    .then((m) => ({ scale: m.a, x: m.e, y: m.f }));
+/** Two-finger pinch on a touch screen, from `from` to `to` pixels between the fingers. */
+async function pinch(cx, cy, from, to) {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  const touch = (type, pts) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type,
+      touchPoints: pts.map(([x, y], i) => ({ x, y, id: i + 1 })),
+    });
+  await touch('touchStart', [
+    [cx - from / 2, cy],
+    [cx + from / 2, cy],
+  ]);
+  const steps = 16;
+  for (let i = 1; i <= steps; i++) {
+    const d = (from + ((to - from) * i) / steps) / 2;
+    await touch('touchMove', [
+      [cx - d, cy],
+      [cx + d, cy],
+    ]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', []);
+  // one finger moves the zoomed page
+  await touch('touchStart', [[cx, cy]]);
+  for (let i = 1; i <= 8; i++) {
+    await touch('touchMove', [[cx, cy + i * 12]]);
+    await page.waitForTimeout(16);
+  }
+  await touch('touchEnd', []);
+  await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+  await cdp.detach();
+}
+
 async function chooseMode(label) {
   await showBars();
   await page.getByTestId('reader-mode').click();
@@ -140,7 +179,49 @@ await step('view modes: half page, two pages, look-ahead, continuous', async () 
   await page.getByTestId('lookahead').waitFor();
   await chooseMode('Vertical continuo');
   await page.getByTestId('continuous').waitFor();
+  await pinch(640, 430, 80, 300);
+  await page.waitForTimeout(800);
+  if ((await zoomOf()).scale < 2) throw new Error('continuous mode pinch');
+  await page.getByTestId('zoom-reset').click();
+  await page.waitForTimeout(300);
   await chooseMode('Página a página con animación');
+});
+
+await step('zoom: Ctrl + wheel, keys, pinch with two fingers, then turning resets it', async () => {
+  await page.keyboard.press('Home');
+  await page.waitForTimeout(800);
+  await page.mouse.move(500, 250);
+  await page.keyboard.down('Control');
+  for (let i = 0; i < 3; i++) await page.mouse.wheel(0, -100);
+  await page.keyboard.up('Control');
+  await page.waitForTimeout(600);
+  if ((await zoomOf()).scale < 1.9) throw new Error(`ctrl+wheel: ${JSON.stringify(await zoomOf())}`);
+  // While zoomed the wheel moves the page instead of turning it.
+  const y0 = (await zoomOf()).y;
+  await page.mouse.wheel(0, 150);
+  await page.waitForTimeout(400);
+  if ((await zoomOf()).y >= y0) throw new Error('wheel did not move the zoomed page');
+  await showBars();
+  if ((await indicator()) !== 'Página 1 de 6') throw new Error(`the wheel turned: ${await indicator()}`);
+  await page.screenshot({ path: `${shots}/04b-zoom.png` });
+  await page.getByTestId('zoom-reset').click();
+  await page.waitForTimeout(400);
+  if ((await zoomOf()).scale !== 1) throw new Error('reset');
+  await page.keyboard.press('Control+Equal');
+  await page.waitForTimeout(300);
+  if ((await zoomOf()).scale !== 1.25) throw new Error('ctrl +');
+  await page.keyboard.press('Control+Digit0');
+  await page.waitForTimeout(300);
+  await pinch(640, 430, 80, 360);
+  await page.waitForTimeout(900);
+  const z = await zoomOf();
+  if (z.scale < 2.5) throw new Error(`pinch: ${JSON.stringify(z)}`);
+  if (z.y <= 0) throw new Error(`one finger did not move the page: ${JSON.stringify(z)}`);
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(800);
+  if ((await zoomOf()).scale !== 1) throw new Error('turning did not reset the zoom');
+  await page.keyboard.press('Home');
+  await page.waitForTimeout(600);
 });
 
 await step('annotations are saved: reopening shows them', async () => {

@@ -15,6 +15,15 @@ import type { RenderedPage } from '../pdf/types';
 import { getServices } from '../services';
 import type { DisplayFilter } from '../settings/defaults';
 
+/**
+ * Current zoom of the reader (1 = not zoomed). Pages are rendered with more
+ * pixels while zoomed so the music stays sharp.
+ */
+export const RenderZoomContext = createContext(1);
+
+/** Most pixels a zoomed page may use (about 64 MB in memory). */
+const ZOOM_MAX_PIXELS = 16_000_000;
+
 /** Annotations of the open document by page id; undefined when they are hidden. */
 export const PageAnnotationsContext = createContext<Record<string, Annotation[]> | undefined>(undefined);
 
@@ -34,12 +43,18 @@ export function fitWidth(page: PageRef, boxW: number, boxH: number): number {
  * Pixel width used to render a page displayed at `width`. Pre-rendering must use the
  * same value as the screen, otherwise the cached image is not reused.
  */
-export function renderPixelWidth(page: PageRef, width: number): number {
+export function renderPixelWidth(page: PageRef, width: number, zoom = 1): number {
   const crop = page.crop ?? { left: 0, top: 0, right: 0, bottom: 0 };
   const rotated = page.rotation === 90 || page.rotation === 270;
   const cw = rotated ? pageHeightForWidth(page, width) : width;
   const fullW = cw / Math.max(0.05, 1 - crop.left - crop.right);
-  return Math.min(4096, fullW * PixelRatio.get());
+  const base = Math.min(4096, fullW * PixelRatio.get());
+  if (zoom <= 1) return base;
+  // Zoomed: more pixels, within a memory budget (important on tablets and phones).
+  const s = displayedPageSize(page);
+  const aspect = Math.max(0.2, s.height / Math.max(1, s.width));
+  const byMemory = Math.sqrt(ZOOM_MAX_PIXELS / aspect);
+  return Math.max(base, Math.min(4096, base * zoom, byMemory));
 }
 
 export function filterStyle(filter: DisplayFilter, brightness = 1): ViewStyle {
@@ -163,10 +178,17 @@ export const PageView = memo(function PageView({
   // Size of the full (uncropped) page at this scale.
   const fullW = cw / Math.max(0.05, 1 - crop.left - crop.right);
   const fullH = ch / Math.max(0.05, 1 - crop.top - crop.bottom);
-  const pixelWidth = renderPixelWidth(page, width);
+  const zoom = useContext(RenderZoomContext);
+  const basePixelWidth = renderPixelWidth(page, width);
+  const pixelWidth = renderPixelWidth(page, width, zoom);
 
   const isRaster = page.kind === 'pdf' || page.kind === 'image';
-  const img = usePageImage(page, isRaster ? pixelWidth : 0);
+  const sharp = usePageImage(page, isRaster ? pixelWidth : 0);
+  // While the sharper (zoomed) image is being prepared, keep showing the normal one.
+  const img =
+    sharp ??
+    (isRaster && pixelWidth !== basePixelWidth ? getServices().renderer.peek(page, basePixelWidth) : null) ??
+    null;
 
   let content: React.ReactNode;
   if (page.kind === 'blank') {

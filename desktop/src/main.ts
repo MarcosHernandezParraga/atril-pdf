@@ -118,13 +118,8 @@ function buildMenu() {
     { role: 'editMenu' },
     {
       label: 'View',
-      submenu: [
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
+      // No window zoom here: Ctrl + / Ctrl − / Ctrl 0 zoom the score in the reader.
+      submenu: [{ role: 'togglefullscreen' }],
     },
     { role: 'windowMenu' },
   ];

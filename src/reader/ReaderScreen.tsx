@@ -57,11 +57,19 @@ import { dialogs } from '../ui/dialogs';
 import { AppText, IconButton } from '../ui/primitives';
 import { ContinuousView, type ContinuousHandle } from './ContinuousView';
 import { FlipStack, type Flip } from './FlipStack';
-import { fitWidth, PageAnnotationsContext, renderPixelWidth } from './PageView';
+import {
+  fitWidth,
+  PageAnnotationsContext,
+  pageHeightForWidth,
+  renderPixelWidth,
+  RenderZoomContext,
+} from './PageView';
 import { PerformanceChrome, useDesktopFullscreenSync } from './performance';
 import { StopView } from './StopView';
 import { analysePage } from './usePageAnalysis';
 import { parseViewState, useDocument } from './useDocument';
+import { usePageZoom } from './usePageZoom';
+import { renderZoom } from './zoomMath';
 
 const BAR_HIDE_MS = 4000;
 
@@ -362,12 +370,36 @@ export function ReaderScreen() {
   );
   useReaderKeys(onKeyAction, Boolean(model));
 
+  // ------------------------------------------------------------------- zoom
+  const zoomBox = useMemo(() => ({ w: size.width, h: size.height }), [size.width, size.height]);
+  const singlePage = !isContinuous && currentStop?.kind === 'page' ? pages[currentStop.page] : undefined;
+  const zoomContent = useMemo(() => {
+    if (!singlePage) return zoomBox;
+    const w = fitWidth(singlePage, zoomBox.w, zoomBox.h);
+    return { w, h: pageHeightForWidth(singlePage, w) };
+  }, [singlePage, zoomBox]);
+  const {
+    pinch: zoomPinch,
+    move: zoomMove,
+    style: zoomStyle,
+    zoom,
+    zoomed,
+    reset: resetZoom,
+    areaRef: zoomAreaRef,
+    isZoomedNow,
+  } = usePageZoom({
+    box: zoomBox,
+    content: zoomContent,
+    enabled: !annotating && Boolean(model),
+    resetKey: `${currentId}|${effectiveMode}|${isContinuous ? continuousPage : stopIndex}|${size.width}x${size.height}`,
+  });
+
   // Mouse wheel on desktop (page modes; the continuous mode scrolls natively).
   useEffect(() => {
     if (Platform.OS !== 'web' || isContinuous || annotating) return;
     let last = 0;
     const onWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || Math.abs(e.deltaY) < 4) return;
+      if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) < 4 || isZoomedNow()) return;
       const now = performance.now();
       if (now - last < 250) return;
       last = now;
@@ -375,7 +407,7 @@ export function ReaderScreen() {
     };
     window.addEventListener('wheel', onWheel, { passive: true });
     return () => window.removeEventListener('wheel', onWheel);
-  }, [turn, isContinuous, annotating]);
+  }, [turn, isContinuous, annotating, isZoomedNow]);
 
   // --------------------------------------------------------------- gestures
   const lastCenterTap = useRef(0);
@@ -411,7 +443,8 @@ export function ReaderScreen() {
   });
   const pan = usePanGesture({
     runOnJS: true,
-    enabled: reader.swipeToTurn && !isContinuous,
+    enabled: reader.swipeToTurn && !isContinuous && !zoomed,
+    maxPointers: 1,
     minDistance: 24,
     activeOffsetX: [-24, 24],
     failOffsetY: [-40, 40],
@@ -420,7 +453,7 @@ export function ReaderScreen() {
       if (a) turn(a === 'next' ? 1 : -1);
     },
   });
-  const gestures = useCompetingGestures(pan, tap);
+  const gestures = useCompetingGestures(zoomPinch, zoomMove, pan, tap);
 
   // ------------------------------------------------------------------- menus
   const chooseMode = () =>
@@ -642,50 +675,58 @@ export function ReaderScreen() {
                 />
               </View>
             ) : isContinuous ? (
-              <GestureDetector gesture={tap}>
-                <View style={styles.fill}>
-                  <ContinuousView
-                    key={doc?.id}
-                    ref={continuousRef}
-                    pages={pages}
-                    width={size.width}
-                    height={size.height}
-                    overlap={reader.continuousOverlap}
-                    initialPage={currentPage}
-                    filter={filter}
-                    brightness={reader.brightness}
-                    onPageChange={setContinuousPage}
-                    scrollEnabled={!fullscreen || reader.swipeToTurn}
-                  />
+              <GestureDetector gesture={gestures}>
+                <View style={[styles.fill, styles.touchArea]} collapsable={false} ref={zoomAreaRef}>
+                  <Animated.View style={[styles.fill, zoomStyle]} testID="zoom-layer">
+                    <RenderZoomContext.Provider value={renderZoom(zoom)}>
+                      <ContinuousView
+                        key={doc?.id}
+                        ref={continuousRef}
+                        pages={pages}
+                        width={size.width}
+                        height={size.height}
+                        overlap={reader.continuousOverlap}
+                        initialPage={currentPage}
+                        filter={filter}
+                        brightness={reader.brightness}
+                        onPageChange={setContinuousPage}
+                        scrollEnabled={(!fullscreen || reader.swipeToTurn) && !zoomed}
+                      />
+                    </RenderZoomContext.Provider>
+                  </Animated.View>
                 </View>
               </GestureDetector>
             ) : (
               <GestureDetector gesture={gestures}>
-                <View style={[styles.fill, { overflow: 'hidden' }]} collapsable={false}>
-                  {animated3d ? (
-                    <FlipStack
-                      current={currentStop!}
-                      flip={flip}
-                      render={renderStop}
-                      width={size.width}
-                      sheetFor={(stop) => {
-                        const p = stop.kind === 'page' ? pages[stop.page] : undefined;
-                        if (!p) return { left: 0, width: size.width };
-                        const w = fitWidth(p, size.width, size.height);
-                        return { left: (size.width - w) / 2, width: w };
-                      }}
-                      duration={reader.transitionMs}
-                    />
-                  ) : (
-                    <Animated.View
-                      key={`${doc?.id}-${stopIndex}`}
-                      entering={entering}
-                      exiting={exiting}
-                      style={StyleSheet.absoluteFill}
-                    >
-                      {renderStop(currentStop!)}
-                    </Animated.View>
-                  )}
+                <View style={[styles.fill, styles.touchArea]} collapsable={false} ref={zoomAreaRef}>
+                  <Animated.View style={[StyleSheet.absoluteFill, zoomStyle]} testID="zoom-layer">
+                    <RenderZoomContext.Provider value={renderZoom(zoom)}>
+                      {animated3d ? (
+                        <FlipStack
+                          current={currentStop!}
+                          flip={flip}
+                          render={renderStop}
+                          width={size.width}
+                          sheetFor={(stop) => {
+                            const p = stop.kind === 'page' ? pages[stop.page] : undefined;
+                            if (!p) return { left: 0, width: size.width };
+                            const w = fitWidth(p, size.width, size.height);
+                            return { left: (size.width - w) / 2, width: w };
+                          }}
+                          duration={reader.transitionMs}
+                        />
+                      ) : (
+                        <Animated.View
+                          key={`${doc?.id}-${stopIndex}`}
+                          entering={entering}
+                          exiting={exiting}
+                          style={StyleSheet.absoluteFill}
+                        >
+                          {renderStop(currentStop!)}
+                        </Animated.View>
+                      )}
+                    </RenderZoomContext.Provider>
+                  </Animated.View>
                 </View>
               </GestureDetector>
             )}
@@ -701,6 +742,25 @@ export function ReaderScreen() {
               onLongPress={toggleFullscreen}
               style={styles.exitZone}
             />
+          ) : null}
+
+          {zoomed && !annotating ? (
+            // Zoom level; pressing it goes back to the whole page.
+            <Animated.View
+              entering={FadeIn.duration(120)}
+              exiting={FadeOut.duration(120)}
+              style={[styles.zoomPill, { bottom: showBars ? 84 : 16 }]}
+            >
+              <IconButton
+                icon="magnify-minus-outline"
+                label={`${Math.round(zoom * 100)} %`}
+                showLabel
+                color="#FFFFFF"
+                size={20}
+                onPress={resetZoom}
+                testID="zoom-reset"
+              />
+            </Animated.View>
           ) : null}
 
           {fullscreen && reader.showPageNumberInPerformance ? (
@@ -926,6 +986,16 @@ const styles = StyleSheet.create({
   title: { color: '#FFFFFF', fontWeight: '700' },
   pageLabel: { minHeight: 44, justifyContent: 'center', paddingHorizontal: SPACING.md },
   exitZone: { position: 'absolute', top: 0, left: 0, right: 0, height: 40 },
+  // In a browser, touches on the score are handled by the app (turning, zooming,
+  // moving), never by the browser itself (it would scroll or zoom the whole page).
+  touchArea: { overflow: 'hidden', ...(Platform.OS === 'web' ? ({ touchAction: 'none' } as object) : {}) },
+  zoomPill: {
+    position: 'absolute',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(24, 20, 16, 0.78)',
+    borderRadius: 999,
+    paddingHorizontal: 6,
+  },
   miniPage: {
     position: 'absolute',
     right: 8,
