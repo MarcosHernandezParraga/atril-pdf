@@ -1,130 +1,164 @@
-# Guía para Marcos: qué tienes que hacer tú
+# Guía para Marcos: cómo usar y publicar Atril PDF
 
-Esta guía explica, paso a paso y sin dar nada por sabido, lo que tienes que hacer tú para que Atril PDF funcione en cada sitio. Se irá ampliando en cada fase.
+Esta guía está escrita para alguien que no sabe programar. Cada paso dice exactamente qué pulsar y qué deberías ver.
+
+**Idea general:** el código de la app se guarda en **GitHub** (una web gratuita para guardar proyectos). Cuando el código está allí, GitHub **fabrica solo** los instaladores de Windows, Mac, Linux y Android cada vez que se lo pidas. Después, cada tienda (Microsoft Store, Google Play, App Store…) recibe esos instaladores. Por eso el **paso 1 es imprescindible**: sin él no se puede publicar en ningún sitio.
+
+| Dónde | ¿Gratis? | Qué hace falta de ti |
+| --- | --- | --- |
+| Descarga directa desde GitHub (Windows, Mac, Linux, Android) | ✅ Gratis | Solo el paso 1 |
+| Microsoft Store (Windows) | ✅ Gratis para particulares | Cuenta de desarrollador de Microsoft con tu DNI |
+| Linux (Flathub) | ✅ Gratis | Nada de dinero; la hago yo con tu visto bueno |
+| Android fuera de Google Play (F-Droid / IzzyOnDroid) | ✅ Gratis | Nada de dinero |
+| **Google Play** (Android) | 💶 25 USD, **una sola vez** | Cuenta de Google Play + 12 personas que la prueben 14 días |
+| **App Store** (iPhone y iPad) y Mac App Store | 💶 **99 USD al año** | Cuenta de Apple Developer |
+| iPhone/iPad **sin pagar** | ✅ Gratis (alternativa) | Versión web que se instala desde Safari (ver apartado 8) |
 
 ---
 
-## 1. Crear el repositorio en GitHub (lo primero)
+## 1. Crear el repositorio en GitHub (imprescindible, 5 minutos)
 
-El código está terminado para esta fase, pero necesita un sitio donde guardarse para siempre y desde donde GitHub compile la app automáticamente. Ya tienes cuenta de GitHub (`MarcosHernandezParraga`), así que solo hay que crear el repositorio:
+Ya tienes cuenta de GitHub (`MarcosHernandezParraga`).
 
-1. Entra en https://github.com/new (inicia sesión si te lo pide).
+1. Entra en **https://github.com/new** (si te lo pide, inicia sesión).
 2. En **Repository name** escribe exactamente: `atril-pdf`
-3. En **Description** (opcional): `Lector de partituras PDF libre y gratuito para músicos`
-4. Marca **Public** (público: así GitHub compila gratis también para Mac).
-5. **No** marques «Add a README file», ni «.gitignore», ni «license» (el proyecto ya los trae; el repositorio tiene que estar vacío).
+3. En **Description**: `Lector de partituras PDF libre y gratuito para músicos`
+4. Marca **Public**.
+5. **No** marques nada más (ni README, ni .gitignore, ni license).
 6. Pulsa el botón verde **Create repository**.
-7. Verás una página que dice «Quick setup». Ya está: avísame y yo subo el código.
+7. Verás una página con el título «Quick setup». **Ya está. Avísame** y yo subo el código.
 
-**Sobre tu correo:** los cambios del proyecto llevan tu nombre y tu correo `marcos.hernandezparraga@gmail.com`, y en un repositorio público ese correo es visible. Si prefieres ocultarlo:
-1. Entra en https://github.com/settings/emails
-2. Marca **Keep my email addresses private**.
-3. Copia la dirección que aparece, del tipo `123456+MarcosHernandezParraga@users.noreply.github.com`, y pásamela: la pondré en todos los cambios antes de subirlos.
+**Tu correo:** los cambios del proyecto llevan tu nombre y tu correo de Gmail, que en un proyecto público se ve. Si prefieres ocultarlo, entra en **https://github.com/settings/emails**, marca **Keep my email addresses private**, copia la dirección que aparece (termina en `@users.noreply.github.com`) y pásamela.
 
-Cuando el código esté subido, GitHub ejecutará solo las comprobaciones. Lo verás en la pestaña **Actions** del repositorio: un círculo amarillo mientras trabaja y un ✓ verde cuando todo va bien.
+Cuando haya subido el código, en tu repositorio verás la pestaña **Actions**: un círculo amarillo significa «trabajando» y un ✓ verde, «todo correcto».
 
 ---
 
-## 2. Probar la app en tu móvil o tableta Android
+## 2. Probarla ya en tu móvil o tableta Android
 
-Te paso un archivo `AtrilPDF-…-android.apk` (versión de prueba). Para instalarlo:
+1. Descarga el archivo **AtrilPDF-…-android.apk** que te he enviado, directamente en el móvil (o pásalo por cable).
+2. Ábrelo desde **Archivos** o **Descargas**.
+3. Si Android avisa de que no permite instalar apps de esta fuente: pulsa **Ajustes**, activa **Permitir de esta fuente** y vuelve atrás.
+4. Pulsa **Instalar**. Si sale un aviso de Google Play Protect: **Más detalles → Instalar de todas formas** (sale porque la app no viene de Google Play).
+5. Abre **Atril PDF**.
 
-1. Copia el archivo al móvil (o descárgalo directamente en el móvil).
-2. Ábrelo desde **Archivos** / **Descargas**.
-3. Android dirá que no permite instalar apps de esta fuente: pulsa **Ajustes**, activa **Permitir de esta fuente** y vuelve atrás.
-4. Pulsa **Instalar**. Si aparece un aviso de Google Play Protect, pulsa **Más detalles → Instalar de todas formas** (sale porque la app no viene de Google Play).
-5. Abre **Atril PDF**. Verás la biblioteca vacía con el botón marrón **Abrir / Importar**.
-
-Qué probar (y contarme cómo va):
-- Importar un PDF con **Abrir / Importar**.
-- Abrir un PDF desde otra app (por ejemplo desde **Archivos** o desde un correo): **Abrir con… → Atril PDF**. Debe abrirse directamente en el lector y quedarse en la biblioteca.
-- Pasar página tocando el lado derecho/izquierdo, deslizando, y con tu **pedal Bluetooth**. Antes, prueba el pedal en **Ajustes → Pedal / teclado → Probar pedal**: debe aparecer el nombre de la tecla.
-- Cambiar de modo con el icono del libro (arriba): **Media página**, **Dos páginas**, **Vertical con anticipación**…
-- Pantalla completa (icono de las cuatro esquinas, o doble toque en el centro). Para salir: mantén el dedo en el borde superior.
-- Usa la lista de `docs/PRUEBAS_PEDAL.md` para el pedal.
-
-> Esta versión de prueba está firmada con una clave de pruebas. Cuando publiquemos la versión definitiva (firmada con tu propia clave), habrá que **desinstalar** la de prueba antes de instalar la nueva (Android no deja actualizar entre firmas distintas). Tus partituras importadas en la versión de prueba se perderían; por eso, de momento, úsala solo para probar.
+Es una versión de prueba: cuando publiquemos la definitiva habrá que desinstalar esta antes, así que no metas aún partituras importantes.
 
 ---
 
-## 3. Probar en Windows, macOS y Linux
+## 3. Probarla ya en tu ordenador Windows
 
-Cuando el repositorio exista, crearé la primera versión (`v0.1.0`). GitHub compilará solo los instaladores (tarda unos 20 minutos) y aparecerán en la página **Releases** del repositorio (columna derecha de la página principal → **Releases**).
+1. Descarga el archivo **Atril PDF-…-win-x64.zip** que te he enviado.
+2. Haz clic derecho sobre él → **Extraer todo…** → **Extraer**.
+3. Abre la carpeta que se crea y haz doble clic en **Atril PDF.exe**.
+4. Windows mostrará «Windows protegió su PC» (sale con cualquier programa nuevo sin certificado de pago): pulsa **Más información → Ejecutar de todas formas**.
 
-**Windows:**
-1. En Releases, descarga el archivo que termina en `-win-x64.exe`.
-2. Ábrelo. Windows mostrará «Windows protegió su PC» (sale con cualquier programa nuevo sin certificado de pago): pulsa **Más información → Ejecutar de todas formas**.
-3. Sigue el instalador (Siguiente → Instalar). Se crea un acceso directo en el escritorio.
-4. Prueba también: clic derecho sobre un PDF → **Abrir con → Atril PDF**, y arrastrar PDF desde el Explorador a la ventana.
-
-**macOS:** descarga el `.dmg`, ábrelo y arrastra Atril PDF a **Aplicaciones**. La primera vez: **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
-
-**Linux:** descarga el `.AppImage`, dale permiso de ejecución (clic derecho → Propiedades → Permitir ejecutar) y ábrelo; o instala el `.deb` con doble clic.
+Esta versión no se instala (funciona desde esa carpeta). El **instalador normal** (con acceso directo en el escritorio y «Abrir con → Atril PDF» para los PDF) lo fabricará GitHub en cuanto exista el repositorio.
 
 ---
 
-## 4. Crear tu propia clave de firma de Android (gratis, una sola vez)
+## 4. Sacar una versión para todo el mundo (cuando lo decidas)
 
-Es la «firma» que demuestra que las versiones de la app son tuyas. **Guárdala muy bien**: si la pierdes, no podrás publicar actualizaciones con la misma app. Hazlo en tu PC (no la compartas con nadie, tampoco conmigo).
+Esto lo haces tú desde la web de GitHub (o me lo pides y lo hago yo):
 
-1. Instala Java (si no lo tienes). En PowerShell:
+1. En tu repositorio, columna de la derecha → **Releases** → **Draft a new release** (o «Create a new release»).
+2. Pulsa **Choose a tag**, escribe `v0.1.0` y pulsa **Create new tag**.
+3. En **Release title** escribe `Atril PDF 0.1.0` y pulsa **Publish release**.
+4. Espera unos 30 minutos. En esa misma página aparecerán los archivos:
+   - Windows: `…-win-x64.exe` (instalador)
+   - Mac: `…-mac-universal.dmg`
+   - Linux: `….AppImage` y `….deb`
+   - Android: `….apk` (para instalar directamente) y `….aab` (para Google Play)
+
+Ese enlace de **Releases** es el que puedes pasar a tus alumnos y compañeros para que se la descarguen gratis.
+
+---
+
+## 5. Microsoft Store (Windows) — gratis
+
+1. Entra en **https://storedeveloper.microsoft.com** y pulsa **Get started / Empezar** como **particular (Individual)**.
+2. Inicia sesión con una cuenta de Microsoft (Outlook/Hotmail; si no tienes, se crea allí gratis).
+3. Rellena tus datos y verifica tu identidad (te pedirá una foto de tu DNI y un selfi).
+4. Cuando te aprueben (suele tardar de 1 a 3 días), en **Partner Center** pulsa **Crear una aplicación nueva** y reserva el nombre **Atril PDF**.
+5. Entra en **Identidad del producto** y **cópiame** estos dos datos: `Package/Identity/Name` y `Package/Identity/Publisher`. Con ellos preparo el paquete para la tienda.
+6. Te diré qué archivo subir y qué textos pegar (ya los tengo preparados en español e inglés).
+
+---
+
+## 6. Google Play (Android) — 25 USD una sola vez
+
+1. Entra en **https://play.google.com/console/signup** con tu cuenta de Google.
+2. Elige **cuenta personal**, paga los 25 USD y verifica tu identidad (DNI) y tu teléfono.
+3. **Obligatorio para cuentas nuevas:** antes de publicar, hay que hacer una **prueba cerrada con al menos 12 personas durante 14 días seguidos**. Ve pensando en 12 alumnos, compañeros o amigos con Android que acepten instalarla.
+4. Antes de eso hay que crear tu **clave de firma** (es como tu firma digital; con ella Google sabe que las actualizaciones son tuyas). Te guío en el apartado 9.
+5. Con la cuenta creada, te iré diciendo paso a paso dónde subir el archivo `.aab`, los textos, el icono y las capturas (ya preparados).
+
+---
+
+## 7. App Store (iPhone, iPad y Mac) — 99 USD al año
+
+Apple **obliga** a pagar la cuota para publicar en el App Store. Solo la perdona a **organizaciones** (centros educativos acreditados, entidades sin ánimo de lucro, administraciones públicas) que publiquen apps gratuitas, y solo en algunos países (hay que comprobarlo en https://developer.apple.com/support/fee-waiver). A particulares no. Si un conservatorio o una asociación quisiera publicarla a su nombre, podría pedir la exención; la app seguiría diciendo «Hecho por Marcos Hernández Párraga».
+
+Si decides pagarla:
+1. Entra en **https://developer.apple.com/programs/enroll** con tu Apple ID (el de tu iPhone/iPad).
+2. Inscríbete como **particular (Individual)**, verifica tu identidad y paga 99 USD.
+3. Crea una cuenta gratuita en **https://expo.dev** (es el servicio que compila la app para Apple en la nube; **no necesitas un Mac**).
+4. Avísame: la compilo, la subo a **TestFlight** (la app de Apple para probar) y la instalas en tu iPad antes de publicarla.
+
+**Mac sin pagar:** la versión de Mac sí se puede descargar gratis desde GitHub (apartado 4). La primera vez que se abre, macOS avisa; se abre en **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
+
+---
+
+## 8. iPhone/iPad sin pagar: la versión web
+
+Hay una alternativa gratuita: publicar **Atril PDF como web** en una dirección gratuita de GitHub (por ejemplo `https://marcoshernandezparraga.github.io`). En el iPad se abre con Safari y se pulsa **Compartir → Añadir a pantalla de inicio**: aparece un icono como el de cualquier app y funciona a pantalla completa y **sin internet** una vez abierta.
+
+- ✅ Funcionan los pedales Bluetooth, el Apple Pencil, las carpetas-concierto y las anotaciones.
+- ⚠️ Limitaciones: los PDF se abren desde la propia app (no aparece en «Abrir con» de otras apps) y las partituras se guardan dentro de Safari.
+
+Si te interesa, dímelo y la preparo.
+
+---
+
+## 9. Tu clave de firma de Android (gratis, una sola vez, antes de publicar)
+
+Es tu «firma» digital: **guárdala muy bien**, porque si la pierdes no podrás actualizar la app. Hazlo en tu PC; no se la pases a nadie (tampoco a mí).
+
+1. Botón Inicio → escribe `PowerShell` → pulsa Intro. Se abre una ventana azul o negra.
+2. Copia y pega esto y pulsa Intro (instala Java, que hace falta para crear la clave):
 
 ```powershell
 winget install EclipseAdoptium.Temurin.21.JDK
 ```
 
-2. Cierra y abre PowerShell. Crea la clave (te pedirá una contraseña: invéntate una larga y apúntala; y tus datos: nombre, ciudad…):
+3. Cierra esa ventana y abre otra igual. Copia y pega esto y pulsa Intro. Te pedirá **inventar una contraseña** (apúntala) y tu nombre y ciudad:
 
 ```powershell
 keytool -genkeypair -v -keystore $HOME\Documents\atril-release.keystore -alias atril -keyalg RSA -keysize 4096 -validity 10000
 ```
 
-3. Haz **dos copias de seguridad** del archivo `Documentos\atril-release.keystore` (por ejemplo en un pendrive y en tu nube personal) junto con la contraseña.
-4. Conviértelo a texto para guardarlo en GitHub:
+4. Haz **dos copias** del archivo `Documentos\atril-release.keystore` (por ejemplo en un pendrive y en tu Google Drive) junto con la contraseña.
+5. Copia la clave como texto (pega esto y pulsa Intro; no verás nada, pero queda copiada):
 
 ```powershell
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("$HOME\Documents\atril-release.keystore")) | Set-Clipboard
 ```
 
-5. En GitHub, en tu repositorio: **Settings → Secrets and variables → Actions → New repository secret**. Crea estos cuatro secretos (botón verde **Add secret** cada vez):
-   - `ANDROID_KEYSTORE_BASE64`: pega (Ctrl+V) lo copiado en el paso 4.
-   - `ANDROID_KEYSTORE_PASSWORD`: la contraseña del paso 2.
-   - `ANDROID_KEY_ALIAS`: `atril`
-   - `ANDROID_KEY_PASSWORD`: la misma contraseña del paso 2.
+6. En GitHub, en tu repositorio: **Settings → Secrets and variables → Actions → New repository secret**. Crea estos cuatro (botón verde **Add secret** cada vez):
+   - Nombre `ANDROID_KEYSTORE_BASE64` → en el valor, pega (Ctrl+V).
+   - Nombre `ANDROID_KEYSTORE_PASSWORD` → tu contraseña.
+   - Nombre `ANDROID_KEY_ALIAS` → `atril`
+   - Nombre `ANDROID_KEY_PASSWORD` → tu contraseña.
 
-A partir de ahí, los APK que compile GitHub irán firmados con tu clave.
-
----
-
-## 5. Sacar una versión nueva (cuando haya cambios)
-
-1. En GitHub, entra en tu repositorio → **Releases** → **Draft a new release**.
-2. En **Choose a tag** escribe el número nuevo, por ejemplo `v0.2.0`, y pulsa **Create new tag**.
-3. En **Release title** escribe `Atril PDF 0.2.0` y pulsa **Publish release**.
-4. Ve a la pestaña **Actions**: verás «Release» trabajando. En unos 20–30 minutos aparecerán en la release los instaladores de Windows, macOS, Linux y el APK/AAB de Android.
-
-(El número de versión de la app lo actualizo yo en el código antes de cada versión.)
+Desde ese momento, todas las versiones de Android saldrán firmadas por ti.
 
 ---
 
-## 6. iPhone y iPad
+## 10. Cómo usar la app (resumen)
 
-Para instalar la app en iPhone/iPad hace falta obligatoriamente una **cuenta de desarrollador de Apple (99 USD al año)**; sin ella Apple no permite distribuirla (los centros educativos acreditados y las entidades sin ánimo de lucro pueden pedir la exención de la cuota). No hace falta tener un Mac: se compila en la nube con EAS Build (plan gratuito de Expo: unas 15 compilaciones de iOS al mes).
-
-Cuando tengas la cuenta, te daré los pasos exactos para: crear la cuenta gratuita de Expo, conectar tu cuenta de Apple, compilar con `eas build --platform ios` y probarla con **TestFlight** en tu iPad antes de publicarla.
-
----
-
-## 7. Tiendas (resumen; los pasos detallados llegarán en la fase de publicación)
-
-| Tienda | Coste | Qué hará falta de ti |
-| --- | --- | --- |
-| GitHub Releases | Gratis | Nada más (ya preparado) |
-| Microsoft Store | Gratis para particulares | Cuenta de Partner Center con verificación de identidad (DNI) |
-| winget (Windows) | Gratis | Nada: se envía el manifiesto a GitHub |
-| Flathub (Linux) | Gratis | Aceptar la revisión de Flathub en GitHub |
-| F-Droid / IzzyOnDroid | Gratis | Nada especial (app libre, sin servicios de Google) |
-| Google Play | 25 USD, pago único | Cuenta de desarrollador; prueba cerrada con **12 personas durante 14 días** antes de publicar |
-| App Store | 99 USD/año | Cuenta de Apple Developer |
-
-Los costes los he comprobado según la información disponible; los volveré a comprobar en la web oficial antes de que te des de alta en cada tienda.
+- **Abrir / Importar**: añade PDF o fotos de partituras. Un PDF abierto desde otra app con «Abrir con… Atril PDF» también se guarda solo.
+- **Carpetas · Conciertos**: pulsa **Nueva carpeta** (por ejemplo «Concierto de Navidad»). Dentro: **Añadir obras**, **Ordenar** (flechas para subir y bajar) y **Iniciar concierto**, que toca todas las obras seguidas: al pasar la última página de una obra se abre la primera de la siguiente.
+- **Todos los documentos**: debajo, del más reciente al más antiguo.
+- **Pasar página**: tocando el lado derecho o izquierdo, deslizando, con el teclado o con el **pedal Bluetooth**. Pruébalo en **Ajustes → Pedal / teclado → Probar pedal**.
+- **Escribir sobre el PDF**: en el lector, pulsa el **lápiz** (Anotar). Puedes usar el bolígrafo, el subrayador, el borrador y el **texto** (tocas donde quieras escribir). El botón **«Lápiz y dedo» / «Solo lápiz»** sirve para que el dedo no dibuje cuando escribes con lápiz.
+- **Pantalla completa**: doble toque en el centro. Para salir, mantén el dedo en el borde superior (o Esc en el ordenador).

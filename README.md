@@ -11,14 +11,16 @@ Desarrollada por **Marcos Hernández Párraga** · Licencia [MIT](LICENSE)
 
 ## Funciones
 
-- **Biblioteca**: importar PDF e imágenes, recientes, carpetas con subcarpetas, favoritos, búsqueda, ordenación, papelera recuperable 30 días. Todo PDF abierto desde otra aplicación («Abrir con…») se añade solo a la biblioteca.
+- **Biblioteca**: importar PDF e imágenes, documentos del más reciente al más antiguo, favoritos, búsqueda, papelera recuperable 30 días. Todo PDF abierto desde otra aplicación («Abrir con…») se añade solo a la biblioteca.
+- **Carpetas · Conciertos**: cada carpeta es un concierto con sus obras numeradas y ordenables; «Iniciar concierto» las toca todas seguidas (al pasar la última página de una obra se abre la siguiente).
+- **Escribir sobre el PDF**: bolígrafo sensible a la presión, subrayador, borrador y texto; modo «Solo lápiz» para que el dedo y la palma no dibujen.
 - **Lector** con 6 modos: página a página (sin animación o con deslizar/fundido), **media página** (estilo atril o desplazamiento, con corte inteligente entre sistemas), **dos páginas** (avance de 1 en 1 o de 2 en 2, portada sola), **vertical con anticipación** (se ve el primer sistema de la página siguiente) y **vertical continuo** (avance de una pantalla menos un solapamiento).
 - **Pedal Bluetooth y teclado**: funciona sin configurar (flechas, Av Pág/Re Pág, espacio, Intro, pista siguiente/anterior), modo aprender, prueba de teclas en vivo, anti-rebote y botones de volumen en Android.
 - **Modo actuación**: pantalla completa total, la pantalla no se apaga, salida con gesto deliberado.
 - Modo noche, sepia, recorte automático de márgenes, girar páginas, deshacer/rehacer, recordar la última página y el modo de cada documento.
 - Español e inglés, tema claro/oscuro.
 
-Funciones en desarrollo: panel de miniaturas y organización de páginas, anotaciones, pentagramas, exportación, repertorios y copias de seguridad. Consulta [docs/PROGRESO.md](docs/PROGRESO.md).
+Funciones en desarrollo: panel de miniaturas y organización de páginas, formas y sellos musicales, pentagramas, exportación y copias de seguridad. Consulta [docs/PROGRESO.md](docs/PROGRESO.md).
 
 ## Plataformas
 

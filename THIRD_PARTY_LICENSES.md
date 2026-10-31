@@ -13,6 +13,7 @@ Atril PDF is distributed under the MIT License. It includes the following third-
 | canvaskit-wasm | 0.41.0 | BSD-3-Clause | https://github.com/google/skia/tree/main/modules/canvaskit |
 | drizzle-orm | 0.45.4 | Apache-2.0 | https://github.com/drizzle-team/drizzle-orm |
 | expo | 58.0.22 | MIT | https://github.com/expo/expo |
+| expo-blur | 58.0.5 | MIT | https://github.com/expo/expo |
 | expo-constants | 58.0.14 | MIT | https://github.com/expo/expo |
 | expo-crypto | 58.0.7 | MIT | https://github.com/expo/expo |
 | expo-dev-client | 58.0.18 | MIT | https://github.com/expo/expo |
@@ -23,6 +24,7 @@ Atril PDF is distributed under the MIT License. It includes the following third-
 | expo-haptics | 58.0.7 | MIT | https://github.com/expo/expo |
 | expo-image | 58.0.18 | MIT | https://github.com/expo/expo |
 | expo-keep-awake | 58.0.3 | MIT | https://github.com/expo/expo |
+| expo-linear-gradient | 58.0.3 | MIT | https://github.com/expo/expo |
 | expo-linking | 58.0.15 | MIT | https://github.com/expo/expo |
 | expo-localization | 58.0.5 | MIT | https://github.com/expo/expo |
 | expo-modules-core | 58.0.29 | MIT | https://github.com/expo/expo |

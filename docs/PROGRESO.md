@@ -1,13 +1,24 @@
 # Progreso del proyecto
 
-*Actualizado: 31 de octubre de 2026*
+*Actualizado: 31 de octubre de 2026 (segunda tanda: cambios pedidos por Marcos)*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
+
+## Cambios pedidos por Marcos (segunda tanda) ✅
+
+- ✅ Nombre **Atril PDF** (identificador `com.marcoshernandez.atrilpdf`, repositorio `atril-pdf`), cambiado en `src/config/identity.json`.
+- ✅ «Hecho por Marcos Hernández Párraga» bajo el título de la pantalla de inicio (y en «Acerca de»).
+- ✅ Diseño tipo Apple/Google manteniendo el tono cálido tipo papel: tarjetas con bordes muy redondeados, sombras suaves, botones píldora, barras translúcidas (cristal).
+- ✅ Animaciones 3D: las tarjetas y botones se inclinan hacia el dedo al pulsar, entradas animadas en cascada, y **paso de hoja en 3D** (la página gira sobre su borde izquierdo con sombra). Es el modo por defecto; «Página a página» sin animación sigue disponible.
+- ✅ Inicio: arriba **Carpetas · Conciertos** con «Nueva carpeta»; debajo **Todos los documentos** del más reciente al más antiguo (se puede ordenar por nombre o fecha).
+- ✅ Carpetas-concierto: obras numeradas 1, 2, 3…, «Ordenar» (subir/bajar), «Añadir obras» (elegir de la biblioteca), «Importar aquí», renombrar, quitar de la carpeta; una obra puede estar en varios conciertos; pulsar una obra la abre sola; **«Iniciar concierto»** las toca seguidas: al pasar la última página se abre la primera de la siguiente obra (y al retroceder, la última de la anterior), sin salir de pantalla completa, con un aviso breve «Siguiente obra».
+- ✅ Escribir sobre el PDF (modo **Anotar**): bolígrafo con presión del lápiz, subrayador, borrador, **texto** en cualquier sitio (tamaño, negrita, color), deshacer/rehacer, mostrar/ocultar; botón **«Lápiz y dedo» / «Solo lápiz»** (también en Ajustes, con «Solo dedo» y «Desactivado»). Las anotaciones se guardan como vectores y se ven en todos los modos.
+- 🟡 Pendiente de probar en dispositivo real: el lápiz (Apple Pencil, S Pen) y la presión; en el navegador se ha probado con ratón.
 
 ## Estado general
 
 - **Fase actual:** 3–5 en curso (fases 0, 1 y 2 terminadas).
-- **Pruebas automáticas:** 109 tests unitarios, de base de datos y de seguridad de rutas en verde; prueba en navegador real (13 pasos) y prueba de escritorio en Electron en verde.
+- **Pruebas automáticas:** 127 tests unitarios, de base de datos y de seguridad de rutas en verde; prueba en navegador real (11 recorridos: importar, pasar página con teclas de pedal, anotar, modos, conciertos, ajustes, PDF protegido) y prueba de escritorio en Electron en verde.
 - **Calidad:** `tsc --noEmit` y ESLint sin errores ni avisos.
 
 ## Fase 0 — Entorno ✅
@@ -60,12 +71,17 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - ✅ Escritorio: arrastrar archivos desde el explorador para importarlos; «Abrir con» probado.
 - 🟡 Android «Abrir con» (`ACTION_VIEW`) e iOS (`CFBundleDocumentTypes`) configurados; falta probar en dispositivo.
 - ⏳ **Arrastrar documentos encima de una carpeta** (selección múltiple, resaltado, vibración).
-- ⏳ Repertorios (listas de concierto) y salto automático a la siguiente obra.
+- ✅ Repertorios: resueltos con las carpetas-concierto (ver arriba).
 - ⏳ «Compartir» desde otras apps en Android (`ACTION_SEND`).
 
-## Fases 6 a 11 ⏳
+## Fase 7 — Anotaciones 🟡
 
-Panel de miniaturas y organización de páginas, anotaciones, pentagramas e imágenes, exportación (PDF con/sin anotaciones, imágenes, imprimir, combinar, copia de seguridad), publicación en tiendas y fase 2 opcional.
+- ✅ Bolígrafo, subrayador, borrador de trazo completo, texto, deshacer/rehacer, modos de entrada lápiz/dedo, mostrar/ocultar.
+- ⏳ Borrador parcial, formas, sellos musicales, lazo de selección, capas.
+
+## Fases 6 y 8 a 11 ⏳
+
+Panel de miniaturas y organización de páginas, pentagramas e imágenes, exportación (PDF con/sin anotaciones, imágenes, imprimir, combinar, copia de seguridad), publicación en tiendas y fase 2 opcional.
 
 ## Problemas conocidos
 
