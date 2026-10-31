@@ -3,6 +3,7 @@
 // Generates the test scores in test-fixtures/ (original content, free of rights):
 //  - partitura-prueba.pdf: 6 A4 pages with title, systems of staves and notes.
 //  - piano-prueba.pdf: 3 pages of grand-staff (piano) systems.
+//  - protegido-prueba.pdf: 2 pages, protected with the password "atril".
 import { PDFDocument, rgb, StandardFonts } from '@cantoo/pdf-lib';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -45,7 +46,7 @@ function notes(page, x0, x1, yTop, spacing, seed) {
   }
 }
 
-async function score(file, pages, piano) {
+async function score(file, pages, piano, password) {
   const doc = await PDFDocument.create();
   doc.setTitle(piano ? 'Piano de prueba' : 'Partitura de prueba');
   doc.setAuthor('Marcos Hernández Párraga');
@@ -82,6 +83,7 @@ async function score(file, pages, piano) {
     }
     page.drawText(String(p + 1), { x: w / 2 - 4, y: 40, size: 10, font });
   }
+  if (password) doc.encrypt({ userPassword: password, ownerPassword: `${password}-owner` });
   const bytes = await doc.save();
   writeFileSync(join(out, file), bytes);
   console.log(`[fixtures] ${file}: ${pages} pages, ${bytes.length} bytes`);
@@ -89,3 +91,5 @@ async function score(file, pages, piano) {
 
 await score('partitura-prueba.pdf', 6, false);
 await score('piano-prueba.pdf', 3, true);
+// Password protected (password: atril)
+await score('protegido-prueba.pdf', 2, false, 'atril');

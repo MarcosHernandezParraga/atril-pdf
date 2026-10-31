@@ -135,6 +135,25 @@ await step('settings and about', async () => {
   await page.screenshot({ path: `${shots}/10-acerca-de.png` });
 });
 
+await step('password-protected PDF asks for the password', async () => {
+  await page.goto(base);
+  await page.getByTestId('import-button').waitFor();
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByTestId('import-button').click();
+  await (await chooser).setFiles('test-fixtures/protegido-prueba.pdf');
+  await page.getByTestId('dialog-input').waitFor({ timeout: 20000 });
+  await page.getByTestId('dialog-input').fill('mala');
+  await page.getByTestId('dialog-ok').click();
+  await page.getByText('La contraseña no es correcta', { exact: false }).waitFor({ timeout: 20000 });
+  await page.getByTestId('dialog-input').fill('atril');
+  await page.getByTestId('dialog-ok').click();
+  await page.getByTestId('reader').waitFor({ timeout: 30000 });
+  await page.waitForTimeout(1200);
+  const v = await indicator();
+  if (v !== 'Página 1 de 2') throw new Error(`unexpected ${v}`);
+  await page.screenshot({ path: `${shots}/11-pdf-protegido.png` });
+});
+
 await browser.close();
 const relevant = errors.filter((e) => !/favicon|DevTools/.test(e));
 if (relevant.length) {

@@ -43,7 +43,7 @@ export class PageRenderer {
       h = (async () => {
         const src = await this.lookup(sourceId);
         if (!src) throw new Error('missing source');
-        return this.engine.open({ relPath: src.path });
+        return this.engine.open({ relPath: src.path, password: src.password ?? undefined });
       })();
       this.handles.set(sourceId, h);
       h.catch(() => this.handles.delete(sourceId));

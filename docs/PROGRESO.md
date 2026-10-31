@@ -7,7 +7,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Estado general
 
 - **Fase actual:** 3–5 en curso (fases 0, 1 y 2 terminadas).
-- **Pruebas automáticas:** 99 tests unitarios y de base de datos en verde; prueba en navegador real (11 pasos) y prueba de escritorio en Electron en verde.
+- **Pruebas automáticas:** 99 tests unitarios y de base de datos en verde; prueba en navegador real (12 pasos) y prueba de escritorio en Electron en verde.
 - **Calidad:** `tsc --noEmit` y ESLint sin errores ni avisos.
 
 ## Fase 0 — Entorno ✅
@@ -33,7 +33,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - 🟡 Módulo nativo `modules/atril-native`: Android (PdfRenderer, serializado, caché en disco de 300 MB) e iOS (PDFKit). Android compila en este entorno; **iOS no se ha compilado todavía** (requiere EAS Build o un Mac).
 - ✅ Caché LRU en memoria y pre-renderizado de las páginas siguientes y anterior.
 - ✅ Modelo no destructivo, comandos (insertar, eliminar, mover, duplicar, girar, recortar, anotaciones) y deshacer/rehacer, con tests.
-- ⏳ PDF protegidos con contraseña: ahora se informa con un mensaje claro; falta el diálogo para pedir la contraseña.
+- ✅ PDF protegidos con contraseña: se pide la contraseña al importarlos (se vuelve a pedir si es incorrecta) y se recuerda en el dispositivo. En Android solo es posible desde Android 15 (limitación de `PdfRenderer`); en versiones anteriores se muestra un mensaje claro.
 - ⏳ Caché en disco de páginas en escritorio (ahora solo en memoria).
 
 ## Fase 3 — Lector 🟡

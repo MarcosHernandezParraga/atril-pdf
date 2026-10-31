@@ -51,6 +51,22 @@ export interface ImporterDeps {
   repo: LibraryRepository;
   storage: StorageAdapter;
   engine: PdfEngine;
+  /** Asks the user for the password of a protected PDF (null = cancel). */
+  askPassword?: (fileName: string, retry: boolean) => Promise<string | null>;
+}
+
+async function openWithPassword(deps: ImporterDeps, relPath: string, fileName: string) {
+  let password: string | undefined;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return { handle: await deps.engine.open({ relPath, password }), password };
+    } catch (e) {
+      if (!(e instanceof PdfError) || e.code !== 'password' || !deps.askPassword || attempt >= 3) throw e;
+      const answer = await deps.askPassword(fileName, attempt > 0);
+      if (answer === null) throw e;
+      password = answer;
+    }
+  }
 }
 
 /** Copies one external file into the library and returns its source + pages. */
@@ -72,7 +88,7 @@ export async function importSource(
   }
   try {
     if (kind === 'pdf') {
-      const handle = await deps.engine.open({ relPath });
+      const { handle, password } = await openWithPassword(deps, relPath, file.name);
       const sizes = handle.pageSizes;
       await handle.close();
       if (sizes.length === 0) throw new PdfError('invalid');
@@ -94,6 +110,7 @@ export async function importSource(
           originalName: file.name,
           byteSize,
           pageSizes: sizes.map((s) => [s.width, s.height]),
+          password: password ?? null,
         },
         pages,
       };

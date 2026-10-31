@@ -87,4 +87,8 @@ export const MIGRATIONS: readonly string[] = [
     value TEXT NOT NULL
   );
   `,
+  // 2: password of protected PDFs (kept only on this device, needed to reopen them)
+  `
+  ALTER TABLE sources ADD COLUMN password TEXT;
+  `,
 ];

@@ -55,6 +55,7 @@ export const sources = sqliteTable('sources', {
   pageSizesJson: text('page_sizes_json').notNull(),
   sha256: text('sha256'),
   createdAt: integer('created_at').notNull(),
+  password: text('password'),
 });
 
 export const annotations = sqliteTable(

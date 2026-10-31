@@ -28,7 +28,12 @@ export function reportImport(result: ImportResult) {
 
 export async function importAndReport(files: ExternalFile[], folderId: string | null): Promise<ImportResult> {
   const s = getServices();
-  const result = await importFiles({ repo: s.repo, storage: s.storage, engine: s.engine }, files, folderId);
+  const askPassword = (name: string, retry: boolean) =>
+    dialogs.prompt(i18n.t('library.passwordTitle'), {
+      message: i18n.t(retry ? 'library.passwordWrong' : 'library.passwordPrompt', { name }),
+      secure: true,
+    });
+  const result = await importFiles({ repo: s.repo, storage: s.storage, engine: s.engine, askPassword }, files, folderId);
   useLibraryRefresh.getState().bump();
   reportImport(result);
   return result;

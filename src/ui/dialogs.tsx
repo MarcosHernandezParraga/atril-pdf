@@ -20,7 +20,15 @@ export interface MenuItem {
 }
 
 type Dialog =
-  | { kind: 'prompt'; title: string; message?: string; initial: string; placeholder?: string; resolve: (v: string | null) => void }
+  | {
+      kind: 'prompt';
+      title: string;
+      message?: string;
+      initial: string;
+      placeholder?: string;
+      secure?: boolean;
+      resolve: (v: string | null) => void;
+    }
   | { kind: 'confirm'; title: string; message?: string; confirmLabel: string; danger: boolean; resolve: (v: boolean) => void }
   | { kind: 'menu'; title?: string; items: MenuItem[]; resolve: () => void };
 
@@ -48,7 +56,10 @@ const useDialogStore = create<DialogStore>((set) => ({
 }));
 
 export const dialogs = {
-  prompt(title: string, opts: { message?: string; initial?: string; placeholder?: string } = {}): Promise<string | null> {
+  prompt(
+    title: string,
+    opts: { message?: string; initial?: string; placeholder?: string; secure?: boolean } = {},
+  ): Promise<string | null> {
     return new Promise((resolve) =>
       useDialogStore.getState().set({ kind: 'prompt', title, initial: opts.initial ?? '', ...opts, resolve }),
     );
@@ -77,7 +88,8 @@ function PromptBody({ d, close }: { d: Extract<Dialog, { kind: 'prompt' }>; clos
   const t = useTheme();
   const [value, setValue] = useState(d.initial);
   const submit = () => {
-    d.resolve(value.trim() ? value.trim() : null);
+    const v = d.secure ? value : value.trim();
+    d.resolve(v ? v : null);
     close();
   };
   return (
@@ -97,6 +109,8 @@ function PromptBody({ d, close }: { d: Extract<Dialog, { kind: 'prompt' }>; clos
         placeholderTextColor={t.textSecondary}
         onSubmitEditing={submit}
         selectTextOnFocus
+        secureTextEntry={d.secure}
+        autoCapitalize={d.secure ? 'none' : 'sentences'}
         style={[styles.input, { color: t.text, borderColor: t.border, backgroundColor: t.background }]}
       />
       <View style={styles.actions}>

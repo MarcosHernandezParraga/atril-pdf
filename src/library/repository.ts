@@ -44,6 +44,7 @@ export interface NewSource {
   byteSize: number;
   pageSizes: [number, number][];
   sha256?: string | null;
+  password?: string | null;
 }
 
 export const TRASH_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
@@ -112,6 +113,7 @@ export class LibraryRepository {
         pageCount: s.pageSizes.length,
         pageSizesJson: JSON.stringify(s.pageSizes),
         sha256: s.sha256 ?? null,
+        password: s.password ?? null,
         createdAt: t,
       }),
     );
@@ -148,6 +150,7 @@ export class LibraryRepository {
           pageCount: s.pageSizes.length,
           pageSizesJson: JSON.stringify(s.pageSizes),
           sha256: s.sha256 ?? null,
+          password: s.password ?? null,
           createdAt: t,
         }),
       ),

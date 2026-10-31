@@ -69,7 +69,10 @@
     "copySuffix": "copy",
     "color": "Colour",
     "selected_one": "{{count}} selected",
-    "selected_other": "{{count}} selected"
+    "selected_other": "{{count}} selected",
+    "passwordTitle": "Protected PDF",
+    "passwordPrompt": "“{{name}}” is password protected. Type the password to open it:",
+    "passwordWrong": "The password is not correct. Try again:"
   },
   "reader": {
     "page": "Page {{page}} of {{total}}",
