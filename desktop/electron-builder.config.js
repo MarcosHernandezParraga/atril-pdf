@@ -19,7 +19,9 @@ module.exports = {
     output: 'desktop/release',
     buildResources: 'desktop/build-resources',
   },
-  files: ['**/*'],
+  // The desktop app needs no node_modules at all: everything is bundled in main.js,
+  // preload.js and the exported web interface.
+  files: ['**/*', '!node_modules{,/**}'],
   asar: true,
   npmRebuild: false,
   nodeGypRebuild: false,
@@ -36,8 +38,9 @@ module.exports = {
   ],
   win: {
     target: [{ target: 'nsis', arch: ['x64', 'arm64'] }, { target: 'appx', arch: ['x64', 'arm64'] }],
-    publisherName: identity.author,
     legalTrademarks: identity.name,
+    // Shown as "Publisher" in Windows. A real code-signing certificate can be added later.
+    signtoolOptions: { publisherName: identity.author },
   },
   nsis: {
     oneClick: false,

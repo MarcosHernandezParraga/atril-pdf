@@ -9,9 +9,16 @@ const os = require('os');
 (async () => {
   const shots = process.argv[2] || 'e2e-shots';
   const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'atril-e2e-'));
+  // ATRIL_EXECUTABLE: test a packaged build instead of desktop/app (e.g. desktop/release/linux-unpacked/atril-musical).
+  const packaged = process.env.ATRIL_EXECUTABLE;
   const app = await electron.launch({
-    executablePath: require('electron'),
-    args: ['--no-sandbox', `--user-data-dir=${userData}`, path.resolve('desktop/app'), path.resolve('test-fixtures/piano-prueba.pdf')],
+    executablePath: packaged || require('electron'),
+    args: [
+      '--no-sandbox',
+      `--user-data-dir=${userData}`,
+      ...(packaged ? [] : [path.resolve('desktop/app')]),
+      path.resolve('test-fixtures/piano-prueba.pdf'),
+    ],
   });
   const win = await app.firstWindow();
   const logs = [];

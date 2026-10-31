@@ -5,7 +5,7 @@
 //  - copies the exported web interface (dist/) into desktop/app/web,
 //  - writes desktop/app/package.json from the single identity file.
 import { build } from 'esbuild';
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -42,6 +42,10 @@ function copyWeb() {
   rmSync(web, { recursive: true, force: true });
   // The browser-only SQLite engine is not needed on desktop.
   cpSync(dist, web, { recursive: true, filter: (src) => !src.includes(join('vendor', 'sqljs')) });
+  // electron-builder always drops folders named "node_modules", but the web export keeps
+  // fonts and images of libraries in assets/node_modules. The app:// protocol maps it back.
+  const nm = join(web, 'assets', 'node_modules');
+  if (existsSync(nm)) renameSync(nm, join(web, 'assets', '__nm'));
 }
 
 function writePackageJson() {
