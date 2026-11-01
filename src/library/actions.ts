@@ -108,6 +108,11 @@ export function documentMenuItems(doc: DocumentRow, extra: MenuItem[] = []): Men
   const { repo } = getServices();
   return [
     ...extra,
+    {
+      label: t('share.button'),
+      icon: 'share-variant',
+      onPress: () => void import('../export/shareDocument').then((m) => m.shareDocument(doc)),
+    },
     { label: t('common.rename'), icon: 'pencil-outline', onPress: () => void renameDocument(doc) },
     {
       label: t('library.addToFolder'),

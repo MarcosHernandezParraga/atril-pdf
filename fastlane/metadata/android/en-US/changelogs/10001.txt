@@ -1,1 +1,1 @@
-Built for large libraries: hundreds of scores and conductor scores of hundreds of pages. Huge scores open in seconds and memory no longer grows with the library. Changes are saved instantly when you switch apps. Lighter APK.
+New: share your scores as PDF, with or without your notes, by email, WhatsApp, AirDrop or saving them on your device. Built for large libraries: scores of hundreds of pages open in seconds and memory no longer grows with the library. Changes are saved instantly. Lighter APK.

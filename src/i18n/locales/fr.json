@@ -278,5 +278,17 @@
     "duplicated": "Page dupliquée",
     "moved": "Page déplacée",
     "blankAdded": "Page blanche ajoutée"
+  },
+  "share": {
+    "button": "Partager",
+    "title": "Partager la partition",
+    "withNotes": "Avec mes annotations",
+    "withoutNotes": "Sans annotations (original)",
+    "progress": "Préparation de {{name}}… {{percent}} %",
+    "ready": "{{name}} est prête",
+    "send": "Envoyer…",
+    "save": "Enregistrer sur l’appareil",
+    "saved": "Enregistrée : {{name}}",
+    "failed": "Impossible de préparer la partition"
   }
 }

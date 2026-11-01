@@ -273,5 +273,17 @@
     "duplicated": "Seite dupliziert",
     "moved": "Seite verschoben",
     "blankAdded": "Leere Seite hinzugefügt"
+  },
+  "share": {
+    "button": "Teilen",
+    "title": "Noten teilen",
+    "withNotes": "Mit meinen Anmerkungen",
+    "withoutNotes": "Ohne Anmerkungen (Original)",
+    "progress": "{{name}} wird vorbereitet … {{percent}} %",
+    "ready": "{{name}} ist fertig",
+    "send": "Senden …",
+    "save": "Auf diesem Gerät speichern",
+    "saved": "Gespeichert: {{name}}",
+    "failed": "Die Noten konnten nicht vorbereitet werden"
   }
 }

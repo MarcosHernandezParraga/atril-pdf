@@ -273,5 +273,17 @@
     "duplicated": "Page duplicated",
     "moved": "Page moved",
     "blankAdded": "Blank page added"
+  },
+  "share": {
+    "button": "Share",
+    "title": "Share score",
+    "withNotes": "With my annotations",
+    "withoutNotes": "Without annotations (original)",
+    "progress": "Preparing {{name}}… {{percent}}%",
+    "ready": "{{name}} is ready",
+    "send": "Send…",
+    "save": "Save to this device",
+    "saved": "Saved: {{name}}",
+    "failed": "The score could not be prepared"
   }
 }

@@ -22,6 +22,7 @@ Lleva todas tus partituras en la tableta, el móvil o el ordenador y olvídate d
 • <b>Pentagrama</b> de cinco líneas para añadir compases o correcciones, del tamaño que quieras.
 • Pega <b>imágenes</b> sobre la página, muévelas y cámbialas de tamaño.
 • Tus anotaciones nunca modifican el PDF original y se pueden deshacer.
+• Comparte la partitura en PDF, con tus anotaciones o sin ellas: por correo, WhatsApp, AirDrop… o guárdala en tu dispositivo.
 
 <b>ORGANIZA LAS PÁGINAS</b>
 • Panel con todas las páginas numeradas: reordena, duplica, elimina, añade páginas en blanco, otro PDF o una imagen.

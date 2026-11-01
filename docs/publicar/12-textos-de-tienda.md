@@ -49,6 +49,7 @@ Revisados para que quepan en los límites de cada tienda. Puedes cambiar lo que 
 > • **Pentagrama** de cinco líneas para añadir compases o correcciones, del tamaño que quieras.
 > • Pega **imágenes** sobre la página, muévelas y cámbialas de tamaño.
 > • Tus anotaciones nunca modifican el PDF original y se pueden deshacer.
+> • **Comparte** la partitura en PDF, con tus anotaciones o sin ellas: por correo, WhatsApp, AirDrop… o guárdala en tu dispositivo.
 >
 > **ORGANIZA LAS PÁGINAS**
 > • Panel con todas las páginas numeradas: reordena, duplica, elimina, añade páginas en blanco, otro PDF o una imagen.
@@ -107,6 +108,7 @@ Revisados para que quepan en los límites de cada tienda. Puedes cambiar lo que 
 > • A five-line **staff** to add bars or corrections, at any size.
 > • Place **images** on the page, move and resize them.
 > • Your notes never change the original PDF and can always be undone.
+> • **Share** the score as a PDF, with or without your notes: by email, WhatsApp, AirDrop… or save it on your device.
 >
 > **ORGANISE PAGES**
 > • A panel with every page numbered: reorder, duplicate, delete, add blank pages, another PDF or an image.

@@ -174,6 +174,11 @@ Desde ese momento, todas las versiones de Android saldrán firmadas por ti.
 - **Escribir sobre el PDF**: pulsa el **lápiz** (Anotar). Bolígrafo, subrayador, borrador y **texto**. El botón **«Lápiz y dedo» / «Solo lápiz»** sirve para que el dedo no dibuje cuando escribes con lápiz.
   - **Pentagrama**: añade un pentagrama de cinco líneas sin clave. Con **Mover** lo arrastras y con las **esquinas** lo haces más ancho, estrecho, alto o bajo. Opción «Fondo blanco» para tapar lo que haya debajo.
   - **Imagen**: pega una imagen encima de la página; muévela y cambia su tamaño por las esquinas.
+- **Compartir** (icono de los tres puntos unidos, arriba en la partitura; en el móvil, dentro de «⋯»; también en el menú «…» de cada partitura de la biblioteca): elige **«Con mis anotaciones»** o **«Sin anotaciones (original)»** y la app prepara un PDF.
+  - En **iPhone, iPad y Android** se abre la ventana de compartir del sistema: correo, WhatsApp, AirDrop, Drive, **«Guardar en Archivos»**… En Android también puedes **«Guardar en el dispositivo»** eligiendo una carpeta.
+  - En el **navegador**, cuando está listo pulsa **«Enviar…»** (si el navegador lo permite) o **«Guardar en el dispositivo»** (se descarga).
+  - En el **ordenador** se abre la ventana **«Guardar como»** para elegir dónde guardarlo; después puedes adjuntarlo a un correo.
+  - El PDF sale igual que lo ves: páginas en tu orden, márgenes recortados, pentagramas, imágenes, lápiz, subrayador y texto. Las páginas originales se copian con toda su calidad. Si la partitura no tiene cambios, se comparte el archivo original tal cual.
 - **Etiquetas**: en el ordenador, al pasar el ratón por un icono aparece su nombre; en la tableta, mantén el dedo sobre el icono.
 - **Idioma**: la app aparece sola en el idioma del móvil, la tableta o el ordenador (21 idiomas). Para cambiarlo: **Ajustes → Idioma** (cada idioma aparece escrito en su lengua). «Como el sistema» vuelve al idioma del aparato.
 - **Pantalla completa**: doble toque en el centro. Para salir, mantén el dedo en el borde superior (o Esc en el ordenador).

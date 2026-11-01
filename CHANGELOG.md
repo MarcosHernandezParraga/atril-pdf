@@ -2,7 +2,14 @@
 
 ## [1.0.1] — 2026-11-01
 
-Versión pensada para bibliotecas grandes: cientos de partituras guardadas y partituras de director de cientos de páginas.
+Versión pensada para bibliotecas grandes (cientos de partituras guardadas y partituras de director de cientos de páginas) y para compartir partituras.
+
+### Añadido
+- **Compartir** una partitura como PDF, **con tus anotaciones** o **sin ellas** (el original): desde la partitura (arriba; en el móvil, en «⋯») o desde el menú «…» de la biblioteca.
+  - iPhone, iPad y Android: ventana de compartir del sistema (correo, WhatsApp, AirDrop, Drive, «Guardar en Archivos»…). En Android, también «Guardar en el dispositivo» en la carpeta que elijas.
+  - Navegador: «Enviar…» (donde el navegador lo permite) o «Guardar en el dispositivo».
+  - Ordenador: ventana «Guardar como».
+  - El PDF sale igual que en la app: páginas en tu orden, márgenes recortados, páginas en blanco o pautadas, imágenes, pentagramas, lápiz, subrayador y texto (en cualquier idioma). Las páginas originales se copian con su calidad completa; si no hay cambios, se comparte el archivo original tal cual.
 
 ### Corregido
 - **Versión web:** las partituras muy grandes (más de unos 128 MB, por ejemplo escaneadas de cientos de páginas) se quedaban en «Importando…» en Chrome, Edge y Android. Ahora se guardan en trozos de 1 MB, que todos los navegadores aceptan (también Safari en iPhone y iPad).

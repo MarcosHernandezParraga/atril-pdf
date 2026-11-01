@@ -278,5 +278,17 @@
     "duplicated": "Página duplicada",
     "moved": "Página movida",
     "blankAdded": "Página em branco adicionada"
+  },
+  "share": {
+    "button": "Partilhar",
+    "title": "Partilhar partitura",
+    "withNotes": "Com as minhas anotações",
+    "withoutNotes": "Sem anotações (original)",
+    "progress": "A preparar {{name}}… {{percent}}%",
+    "ready": "{{name}} está pronta",
+    "send": "Enviar…",
+    "save": "Guardar no dispositivo",
+    "saved": "Guardada: {{name}}",
+    "failed": "Não foi possível preparar a partitura"
   }
 }

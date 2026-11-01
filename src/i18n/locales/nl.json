@@ -273,5 +273,17 @@
     "duplicated": "Pagina gedupliceerd",
     "moved": "Pagina verplaatst",
     "blankAdded": "Lege pagina toegevoegd"
+  },
+  "share": {
+    "button": "Delen",
+    "title": "Bladmuziek delen",
+    "withNotes": "Met mijn aantekeningen",
+    "withoutNotes": "Zonder aantekeningen (origineel)",
+    "progress": "{{name}} wordt voorbereid… {{percent}}%",
+    "ready": "{{name}} is klaar",
+    "send": "Versturen…",
+    "save": "Opslaan op dit apparaat",
+    "saved": "Opgeslagen: {{name}}",
+    "failed": "De bladmuziek kon niet worden voorbereid"
   }
 }

@@ -268,5 +268,17 @@
     "duplicated": "페이지를 복제했습니다",
     "moved": "페이지를 이동했습니다",
     "blankAdded": "빈 페이지를 추가했습니다"
+  },
+  "share": {
+    "button": "공유",
+    "title": "악보 공유",
+    "withNotes": "내 메모 포함",
+    "withoutNotes": "메모 없이(원본)",
+    "progress": "{{name}} 준비 중… {{percent}}%",
+    "ready": "{{name}} 준비 완료",
+    "send": "보내기…",
+    "save": "이 기기에 저장",
+    "saved": "저장됨: {{name}}",
+    "failed": "악보를 준비하지 못했습니다"
   }
 }

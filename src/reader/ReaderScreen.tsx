@@ -585,6 +585,12 @@ export function ReaderScreen() {
       t('reader.viewMode'),
     );
 
+  // Share the score as a PDF, with the latest changes (also those not saved yet).
+  const share = () => {
+    if (!doc || !model) return;
+    void import('../export/shareDocument').then((m) => m.shareDocument(doc, model));
+  };
+
   const chooseDisplay = () =>
     void dialogs.menu(
       [
@@ -971,6 +977,7 @@ export function ReaderScreen() {
                         color="#FFFFFF"
                         onPress={() =>
                           void dialogs.menu([
+                            { label: t('share.button'), icon: 'share-variant', onPress: share },
                             { label: t('reader.crop'), icon: 'crop', onPress: cropMenu },
                             { label: t('reader.display'), icon: 'theme-light-dark', onPress: chooseDisplay },
                           ])
@@ -979,6 +986,13 @@ export function ReaderScreen() {
                       />
                     ) : (
                       <>
+                        <IconButton
+                          icon="share-variant"
+                          label={t('share.button')}
+                          color="#FFFFFF"
+                          onPress={share}
+                          testID="reader-share"
+                        />
                         <IconButton icon="crop" label={t('reader.crop')} color="#FFFFFF" onPress={cropMenu} />
                         <IconButton
                           icon="theme-light-dark"

@@ -278,5 +278,17 @@
     "duplicated": "Pagina duplicata",
     "moved": "Pagina spostata",
     "blankAdded": "Pagina bianca aggiunta"
+  },
+  "share": {
+    "button": "Condividi",
+    "title": "Condividi lo spartito",
+    "withNotes": "Con le mie annotazioni",
+    "withoutNotes": "Senza annotazioni (originale)",
+    "progress": "Preparazione di {{name}}… {{percent}}%",
+    "ready": "{{name}} è pronto",
+    "send": "Invia…",
+    "save": "Salva sul dispositivo",
+    "saved": "Salvato: {{name}}",
+    "failed": "Impossibile preparare lo spartito"
   }
 }

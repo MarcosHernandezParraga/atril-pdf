@@ -283,5 +283,17 @@
     "duplicated": "Zduplikowano stronę",
     "moved": "Przeniesiono stronę",
     "blankAdded": "Dodano pustą stronę"
+  },
+  "share": {
+    "button": "Udostępnij",
+    "title": "Udostępnij nuty",
+    "withNotes": "Z moimi adnotacjami",
+    "withoutNotes": "Bez adnotacji (oryginał)",
+    "progress": "Przygotowywanie: {{name}}… {{percent}}%",
+    "ready": "Gotowe: {{name}}",
+    "send": "Wyślij…",
+    "save": "Zapisz na urządzeniu",
+    "saved": "Zapisano: {{name}}",
+    "failed": "Nie udało się przygotować nut"
   }
 }

@@ -278,5 +278,17 @@
     "duplicated": "Pagină duplicată",
     "moved": "Pagină mutată",
     "blankAdded": "Pagină goală adăugată"
+  },
+  "share": {
+    "button": "Distribuie",
+    "title": "Distribuie partitura",
+    "withNotes": "Cu adnotările mele",
+    "withoutNotes": "Fără adnotări (original)",
+    "progress": "Se pregătește {{name}}… {{percent}}%",
+    "ready": "{{name}} este gata",
+    "send": "Trimite…",
+    "save": "Salvează pe dispozitiv",
+    "saved": "Salvat: {{name}}",
+    "failed": "Partitura nu a putut fi pregătită"
   }
 }

@@ -3,6 +3,7 @@
 // write on the PDF (pen and text), view modes, zoom (wheel, keys, pinch), page panel,
 // staff and image on the page, concert folders, dragging pieces onto folders and
 // reordering them, settings, languages, protected PDFs.
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 // Uses the Playwright installed in the project (or on the machine).
@@ -308,6 +309,22 @@ await step('annotations are saved: reopening shows them', async () => {
   await page.keyboard.press('Home');
   await page.waitForTimeout(1200);
   await page.getByText('Respirar aquí', { exact: true }).waitFor();
+  await backToLibrary();
+});
+
+await step('share: a PDF with the annotations is saved on the device', async () => {
+  await page.locator('[data-testid^="doc-"]').first().click();
+  await page.getByTestId('reader').waitFor();
+  await page.waitForTimeout(800);
+  await showBars();
+  await page.getByTestId('reader-share').click();
+  await page.getByText('Con mis anotaciones', { exact: true }).click();
+  const download = page.waitForEvent('download', { timeout: 60000 });
+  await page.getByText('Guardar en el dispositivo', { exact: true }).click({ timeout: 60000 });
+  const file = await (await download).path();
+  const head = readFileSync(file).subarray(0, 5).toString();
+  if (head !== '%PDF-') throw new Error(`not a PDF: ${head}`);
+  await page.getByTestId('toast').waitFor();
   await backToLibrary();
 });
 

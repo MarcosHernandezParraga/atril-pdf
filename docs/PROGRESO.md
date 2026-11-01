@@ -4,7 +4,11 @@
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
 
-## Versión 1.0.1: bibliotecas grandes y partituras enormes ✅ (preparada; falta publicarla)
+## Versión 1.0.1: bibliotecas grandes, partituras enormes y compartir ✅ (preparada; falta publicarla)
+
+- ✅ **Compartir** (`src/export/`): PDF con o sin anotaciones. Páginas originales copiadas en vectorial con `@cantoo/pdf-lib` (`embedPage` + matriz igual que pdf.js, también con /Rotate, recorte y giro); lápiz, subrayador (multiplicar, 38 %), pentagramas e imágenes en vectorial/imagen; texto dibujado con las fuentes del sistema (lienzo en web y escritorio, Skia en Android/iOS) para cualquier idioma; PDF protegidos con su contraseña; páginas que no se pueden copiar, como imagen del lector. Sin cambios ni anotaciones → el archivo original tal cual.
+  - Entrega: hoja de compartir del sistema (`expo-sharing` en Android/iOS, `navigator.share` en el navegador), «Guardar en el dispositivo» (descarga en web, carpeta elegida en Android) y «Guardar como» en el ordenador.
+  - Comprobado: web (descarga y hoja de compartir simulada), ordenador (Electron) y PDF resultante idéntico a lo que muestra el lector (también con recorte). 🟡 Falta probarlo en iPad, iPhone y Android reales.
 
 - ✅ Web: archivos en trozos de 1 MB en IndexedDB (`src/storage/chunkedFiles.ts`). Chrome no admite valores de más de unos 128 MB y Safari en iOS ha tenido fallos al leer Blobs guardados tras reiniciar (WebKit 235687), así que no se usan Blobs. Lo guardado por la 1.0.0 (un solo Uint8Array) se sigue leyendo (comprobado con la 1.0.0 real).
 - ✅ Web y escritorio: pdf.js lee por rangos (`PDFDataRangeTransport`) los archivos de más de 4 MB; en escritorio, canal `fs:readRange` (máx. 16 MB por petición). Tamaños de página guardados al importar: abrir no recorre todas las páginas.
@@ -150,7 +154,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 
 ## Fases 9 a 11 ⏳ / 🟡
 
-- ⏳ Exportación (PDF con/sin anotaciones, imágenes, imprimir, combinar) y **copias de seguridad** (`.atril`).
+- ✅ Exportación a PDF con o sin anotaciones (Compartir). ⏳ Imágenes, imprimir, combinar y **copias de seguridad** (`.atril`).
 - 🟡 Publicación: todo preparado (`docs/publicar/`); falta que Marcos cree el repositorio y las cuentas.
 
 ## Problemas conocidos

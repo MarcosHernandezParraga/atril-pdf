@@ -268,5 +268,17 @@
     "duplicated": "已複製頁面",
     "moved": "已移動頁面",
     "blankAdded": "已加入空白頁"
+  },
+  "share": {
+    "button": "分享",
+    "title": "分享樂譜",
+    "withNotes": "包含我的註記",
+    "withoutNotes": "不含註記（原檔）",
+    "progress": "正在準備 {{name}}… {{percent}}%",
+    "ready": "{{name}} 已準備好",
+    "send": "傳送…",
+    "save": "儲存到此裝置",
+    "saved": "已儲存：{{name}}",
+    "failed": "無法準備樂譜"
   }
 }

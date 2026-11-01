@@ -268,5 +268,17 @@
     "duplicated": "ページを複製しました",
     "moved": "ページを移動しました",
     "blankAdded": "白紙ページを追加しました"
+  },
+  "share": {
+    "button": "共有",
+    "title": "楽譜を共有",
+    "withNotes": "書き込みを含める",
+    "withoutNotes": "書き込みなし（元のファイル）",
+    "progress": "{{name}} を準備中… {{percent}}%",
+    "ready": "{{name}} の準備ができました",
+    "send": "送信…",
+    "save": "このデバイスに保存",
+    "saved": "保存しました：{{name}}",
+    "failed": "楽譜を準備できませんでした"
   }
 }

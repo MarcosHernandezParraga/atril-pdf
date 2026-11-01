@@ -273,5 +273,17 @@
     "duplicated": "Orria bikoiztu da",
     "moved": "Orria mugitu da",
     "blankAdded": "Orri zuri bat gehitu da"
+  },
+  "share": {
+    "button": "Partekatu",
+    "title": "Partekatu partitura",
+    "withNotes": "Nire oharrekin",
+    "withoutNotes": "Oharrik gabe (jatorrizkoa)",
+    "progress": "{{name}} prestatzen… %{{percent}}",
+    "ready": "{{name}} prest dago",
+    "send": "Bidali…",
+    "save": "Gorde gailuan",
+    "saved": "Gordeta: {{name}}",
+    "failed": "Ezin izan da partitura prestatu"
   }
 }

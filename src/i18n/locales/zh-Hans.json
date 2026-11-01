@@ -268,5 +268,17 @@
     "duplicated": "已复制页面",
     "moved": "已移动页面",
     "blankAdded": "已添加空白页"
+  },
+  "share": {
+    "button": "分享",
+    "title": "分享乐谱",
+    "withNotes": "包含我的批注",
+    "withoutNotes": "不含批注（原件）",
+    "progress": "正在准备 {{name}}… {{percent}}%",
+    "ready": "{{name}} 已准备好",
+    "send": "发送…",
+    "save": "保存到此设备",
+    "saved": "已保存：{{name}}",
+    "failed": "无法准备乐谱"
   }
 }

@@ -278,5 +278,17 @@
     "duplicated": "Pàgina duplicada",
     "moved": "Pàgina moguda",
     "blankAdded": "S’ha afegit una pàgina en blanc"
+  },
+  "share": {
+    "button": "Comparteix",
+    "title": "Comparteix la partitura",
+    "withNotes": "Amb les meves anotacions",
+    "withoutNotes": "Sense anotacions (original)",
+    "progress": "S’està preparant {{name}}… {{percent}} %",
+    "ready": "{{name}} està a punt",
+    "send": "Envia…",
+    "save": "Desa al dispositiu",
+    "saved": "Desada: {{name}}",
+    "failed": "No s’ha pogut preparar la partitura"
   }
 }
