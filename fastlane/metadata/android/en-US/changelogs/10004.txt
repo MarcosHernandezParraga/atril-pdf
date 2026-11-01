@@ -1,0 +1,1 @@
+Fix for the Microsoft Store (publisher name). Includes everything before: share scores as PDF and large libraries.

@@ -1,5 +1,10 @@
 # Registro de cambios / Changelog
 
+## [1.0.4] — 2026-11-01
+
+### Corregido
+- **Microsoft Store:** el nombre del editor de los paquetes vuelve a ser «Marcos Hernández Párraga», con tildes, igual que el nombre de la cuenta de la tienda, que ahora lo tiene así. Es el mismo nombre en la app, en la cuenta y en los paquetes.
+
 ## [1.0.3] — 2026-11-01
 
 ### Corregido

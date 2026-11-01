@@ -1,10 +1,14 @@
 # Progreso del proyecto
 
-*Actualizado: 1 de noviembre de 2026 — versión 1.0.3 preparada (1.0.1 publicada)*
+*Actualizado: 1 de noviembre de 2026 — versión 1.0.4 preparada (1.0.3 publicada)*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
 
-## Versión 1.0.3: Microsoft Store ✅ (preparada; falta publicarla)
+## Versión 1.0.4: nombre del editor con tildes ✅ (preparada; falta publicarla)
+
+- La cuenta de la Microsoft Store se cambió a «Marcos Hernández Párraga» mientras la 1.0.3 quitaba las tildes del paquete, así que volvían a no coincidir. Ahora todo usa el mismo nombre con tildes: app, cuenta y paquetes (`publisher` en `src/config/identity.json`). Comprobado en el `AppxManifest.xml` del paquete fabricado por GitHub.
+
+## Versión 1.0.3: Microsoft Store ✅ (publicada)
 
 - ✅ Nombre del editor sin tildes en los paquetes (`publisher` en `src/config/identity.json`: AppX `PublisherDisplayName`, firma de Windows, autor del programa de escritorio, mantenedor del `.deb`). La Microsoft Store exige que coincida con la cuenta («Marcos Hernandez Parraga»). La app sigue mostrando «Hecho por Marcos Hernández Párraga».
 - ✅ La 1.0.2 se publicó desde GitHub sin cambiar el número de versión (archivos con «1.0.1» y Android con `versionCode` 10001). `release.yml` ahora para todo si la etiqueta no es `v` + la versión de `package.json`.

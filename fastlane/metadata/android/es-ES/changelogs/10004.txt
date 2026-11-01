@@ -1,0 +1,1 @@
+Corrección para la Microsoft Store (nombre del editor). Incluye todo lo anterior: compartir partituras en PDF y bibliotecas grandes.

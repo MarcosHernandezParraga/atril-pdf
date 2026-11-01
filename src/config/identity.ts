@@ -4,9 +4,9 @@
  * Single source of truth for the application's identity.
  * To rename the app or change its identifier, edit `identity.json` only:
  * app.config.ts, the desktop build and the UI all read from it.
- * `author` is the name shown in the app; `publisher` is the same name without
- * accents, used as the publisher of the installers: it must match the
- * Microsoft Store account exactly.
+ * `author` is the name shown in the app; `publisher` is the publisher of the
+ * installers, which must match the name of the Microsoft Store account letter
+ * by letter (accents included).
  */
 import identityJson from './identity.json';
 import packageJson from '../../package.json';

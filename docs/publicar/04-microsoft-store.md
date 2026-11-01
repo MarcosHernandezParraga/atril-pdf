@@ -69,7 +69,7 @@ En Partner Center, pulsa **Iniciar envío (Start submission)** y rellena cada ap
 
 ### Dos avisos que salen al subir el paquete
 
-- **«The PublisherDisplayName … doesn't match your publisher display name»**: el nombre del editor del paquete tiene que ser idéntico al de la cuenta, letra a letra. La cuenta tiene **«Marcos Hernandez Parraga»** (sin tildes) y los paquetes se fabrican así desde la versión 1.0.3 (campo `publisher` de `src/config/identity.json`). Dentro de la app se sigue leyendo «Hecho por Marcos Hernández Párraga».
+- **«The PublisherDisplayName … doesn't match your publisher display name»**: el nombre del editor del paquete tiene que ser idéntico al de la cuenta, letra a letra y con las mismas tildes. La cuenta tiene **«Marcos Hernández Párraga»** y los paquetes se fabrican así desde la versión 1.0.4 (campo `publisher` de `src/config/identity.json`). **No cambies el nombre de la cuenta**: si algún día cambiara, hay que cambiar también ese campo y sacar una versión nueva.
 - **«runFullTrust … require approval»**: es normal en todos los programas de escritorio de Windows empaquetados para la tienda (no es un error). En **Opciones de envío → Funcionalidades restringidas** (*Submission options → Restricted capabilities*) explica por qué la necesita, en inglés:
 
 > Atril PDF is a Windows desktop application (Win32, built with Electron) packaged as MSIX. runFullTrust is required for a Win32 desktop application to run. The app works fully offline: it does not connect to the internet or collect any data, and it only opens the PDF files that the user chooses.
