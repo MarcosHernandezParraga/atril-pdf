@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { getDesktopBridge } from '../platform/desktopBridge';
+import { isInstalledWebApp } from '../platform/persistentStorage';
 import { useSettings } from '../settings/store';
 import { cardShadow, RADIUS, SPACING, useTheme } from '../theme';
 import { AppText, Button, Icon } from '../ui/primitives';
@@ -15,11 +16,8 @@ import { AppText, Button, Icon } from '../ui/primitives';
 /** Safari on iPhone/iPad, not yet opened from the home screen. */
 export function isIosBrowserNotInstalled(): boolean {
   if (Platform.OS !== 'web' || typeof navigator === 'undefined' || getDesktopBridge()) return false;
-  const nav = navigator as Navigator & { standalone?: boolean };
-  const installed =
-    nav.standalone === true ||
-    (typeof window !== 'undefined' && window.matchMedia?.('(display-mode: standalone)').matches === true);
-  if (installed) return false;
+  if (isInstalledWebApp()) return false;
+  const nav = navigator;
   const ua = nav.userAgent;
   // iPadOS presents itself as a Mac, but with a touch screen.
   return /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && nav.maxTouchPoints > 1);

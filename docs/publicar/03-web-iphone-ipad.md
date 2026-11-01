@@ -47,7 +47,10 @@ La propia app muestra estas instrucciones la primera vez que se abre en Safari.
 ## Cosas importantes que conviene saber
 
 - **Sin internet:** la primera vez hay que abrirla con conexión (descarga unos 18 MB). Después funciona sin conexión, también en un escenario sin cobertura.
-- **PDF grandes:** funcionan; las páginas se preparan una a una para no llenar la memoria.
-- **Tus partituras** se guardan dentro del navegador, solo en ese aparato. Si borras los «datos de sitios web» de Safari (Ajustes → Safari → Avanzado → Datos de sitios web) **se borran también**. Guarda tus PDF originales en la app Archivos o en tu ordenador.
+- **PDF grandes:** funcionan, también partituras escaneadas de cientos de páginas: el archivo se guarda entero y las páginas se dibujan una a una, cuando hacen falta, para no llenar la memoria.
+- **Dónde se guardan tus partituras:** en el propio aparato, dentro del espacio que el navegador reserva para la app. No se suben a internet. El límite es el espacio libre del aparato: Safari permite usar más de la mitad del almacenamiento.
+- **Úsala siempre desde el icono de la pantalla de inicio.** En iPhone y iPad, el icono y Safari guardan sus datos por separado: lo que importes en una pestaña de Safari no aparece en el icono. Además, Safari puede borrar los datos de las webs que no se visitan en unos días; las apps abiertas desde la pantalla de inicio no siguen esa norma.
+- **Protegidas contra la falta de espacio:** la app pide al navegador «almacenamiento persistente», para que no borre las partituras aunque el aparato se quede sin espacio. Safari lo concede a la app abierta desde la pantalla de inicio.
+- **Cuándo se borran:** si borras el icono de la pantalla de inicio, o si borras los datos de sitios web (Ajustes → Apps → Safari → Avanzado → Datos de sitios web). Por eso, **guarda siempre tus PDF originales** en la app Archivos, en iCloud o en tu ordenador.
 - **Actualizaciones:** cuando publicas una versión nueva, la app se actualiza sola la siguiente vez que se abre con internet.
 - **Privacidad:** igual que el resto de versiones: nada sale del aparato.

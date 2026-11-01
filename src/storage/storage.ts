@@ -1,10 +1,11 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
 // Desktop storage (files in the user's application data folder, through the
-// Electron bridge) and plain-browser development storage (IndexedDB).
+// Electron bridge) and browser storage for the web version (IndexedDB).
 
 import { getDesktopBridge, type DesktopBridge } from '../platform/desktopBridge';
 import { idbStore } from '../platform/loadScript';
+import { isInstalledWebApp, keepStoragePersistent } from '../platform/persistentStorage';
 import type { ExternalFile, StorageAdapter } from './types';
 
 function desktopStorage(bridge: DesktopBridge): StorageAdapter {
@@ -29,22 +30,41 @@ function desktopStorage(bridge: DesktopBridge): StorageAdapter {
   };
 }
 
+/** Bytes of a stored file: a Blob, or a byte array in libraries saved by earlier versions. */
+async function bytesOf(value: Blob | Uint8Array): Promise<Uint8Array> {
+  return value instanceof Blob ? new Uint8Array(await value.arrayBuffer()) : value;
+}
+
 function browserStorage(): StorageAdapter {
   const store = idbStore('atril-dev-files');
+  // The scores must survive when the device runs low on space.
+  if (isInstalledWebApp()) keepStoragePersistent();
+  // Files are kept as Blobs: the browser stores them as separate files, with no
+  // size limit per score (byte arrays are limited, about 128 MB in Chrome).
+  const save = async (rel: string, blob: Blob) => {
+    await store.set(rel, blob);
+    keepStoragePersistent();
+  };
   return {
     async read(rel) {
-      const v = await store.get<Uint8Array>(rel);
+      const v = await store.get<Blob | Uint8Array>(rel);
       if (!v) throw new Error(`File not found: ${rel}`);
-      return v;
+      return bytesOf(v);
     },
-    write: (rel, data) => store.set(rel, data),
+    write: (rel, data) => save(rel, new Blob([data as BlobPart])),
     exists: async (rel) => (await store.get(rel)) !== undefined,
     remove: (rel) => store.delete(rel),
-    size: async (rel) => (await store.get<Uint8Array>(rel))?.byteLength ?? 0,
+    async size(rel) {
+      const v = await store.get<Blob | Uint8Array>(rel);
+      return v ? (v instanceof Blob ? v.size : v.byteLength) : 0;
+    },
     async importExternal(ext: ExternalFile, rel: string) {
-      const bytes = await this.readExternal(ext);
-      await store.set(rel, bytes);
-      return bytes.byteLength;
+      let blob: Blob;
+      if (ext.kind === 'blob') blob = ext.blob.slice(0, ext.blob.size, ext.blob.type);
+      else if (ext.kind === 'uri') blob = await (await fetch(ext.uri)).blob();
+      else throw new Error('Unsupported file');
+      await save(rel, blob);
+      return blob.size;
     },
     async readExternal(ext) {
       if (ext.kind === 'blob') return new Uint8Array(await ext.blob.arrayBuffer());

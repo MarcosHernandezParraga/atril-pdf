@@ -1,8 +1,15 @@
 # Progreso del proyecto
 
-*Actualizado: 1 de noviembre de 2026 — versión 1.0.0, la primera pública (versión base)*
+*Actualizado: 1 de noviembre de 2026 — versión 1.0.1 preparada (1.0.0 publicada)*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
+
+## Versión 1.0.1: partituras muy grandes en la web ✅ (preparada; falta publicarla)
+
+- ✅ Web: los archivos se guardan como Blob en IndexedDB (Chrome no admite valores de más de unos 128 MB como lista de bytes y la importación se quedaba colgada). Comprobado con una partitura escaneada de 300 páginas y 384 MB: importar y abrir 3,4 s, ir a la última página 0,5 s, sigue tras recargar. Las bibliotecas guardadas por la 1.0.0 se siguen abriendo (comprobado).
+- ✅ IndexedDB: cada operación termina cuando la transacción se completa o falla (antes una escritura fallida podía dejar la app esperando).
+- ✅ Web: `navigator.storage.persist()` al abrirla instalada y tras importar (`src/platform/persistentStorage.ts`).
+- 🟡 Probar en un iPad real con una partitura grande (en el servidor solo hay Chromium).
 
 ## Versión 1.0.0: la versión base para publicar ✅
 

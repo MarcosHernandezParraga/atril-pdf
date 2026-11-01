@@ -1,0 +1,1 @@
+Web version: very large scores (scanned, hundreds of pages) now import and open in seconds, and the app asks the browser to keep them even when space runs low. Lighter APK.

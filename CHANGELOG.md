@@ -1,5 +1,17 @@
 # Registro de cambios / Changelog
 
+## [1.0.1] — 2026-11-01
+
+### Corregido
+- **Versión web:** las partituras muy grandes (más de unos 128 MB, por ejemplo escaneadas de cientos de páginas) se quedaban en «Importando…» en Chrome, Edge y Android. Ahora se guardan como archivos y una de 300 páginas y 384 MB se importa y se abre en unos segundos.
+- **Versión web:** si el navegador no puede guardar algo (por ejemplo, por falta de espacio), ahora se avisa en vez de quedarse esperando.
+
+### Cambiado
+- **Versión web:** pide al navegador «almacenamiento persistente» para que no borre las partituras aunque el aparato se quede sin espacio (Safari lo concede a la app abierta desde la pantalla de inicio).
+- APK de Android la mitad de ligero (procesadores ARM: móviles, tabletas y Chromebooks).
+- Windows: un instalador por tipo de procesador.
+- La web se publica sola al terminar de fabricarse cada versión.
+
 ## [1.0.0] — 2026-11-01 — Primera versión pública
 
 Primera versión publicada para todo el mundo: la **versión base**. Reúne todo lo de las versiones de prueba 0.1.0, 0.2.0 y 0.3.0 (detalladas abajo), que no se llegaron a publicar.
