@@ -24,10 +24,10 @@ Es útil para profesores de informática o centros que instalan programas en muc
 winget install Microsoft.WingetCreate
 ```
 
-3. Cierra y abre otra ventana de PowerShell. Escribe (cambia `0.2.0` por la versión publicada):
+3. Cierra y abre otra ventana de PowerShell. Escribe (cambia `0.3.0` por la versión publicada):
 
 ```powershell
-wingetcreate new "https://github.com/MarcosHernandezParraga/atril-pdf/releases/download/v0.2.0/Atril.PDF-0.2.0-win-x64.exe"
+wingetcreate new "https://github.com/MarcosHernandezParraga/atril-pdf/releases/download/v0.3.0/Atril.PDF-0.3.0-win-x64.exe"
 ```
 
    *El nombre exacto del archivo lo ves en la página de la versión: clic derecho sobre el `.exe` → «Copiar dirección del enlace».*
@@ -45,7 +45,7 @@ wingetcreate new "https://github.com/MarcosHernandezParraga/atril-pdf/releases/d
 ## Versiones siguientes
 
 ```powershell
-wingetcreate update MarcosHernandezParraga.AtrilPDF --version 0.3.0 --urls "https://github.com/.../Atril.PDF-0.3.0-win-x64.exe" --submit
+wingetcreate update MarcosHernandezParraga.AtrilPDF --version 0.4.0 --urls "https://github.com/.../Atril.PDF-0.4.0-win-x64.exe" --submit
 ```
 
 (Si lo prefieres, dímelo y lo automatizo para que se haga solo con cada versión.)

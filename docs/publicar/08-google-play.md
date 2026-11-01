@@ -62,7 +62,7 @@ Las cuentas personales nuevas **no pueden publicar directamente**: antes hay que
 3. **Testers → Crear lista de correo**: pega los correos (uno por línea). Guarda.
 4. **Crear versión** → sube el archivo **`AtrilPDF-v….aab`** de la última versión de GitHub.
    - La primera vez te preguntará por la **firma de apps de Google Play**: acepta la opción recomendada (Google guarda la firma final; tu clave sirve para subir versiones).
-5. Nombre de la versión: el número (por ejemplo `0.2.0`). Notas: las novedades. **Guardar → Revisar → Iniciar lanzamiento**.
+5. Nombre de la versión: el número (por ejemplo `0.3.0`). Notas: las novedades. **Guardar → Revisar → Iniciar lanzamiento**.
 6. En la página del canal aparece un **enlace para unirse**. Envíaselo a los 12: tienen que abrirlo con su cuenta de Gmail, pulsar **Convertirse en tester** e **instalar** la app desde Google Play.
 7. Espera **14 días** con todos ellos dados de alta (que no la desinstalen).
 8. Pasado ese tiempo: **Panel → Solicitar acceso de producción**. Responde a las preguntas sobre la prueba (cuántos testers, qué opinaron, qué cambiaste). Google tarda unos días en contestar.

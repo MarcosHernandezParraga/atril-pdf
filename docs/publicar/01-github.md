@@ -40,16 +40,16 @@ Así, si alguien encuentra un fallo de seguridad, te lo comunica en privado.
 ## Paso 5. Sacar una versión (cada vez que quieras publicar)
 
 1. En tu repositorio, columna derecha → **Releases** → **Draft a new release** (o «Create a new release»).
-2. Pulsa **Choose a tag**, escribe `v0.2.0` (el número de la versión) y pulsa **Create new tag**.
-3. **Release title:** `Atril PDF 0.2.0`
+2. Pulsa **Choose a tag**, escribe `v0.3.0` (el número de la versión) y pulsa **Create new tag**.
+3. **Release title:** `Atril PDF 0.3.0`
 4. En la descripción puedes pegar las novedades (las tienes en `CHANGELOG.md`).
 5. Pulsa **Publish release**.
 6. Espera unos **30–40 minutos**. En la pestaña **Actions** verás círculos amarillos (trabajando) que pasarán a ✓ verde (terminado). Al final, en la página de la versión aparecerán:
-   - **Windows:** `Atril.PDF-0.2.0-win-x64.exe` (instalador) y `.appx` (para la Microsoft Store)
-   - **Mac:** `Atril.PDF-0.2.0-mac-universal.dmg`
+   - **Windows:** `Atril.PDF-0.3.0-win-x64.exe` (instalador) y `.appx` (para la Microsoft Store)
+   - **Mac:** `Atril.PDF-0.3.0-mac-universal.dmg`
    - **Linux:** `….AppImage` y `….deb`
    *(GitHub cambia los espacios de los nombres por puntos: «Atril PDF» aparece como «Atril.PDF».)*
-   - **Android:** `AtrilPDF-v0.2.0-android.apk` (para instalar directamente) y `….aab` (para Google Play)
+   - **Android:** `AtrilPDF-v0.3.0-android.apk` (para instalar directamente) y `….aab` (para Google Play)
    - **`SHA256SUMS.txt`**: las «huellas» para comprobar que nadie ha modificado los archivos.
    - Y la versión web se actualiza sola.
 
