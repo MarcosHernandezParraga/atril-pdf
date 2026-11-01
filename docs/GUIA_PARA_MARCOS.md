@@ -175,4 +175,5 @@ Desde ese momento, todas las versiones de Android saldrán firmadas por ti.
   - **Pentagrama**: añade un pentagrama de cinco líneas sin clave. Con **Mover** lo arrastras y con las **esquinas** lo haces más ancho, estrecho, alto o bajo. Opción «Fondo blanco» para tapar lo que haya debajo.
   - **Imagen**: pega una imagen encima de la página; muévela y cambia su tamaño por las esquinas.
 - **Etiquetas**: en el ordenador, al pasar el ratón por un icono aparece su nombre; en la tableta, mantén el dedo sobre el icono.
+- **Idioma**: la app aparece sola en el idioma del móvil, la tableta o el ordenador (21 idiomas). Para cambiarlo: **Ajustes → Idioma** (cada idioma aparece escrito en su lengua). «Como el sistema» vuelve al idioma del aparato.
 - **Pantalla completa**: doble toque en el centro. Para salir, mantén el dedo en el borde superior (o Esc en el ordenador).

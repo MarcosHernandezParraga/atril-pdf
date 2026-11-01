@@ -22,7 +22,7 @@ Desarrollada por **Marcos Hernández Párraga** · Licencia [MIT](LICENSE)
 - **Pedal Bluetooth y teclado**: funciona sin configurar (flechas, Av Pág/Re Pág, espacio, Intro, pista siguiente/anterior), modo aprender, prueba de teclas en vivo, anti-rebote y botones de volumen en Android.
 - **Modo actuación**: pantalla completa total, la pantalla no se apaga, salida con gesto deliberado.
 - Modo noche, sepia, recorte automático de márgenes, girar páginas, deshacer/rehacer, recordar la última página y el modo de cada documento.
-- Español e inglés, tema claro/oscuro.
+- **21 idiomas** (español, inglés, portugués, francés, alemán, italiano, catalán, gallego, euskera, neerlandés, polaco, rumano, griego, ruso, ucraniano, árabe, chino, japonés, coreano…): usa el idioma del dispositivo y se cambia en Ajustes. Tema claro/oscuro.
 
 Funciones en desarrollo: formas y sellos musicales, exportación y copias de seguridad. Consulta [docs/PROGRESO.md](docs/PROGRESO.md).
 
@@ -89,7 +89,7 @@ Developed by **Marcos Hernández Párraga** · [MIT License](LICENSE)
 - **Bluetooth pedal and keyboard**: works out of the box, learn mode, live key test, anti-bounce, Android volume buttons.
 - **Performance mode**: true full screen, the screen never sleeps, deliberate exit gesture.
 - Night and sepia modes, automatic margin crop, page rotation, undo/redo, remembers the last page and mode of each document.
-- Spanish and English, light/dark theme.
+- **21 languages** (Spanish, English, Portuguese, French, German, Italian, Catalan, Galician, Basque, Dutch, Polish, Romanian, Greek, Russian, Ukrainian, Arabic, Chinese, Japanese, Korean…): follows the device language, can be changed in Settings. Light/dark theme.
 
 Work in progress: shapes and music stamps, export and backups. See [docs/PROGRESO.md](docs/PROGRESO.md).
 

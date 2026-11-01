@@ -29,4 +29,7 @@ Carry all your scores on your tablet, phone or computer: no more photocopies, cl
 <b>LIBRARY</b>
 • Import PDFs and images, search, favourites, most recent and a recoverable trash.
 
+<b>IN YOUR LANGUAGE</b>
+• 21 languages, including English, Spanish, Portuguese, French, German, Italian, Greek, Russian, Arabic, Chinese, Japanese and Korean. It follows your device language.
+
 Open source (MIT licence). Made by Marcos Hernández Párraga.

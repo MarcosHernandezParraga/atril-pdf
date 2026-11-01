@@ -1,5 +1,14 @@
 # Registro de cambios / Changelog
 
+## [0.3.0] — 2026-11-01
+
+### Añadido
+- **21 idiomas**: español, inglés, portugués (Brasil y Portugal), francés, alemán, italiano, catalán, gallego, euskera, neerlandés, polaco, rumano, griego, ruso, ucraniano, árabe, chino simplificado y tradicional, japonés y coreano.
+- La app usa automáticamente el idioma del dispositivo (o del navegador). En **Ajustes → Idioma** se puede elegir otro; cada idioma aparece escrito en su propia lengua.
+- Plurales correctos en cada idioma (ruso, polaco, ucraniano, rumano y árabe tienen varias formas).
+- Árabe: los menús, la biblioteca y los ajustes se muestran de derecha a izquierda; la partitura y el lector siguen de izquierda a derecha, como se lee la música.
+- Android 13+ e iOS: los idiomas aparecen en el ajuste del sistema «Idioma de la app».
+
 ## [0.2.0] — 2026-11-01
 
 ### Añadido

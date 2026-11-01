@@ -1,8 +1,18 @@
 # Progreso del proyecto
 
-*Actualizado: 1 de noviembre de 2026 (tercera tanda: correcciones y novedades pedidas por Marcos) — versión 0.2.0*
+*Actualizado: 1 de noviembre de 2026 (cuarta tanda: idiomas) — versión 0.3.0*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
+
+## Cuarta tanda (versión 0.3.0): idiomas ✅
+
+- ✅ **21 idiomas** (`src/i18n/locales/`): es, en, pt (Brasil), pt-PT, fr, de, it, ca, gl, eu, nl, pl, ro, el, ru, uk, ar, zh-Hans, zh-Hant, ja, ko. Lista única en `src/i18n/languages.ts`.
+- ✅ Idioma del dispositivo por defecto (`pickLanguage`: chino simplificado/tradicional según región o escritura, portugués de Brasil/Portugal, valenciano → catalán, idiomas no disponibles → inglés). **Ajustes → Idioma** con cada idioma escrito en su lengua; se guarda y se puede volver a «Como el sistema».
+- ✅ Plurales correctos con `intl-pluralrules` (ISC) por si el dispositivo no trae las reglas; test que exige exactamente las formas de cada idioma (CLDR) y los mismos huecos `{{…}}` que el español.
+- ✅ Árabe: biblioteca, carpetas, ajustes, «Acerca de» y diálogos de derecha a izquierda (`useDirection.ts`, márgenes de inicio/fin); el lector y la partitura siempre de izquierda a derecha. En Android/iOS el sistema no invierte la app entera (`supportsRTL: false`).
+- ✅ Android 13+ e iOS: idiomas declarados para el ajuste «Idioma de la app» del sistema.
+- ✅ Probado en navegador con 22 idiomas de dispositivo, cambio desde Ajustes y persistencia; capturas en árabe, japonés, alemán, griego y euskera (pantalla de móvil).
+- 🟡 Las traducciones se han hecho con cuidado, pero conviene que una persona nativa (por ejemplo, un músico) revise cada idioma; corregir es tan fácil como editar el archivo del idioma.
 
 ## Tercera tanda (versión 0.2.0) ✅
 
@@ -34,7 +44,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Estado general
 
 - **Fase actual:** 3–5 en curso (fases 0, 1 y 2 terminadas).
-- **Pruebas automáticas:** 147 tests unitarios (modelo, navegación, zoom, panel de páginas, pentagrama e imágenes, arrastrar, base de datos, seguridad de rutas) en verde; prueba en navegador real (15 recorridos: importar, pasar página con teclas de pedal, anotar, modos, zoom con rueda/teclas/dos dedos, panel de páginas, pentagrama e imagen, conciertos, arrastrar a carpetas y reordenar, ajustes, PDF protegido); prueba de la versión web instalable sin conexión; prueba de escritorio en Electron.
+- **Pruebas automáticas:** 213 tests unitarios (incluidos 66 de idiomas) (modelo, navegación, zoom, panel de páginas, pentagrama e imágenes, arrastrar, base de datos, seguridad de rutas) en verde; prueba en navegador real (16 recorridos, incluido el cambio de idioma: importar, pasar página con teclas de pedal, anotar, modos, zoom con rueda/teclas/dos dedos, panel de páginas, pentagrama e imagen, conciertos, arrastrar a carpetas y reordenar, ajustes, PDF protegido); prueba de la versión web instalable sin conexión; prueba de escritorio en Electron.
 - **Calidad:** `tsc --noEmit` y ESLint sin errores ni avisos.
 
 ## Fase 0 — Entorno ✅

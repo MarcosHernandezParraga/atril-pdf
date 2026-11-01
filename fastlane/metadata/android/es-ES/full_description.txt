@@ -29,4 +29,7 @@ Lleva todas tus partituras en la tableta, el móvil o el ordenador y olvídate d
 <b>BIBLIOTECA</b>
 • Importa PDF e imágenes, búsqueda, favoritos, más recientes y papelera recuperable.
 
+<b>EN TU IDIOMA</b>
+• 21 idiomas, entre ellos español, catalán, gallego, euskera, inglés, portugués, francés, alemán, italiano, griego, ruso, árabe, chino y japonés. Usa el idioma de tu dispositivo.
+
 Código abierto (licencia MIT). Hecho por Marcos Hernández Párraga.

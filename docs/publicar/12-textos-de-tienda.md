@@ -56,10 +56,13 @@ Revisados para que quepan en los límites de cada tienda. Puedes cambiar lo que 
 > **BIBLIOTECA**
 > • Importa PDF e imágenes, búsqueda, favoritos, más recientes y papelera recuperable.
 >
+> **EN TU IDIOMA**
+> • 21 idiomas, entre ellos español, catalán, gallego, euskera, inglés, portugués, francés, alemán, italiano, griego, ruso, árabe, chino y japonés. Usa el idioma de tu dispositivo.
+>
 > Código abierto (licencia MIT). Hecho por Marcos Hernández Párraga.
 
 **Novedades de esta versión** (máx. 500):
-`Amplía la partitura con dos dedos o Ctrl + rueda. Nuevo panel de páginas: reordena, duplica, elimina y añade páginas, otro PDF o imágenes. Pentagrama de cinco líneas e imágenes sobre la página. Arrastra obras a una carpeta y ordénalas arrastrando. Paso de página más suave y rápido. Versión web instalable en iPhone y iPad.`
+`Ahora en 21 idiomas: usa el idioma de tu dispositivo y puedes cambiarlo en Ajustes. Amplía la partitura con dos dedos o Ctrl + rueda. Nuevo panel de páginas: reordena, duplica, elimina y añade páginas, otro PDF o imágenes. Pentagrama de cinco líneas e imágenes sobre la página. Arrastra obras a una carpeta y ordénalas arrastrando. Paso de página más suave y rápido. Versión web instalable en iPhone y iPad.`
 
 ---
 
@@ -111,10 +114,13 @@ Revisados para que quepan en los límites de cada tienda. Puedes cambiar lo que 
 > **LIBRARY**
 > • Import PDFs and images, search, favourites, most recent and a recoverable trash.
 >
+> **IN YOUR LANGUAGE**
+> • 21 languages, including English, Spanish, Portuguese, French, German, Italian, Greek, Russian, Arabic, Chinese, Japanese and Korean. It follows your device language.
+>
 > Open source (MIT licence). Made by Marcos Hernández Párraga.
 
 **What's new:**
-`Pinch to zoom or Ctrl + wheel. New page panel: reorder, duplicate, delete and add pages, another PDF or images. Five-line staff and images on the page. Drag pieces into a folder and reorder them by dragging. Smoother, faster page turns. Installable web version for iPhone and iPad.`
+`Now in 21 languages: it follows your device language and can be changed in Settings. Pinch to zoom or Ctrl + wheel. New page panel: reorder, duplicate, delete and add pages, another PDF or images. Five-line staff and images on the page. Drag pieces into a folder and reorder them by dragging. Smoother, faster page turns. Installable web version for iPhone and iPad.`
 
 ---
 
