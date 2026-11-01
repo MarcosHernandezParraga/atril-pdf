@@ -1,5 +1,11 @@
 # Registro de cambios / Changelog
 
+## [1.0.3] — 2026-11-01
+
+### Corregido
+- **Microsoft Store:** el nombre del editor en los paquetes de Windows va sin tildes («Marcos Hernandez Parraga»), igual que en la cuenta de la tienda; si no coincide, la tienda rechaza el paquete. Dentro de la app se sigue leyendo «Hecho por Marcos Hernández Párraga».
+- La 1.0.2 se publicó con el número de versión sin cambiar (archivos de Windows, Mac y Linux con «1.0.1»). Ahora, si la etiqueta de una versión no coincide con su número, GitHub no fabrica nada y lo avisa.
+
 ## [1.0.1] — 2026-11-01
 
 Versión pensada para bibliotecas grandes (cientos de partituras guardadas y partituras de director de cientos de páginas) y para compartir partituras.

@@ -1,0 +1,1 @@
+Fixes for the Microsoft Store (publisher name) and the right version number on every file. Includes everything in 1.0.1: share scores as PDF and large libraries.

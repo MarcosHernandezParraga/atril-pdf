@@ -1,0 +1,1 @@
+Correcciones para la Microsoft Store (nombre del editor) y versión con el número correcto en todos los archivos. Incluye todo lo de la 1.0.1: compartir partituras en PDF y bibliotecas grandes.

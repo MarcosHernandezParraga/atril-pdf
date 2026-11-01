@@ -53,7 +53,7 @@ module.exports = {
     ],
     legalTrademarks: identity.name,
     // Shown as "Publisher" in Windows. A real code-signing certificate can be added later.
-    signtoolOptions: { publisherName: identity.author },
+    signtoolOptions: { publisherName: identity.publisher },
   },
   nsis: {
     oneClick: false,
@@ -67,7 +67,7 @@ module.exports = {
   },
   appx: {
     displayName: identity.name,
-    publisherDisplayName: identity.author,
+    publisherDisplayName: identity.publisher,
     // Replace these two values with the ones shown in Microsoft Partner Center
     // (Product identity) before uploading to the Microsoft Store.
     identityName: process.env.MS_STORE_IDENTITY_NAME || 'MarcosHernandezParraga.AtrilPDF',
@@ -96,8 +96,8 @@ module.exports = {
       { target: 'deb', arch: ['x64', 'arm64'] },
     ],
     category: 'AudioVideo',
-    maintainer: identity.author,
-    vendor: identity.author,
+    maintainer: identity.publisher,
+    vendor: identity.publisher,
     synopsis: 'Lector de partituras PDF / PDF sheet music reader',
     mimeTypes: ['application/pdf'],
     executableName: identity.slug,

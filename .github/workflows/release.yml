@@ -14,7 +14,24 @@ permissions:
   contents: write
 
 jobs:
+  # A version is published with the tag "v" + the version in package.json
+  # (for example v1.0.3). If they differ, nothing is built: otherwise the files
+  # would carry another number than the version.
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: The tag matches the version in package.json
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          expected="v$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+            echo "::error::La etiqueta $GITHUB_REF_NAME no coincide con la versión de package.json. Publica la versión con la etiqueta $expected."
+            exit 1
+          fi
+
   desktop:
+    needs: version
     strategy:
       fail-fast: false
       matrix:
@@ -56,6 +73,7 @@ jobs:
           if-no-files-found: ignore
 
   android:
+    needs: version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

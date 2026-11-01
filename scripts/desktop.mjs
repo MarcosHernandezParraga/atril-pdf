@@ -62,7 +62,7 @@ function writePackageJson() {
     productName: identity.name,
     version: pkg.version,
     description: pkg.description,
-    author: { name: identity.author },
+    author: { name: identity.publisher },
     license: identity.license,
     homepage: identity.repositoryUrl,
     main: 'main.js',

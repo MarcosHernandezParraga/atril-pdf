@@ -40,7 +40,7 @@ vi.setStringValues(
   {
     ProductName: identity.name,
     FileDescription: identity.name,
-    CompanyName: identity.author,
+    CompanyName: identity.publisher,
     LegalCopyright: `Copyright © ${identity.copyrightYear} ${identity.author}`,
     OriginalFilename: `${identity.name}.exe`,
     InternalName: identity.slug,
