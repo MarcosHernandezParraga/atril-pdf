@@ -215,19 +215,50 @@ Al publicar una versión, GitHub **fabrica solo** todos los instaladores y la we
 2. En la columna de la derecha, busca **Releases** y pulsa **Create a new release**.
 3. Pulsa **Choose a tag**, escribe exactamente `v1.0.0` (con la **v** minúscula delante) y pulsa **+ Create new tag: v1.0.0 on publish**.
 4. **Release title:** `Atril PDF 1.0.0`
-5. En el cuadro grande de descripción, pega esto:
+5. En el cuadro grande de descripción, pega el texto de abajo. Cópialo con el botón de copiar que aparece en la esquina del recuadro (así no se copian las líneas con comillas raras del principio y del final). Cambia **Novedades** por las de la versión (están en `CHANGELOG.md`).
 
-```text
-Primera versión de Atril PDF, tu atril digital. Hecho por un músico para todos los músicos.
+```markdown
+## 🎼 Atril PDF — tu atril digital
 
-Descarga:
-- Windows: el archivo que termina en win-x64.exe
-- Mac: el archivo .dmg
-- Linux: el .AppImage o el .deb
-- Android: el archivo .apk
-- iPhone y iPad: abre https://marcoshernandezparraga.github.io/atril-pdf/ en Safari y pulsa Compartir → «Añadir a pantalla de inicio».
+Hecho por un músico para todos los músicos. Gratis, sin anuncios, sin cuentas y sin conexión.
 
-Gratis, sin anuncios, sin cuentas y sin conexión.
+**Novedades:** …
+
+## ¿Qué archivo descargo?
+
+Los archivos están abajo, en **Assets**. Descarga **solo el de tu aparato**.
+
+### 🪟 Windows
+- **Casi todos los ordenadores** (procesador Intel o AMD): el que termina en **`win-x64.exe`**
+- **Ordenadores con procesador ARM** (algunos Surface y portátiles con Snapdragon): el que termina en **`win-arm64.exe`**
+
+¿No sabes cuál es el tuyo? Mira en **Configuración → Sistema → Información → Tipo de sistema**: si pone **x64**, el primero; si pone **ARM**, el segundo. Si tienes dudas, descarga el **x64**: funciona en casi todos.
+
+Si aparece «Windows protegió su PC», pulsa **Más información → Ejecutar de todas formas**.
+
+### 🍎 Mac (todos: Intel y Apple M1, M2, M3, M4…)
+- El que termina en **`mac-universal.dmg`**
+
+Ábrelo y arrastra Atril PDF a **Aplicaciones**. La primera vez: **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
+
+### 🐧 Linux
+- **Ubuntu, Debian, Linux Mint…:** el que termina en **`linux-amd64.deb`**
+- **Cualquier otra distribución:** el que termina en **`linux-x86_64.AppImage`**
+- **Ordenadores ARM** (por ejemplo, Raspberry Pi): los que llevan **`arm64`**
+
+### 🤖 Android (móvil y tableta)
+- El que termina en **`android.apk`**
+
+Ábrelo desde el móvil y permite «instalar de esta fuente». Para recibir las actualizaciones solas, usa la app **Obtainium** con esta dirección: `https://github.com/MarcosHernandezParraga/atril-pdf`
+
+### 📱 iPhone y iPad
+No hay que descargar nada: abre **https://marcoshernandezparraga.github.io/atril-pdf/** en **Safari** → botón **Compartir** → **Añadir a pantalla de inicio**.
+
+### Archivos que no tienes que descargar
+- **`.appx`**: son para la Microsoft Store.
+- **`.aab`**: es para Google Play.
+- **`SHA256SUMS.txt`**: sirve para comprobar que ningún archivo ha sido modificado (opcional).
+- **Source code**: el código de la app, para programadores.
 ```
 
 6. Deja marcado **Set as the latest release**.
