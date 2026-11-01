@@ -2,7 +2,7 @@
 
 Esta guía está escrita para alguien que no sabe programar. Cada paso dice exactamente qué pulsar y qué deberías ver.
 
-> 📁 **Las guías completas de publicación, una por cada tienda, están en [`docs/publicar/`](publicar/README.md).** Esta página es el resumen.
+> 📁 **Para publicar desde cero, todo en orden: [`docs/publicar/00-EMPIEZA-AQUI.md`](publicar/00-EMPIEZA-AQUI.md).** Las guías de cada tienda están en [`docs/publicar/`](publicar/README.md). Esta página es el resumen.
 
 **Idea general:** el código de la app se guarda en **GitHub** (una web gratuita para guardar proyectos). Cuando el código está allí, GitHub **fabrica solo** los instaladores de Windows, Mac, Linux y Android cada vez que se lo pidas. Después, cada tienda (Microsoft Store, Google Play, App Store…) recibe esos instaladores. Por eso el **paso 1 es imprescindible**: sin él no se puede publicar en ningún sitio.
 
@@ -64,8 +64,8 @@ Esta versión no se instala (funciona desde esa carpeta). El **instalador normal
 Esto lo haces tú desde la web de GitHub (o me lo pides y lo hago yo):
 
 1. En tu repositorio, columna de la derecha → **Releases** → **Draft a new release** (o «Create a new release»).
-2. Pulsa **Choose a tag**, escribe `v0.1.0` y pulsa **Create new tag**.
-3. En **Release title** escribe `Atril PDF 0.1.0` y pulsa **Publish release**.
+2. Pulsa **Choose a tag**, escribe `v1.0.0` y pulsa **Create new tag**.
+3. En **Release title** escribe `Atril PDF 1.0.0` y pulsa **Publish release**.
 4. Espera unos 30 minutos. En esa misma página aparecerán los archivos:
    - Windows: `…-win-x64.exe` (instalador)
    - Mac: `…-mac-universal.dmg`

@@ -61,8 +61,8 @@ Revisados para que quepan en los límites de cada tienda. Puedes cambiar lo que 
 >
 > Código abierto (licencia MIT). Hecho por Marcos Hernández Párraga.
 
-**Novedades de esta versión** (máx. 500):
-`Ahora en 21 idiomas: usa el idioma de tu dispositivo y puedes cambiarlo en Ajustes. Amplía la partitura con dos dedos o Ctrl + rueda. Nuevo panel de páginas: reordena, duplica, elimina y añade páginas, otro PDF o imágenes. Pentagrama de cinco líneas e imágenes sobre la página. Arrastra obras a una carpeta y ordénalas arrastrando. Paso de página más suave y rápido. Versión web instalable en iPhone y iPad.`
+**Novedades de esta versión** (máx. 500) — versión 1.0.0, la primera:
+`Primera versión de Atril PDF, tu atril digital. Lee tus partituras PDF y pasa página tocando, deslizando, con el teclado o con un pedal Bluetooth. Carpetas por concierto con «Iniciar concierto». Lápiz, subrayador, texto, pentagrama e imágenes sobre la partitura. Amplía con dos dedos. Panel para reordenar y añadir páginas. 21 idiomas. Gratis, sin anuncios, sin cuentas y sin conexión.`
 
 ---
 
@@ -119,8 +119,8 @@ Revisados para que quepan en los límites de cada tienda. Puedes cambiar lo que 
 >
 > Open source (MIT licence). Made by Marcos Hernández Párraga.
 
-**What's new:**
-`Now in 21 languages: it follows your device language and can be changed in Settings. Pinch to zoom or Ctrl + wheel. New page panel: reorder, duplicate, delete and add pages, another PDF or images. Five-line staff and images on the page. Drag pieces into a folder and reorder them by dragging. Smoother, faster page turns. Installable web version for iPhone and iPad.`
+**What's new** (version 1.0.0, the first one):
+`First release of Atril PDF, your digital music stand. Read your PDF scores and turn pages by tapping, swiping, with the keyboard or a Bluetooth pedal. A folder for each concert with "Start concert". Pen, highlighter, text, staff and images on your score. Pinch to zoom. A panel to reorder and add pages. 21 languages. Free, no ads, no accounts, works offline.`
 
 ---
 

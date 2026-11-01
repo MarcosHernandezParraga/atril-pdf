@@ -1,9 +1,12 @@
 # Publicar Atril PDF — índice
 
+> 👉 **¿Empiezas desde cero?** Lee primero **[00-EMPIEZA-AQUI.md](00-EMPIEZA-AQUI.md)**: todo el camino en orden, de la cuenta de GitHub a las tiendas, con la versión base 1.0.0.
+
 Cada documento de esta carpeta explica **un solo sitio**, paso a paso, sin tecnicismos. Hazlos **en este orden**: el primero es imprescindible para todos los demás.
 
 | Orden | Documento | Para qué sirve | ¿Cuesta dinero? |
 | --- | --- | --- | --- |
+| 0 | [00-EMPIEZA-AQUI.md](00-EMPIEZA-AQUI.md) | **Todo en orden, desde cero** | — |
 | 1 | [01-github.md](01-github.md) | Guardar el proyecto y que se fabriquen solos los instaladores | Gratis |
 | 2 | [02-descargas-directas.md](02-descargas-directas.md) | Que cualquiera la descargue para Windows, Mac, Linux y Android | Gratis |
 | 3 | [03-web-iphone-ipad.md](03-web-iphone-ipad.md) | Versión web que se instala en iPhone y iPad desde Safari | Gratis |

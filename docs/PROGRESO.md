@@ -1,8 +1,15 @@
 # Progreso del proyecto
 
-*Actualizado: 1 de noviembre de 2026 (cuarta tanda: idiomas) — versión 0.3.0*
+*Actualizado: 1 de noviembre de 2026 — versión 1.0.0, la primera pública (versión base)*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
+
+## Versión 1.0.0: la versión base para publicar ✅
+
+- ✅ Número de versión 1.0.0 (Android `versionCode` 10000). Las 0.x fueron de prueba y no se publicaron.
+- ✅ Guía única y ordenada para publicar desde cero: `docs/publicar/00-EMPIEZA-AQUI.md`.
+- ✅ Textos de «Novedades» de las tiendas para la primera versión (`fastlane/metadata/android/*/changelogs/10000.txt` y guía 12).
+- ⏳ Crear el repositorio en GitHub, subir el código, clave de firma de Android y publicar `v1.0.0` (los pasos de Marcos están en la guía 00).
 
 ## Cuarta tanda (versión 0.3.0): idiomas ✅
 

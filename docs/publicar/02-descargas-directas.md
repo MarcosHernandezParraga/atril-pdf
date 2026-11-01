@@ -56,7 +56,7 @@ Más detalles en la guía 06.
 
 Cada versión incluye **`SHA256SUMS.txt`** con la «huella» de cada archivo.
 
-- **Windows** (PowerShell): `Get-FileHash ".\Atril.PDF-0.3.0-win-x64.exe"`
+- **Windows** (PowerShell): `Get-FileHash ".\Atril.PDF-1.0.0-win-x64.exe"`
 - **Mac / Linux** (Terminal): `shasum -a 256 nombre-del-archivo`
 
 El número que sale debe ser **idéntico** al de `SHA256SUMS.txt`. Si no lo es, no lo instales.

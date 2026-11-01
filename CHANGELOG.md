@@ -1,5 +1,16 @@
 # Registro de cambios / Changelog
 
+## [1.0.0] — 2026-11-01 — Primera versión pública
+
+Primera versión publicada para todo el mundo: la **versión base**. Reúne todo lo de las versiones de prueba 0.1.0, 0.2.0 y 0.3.0 (detalladas abajo), que no se llegaron a publicar.
+
+- Lector de partituras PDF con paso de página tocando, deslizando, con teclado o con pedal Bluetooth; media página «estilo atril», vista continua y dos páginas.
+- Carpetas-concierto con «Iniciar concierto», arrastrar obras y reordenarlas.
+- Lápiz, subrayador, borrador, texto, pentagrama e imágenes sobre la página.
+- Zoom con dos dedos o Ctrl + rueda; panel de páginas.
+- 21 idiomas con el del dispositivo por defecto.
+- Windows, Mac, Linux, Android y versión web instalable en iPhone y iPad. Sin anuncios, sin cuentas, sin conexión y sin recoger datos.
+
 ## [0.3.0] — 2026-11-01
 
 ### Añadido
