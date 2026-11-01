@@ -239,5 +239,27 @@
     "hide": "Hide annotations",
     "stylusHint": "Pencil only: the finger no longer draws (you can rest your hand).",
     "fingerHint": "Pencil and finger: both draw."
+  },
+  "pages": {
+    "title": "Pages",
+    "open": "Pages",
+    "addBlank": "Blank page",
+    "addPdf": "Add PDF",
+    "addImage": "Add image",
+    "hint": "Tap a page to go to it. Press, hold and drag it to change the order.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "blank": "Blank",
+    "image": "Image",
+    "staffPaper": "Staff paper",
+    "pdfPage": "PDF page {{n}}",
+    "added_one": "{{count}} page added",
+    "added_other": "{{count}} pages added",
+    "deleted": "Page deleted (you can undo it)",
+    "duplicated": "Page duplicated",
+    "moved": "Page moved",
+    "blankAdded": "Blank page added"
   }
 }

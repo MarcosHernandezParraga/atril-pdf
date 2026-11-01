@@ -2,11 +2,13 @@
 import * as DocumentPicker from 'expo-document-picker';
 
 import type { ExternalFile } from '../storage/types';
+import type { PickKind } from './pickFiles';
 
 /** Opens the system file picker (no storage permission needed). */
-export async function pickFiles(): Promise<ExternalFile[]> {
+export async function pickFiles(kind: PickKind = 'all'): Promise<ExternalFile[]> {
   const r = await DocumentPicker.getDocumentAsync({
-    type: ['application/pdf', 'image/*'],
+    type:
+      kind === 'pdf' ? ['application/pdf'] : kind === 'image' ? ['image/*'] : ['application/pdf', 'image/*'],
     multiple: true,
     copyToCacheDirectory: true,
   });

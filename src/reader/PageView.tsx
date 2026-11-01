@@ -69,23 +69,27 @@ export function filterStyle(filter: DisplayFilter, brightness = 1): ViewStyle {
   return {};
 }
 
-function usePageImage(page: PageRef, pixelWidth: number): RenderedPage | null | 'error' {
+function usePageImage(page: PageRef, pixelWidth: number, thumbnail = false): RenderedPage | null | 'error' {
   const renderer = getServices().renderer;
-  const cached = pixelWidth > 0 ? renderer.peek(page, pixelWidth) : undefined;
+  const cached =
+    pixelWidth > 0
+      ? thumbnail
+        ? renderer.peekThumb(page, pixelWidth)
+        : renderer.peek(page, pixelWidth)
+      : undefined;
   const [loaded, setLoaded] = useState<{ page: PageRef; width: number; img: RenderedPage | 'error' } | null>(
     null,
   );
   useEffect(() => {
     if (cached || pixelWidth <= 0) return;
     let alive = true;
-    renderer
-      .render(page, pixelWidth)
+    (thumbnail ? renderer.renderThumb(page, pixelWidth) : renderer.render(page, pixelWidth))
       .then((r) => alive && r && setLoaded({ page, width: pixelWidth, img: r }))
       .catch(() => alive && setLoaded({ page, width: pixelWidth, img: 'error' }));
     return () => {
       alive = false;
     };
-  }, [renderer, page, pixelWidth, cached]);
+  }, [renderer, page, pixelWidth, cached, thumbnail]);
   if (cached) return cached;
   if (loaded && loaded.page === page && loaded.width === pixelWidth) return loaded.img;
   return null;
@@ -152,6 +156,8 @@ export interface PageViewProps {
   /** Annotations drawn on top of the page (vectors). */
   annotations?: Annotation[];
   hiddenIds?: ReadonlySet<string>;
+  /** Small picture for lists (page panel): own cache, no annotations, no zoom. */
+  thumbnail?: boolean;
 }
 
 export const PageView = memo(function PageView({
@@ -163,10 +169,11 @@ export const PageView = memo(function PageView({
   testID,
   annotations,
   hiddenIds,
+  thumbnail = false,
 }: PageViewProps) {
   const height = pageHeightForWidth(page, width);
   const fromContext = useContext(PageAnnotationsContext);
-  const pageAnnotations = annotations ?? fromContext?.[page.id];
+  const pageAnnotations = thumbnail ? undefined : (annotations ?? fromContext?.[page.id]);
   const [b0, b1] = band ?? [0, 1];
   const visibleH = Math.max(1, (b1 - b0) * height);
 
@@ -178,12 +185,13 @@ export const PageView = memo(function PageView({
   // Size of the full (uncropped) page at this scale.
   const fullW = cw / Math.max(0.05, 1 - crop.left - crop.right);
   const fullH = ch / Math.max(0.05, 1 - crop.top - crop.bottom);
-  const zoom = useContext(RenderZoomContext);
+  const zoomContext = useContext(RenderZoomContext);
+  const zoom = thumbnail ? 1 : zoomContext;
   const basePixelWidth = renderPixelWidth(page, width);
   const pixelWidth = renderPixelWidth(page, width, zoom);
 
   const isRaster = page.kind === 'pdf' || page.kind === 'image';
-  const sharp = usePageImage(page, isRaster ? pixelWidth : 0);
+  const sharp = usePageImage(page, isRaster ? pixelWidth : 0, thumbnail);
   // While the sharper (zoomed) image is being prepared, keep showing the normal one.
   const img =
     sharp ??

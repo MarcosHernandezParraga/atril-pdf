@@ -239,5 +239,27 @@
     "hide": "Ocultar anotaciones",
     "stylusHint": "Solo lápiz: el dedo ya no dibuja (sirve para apoyar la mano).",
     "fingerHint": "Lápiz y dedo: los dos dibujan."
+  },
+  "pages": {
+    "title": "Páginas",
+    "open": "Páginas",
+    "addBlank": "Página en blanco",
+    "addPdf": "Añadir PDF",
+    "addImage": "Añadir imagen",
+    "hint": "Toca una página para ir a ella. Mantenla pulsada y arrástrala para cambiar el orden.",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "duplicate": "Duplicar",
+    "delete": "Eliminar",
+    "blank": "En blanco",
+    "image": "Imagen",
+    "staffPaper": "Papel pautado",
+    "pdfPage": "Página {{n}} del PDF",
+    "added_one": "Se ha añadido {{count}} página",
+    "added_other": "Se han añadido {{count}} páginas",
+    "deleted": "Página eliminada (puedes deshacerlo)",
+    "duplicated": "Página duplicada",
+    "moved": "Página movida",
+    "blankAdded": "Página en blanco añadida"
   }
 }

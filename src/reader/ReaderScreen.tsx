@@ -48,7 +48,11 @@ import {
   type ViewMode,
 } from '../core/navigation';
 import { swipeAction, tapZoneAction } from '../core/tapZones';
+import { newId } from '../core/ids';
 import { useReaderKeys } from '../input/useReaderKeys';
+import { importPages } from '../library/importer';
+import { pickFiles } from '../library/pickFiles';
+import { askPdfPassword, reportImport } from '../library/useExternalOpen';
 import { getServices } from '../services';
 import { READER_MODES, type DisplayFilter, type InputMode, type ReaderMode } from '../settings/defaults';
 import { useSettings } from '../settings/store';
@@ -68,6 +72,15 @@ import { PerformanceChrome, useDesktopFullscreenSync } from './performance';
 import { StopView } from './StopView';
 import { analysePage } from './usePageAnalysis';
 import { parseViewState, useDocument } from './useDocument';
+import { PagePanel, type PagePanelActions } from './PagePanel';
+import {
+  blankPageLike,
+  duplicatePageCommand,
+  insertPagesCommand,
+  movePageCommand,
+  pageAfterRemoval,
+  removePageCommand,
+} from './pageEditing';
 import { usePageZoom } from './usePageZoom';
 import { renderZoom } from './zoomMath';
 
@@ -129,6 +142,10 @@ export function ReaderScreen() {
   const [annotating, setAnnotating] = useState(false);
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [tools, setTools] = useState<ToolState>(DEFAULT_TOOL_STATE);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelBusy, setPanelBusy] = useState(false);
+  // After a change in the page panel, the page to show (by id).
+  const [showPageId, setShowPageId] = useState<string | null>(null);
   const continuousRef = useRef<ContinuousHandle>(null);
   const viewState = useMemo(() => parseViewState(doc?.viewStateJson), [doc]);
   const inputMode: InputMode =
@@ -166,6 +183,11 @@ export function ReaderScreen() {
     if (nav && nav.docId === doc.id) {
       const prev = nav.stops[Math.min(nav.index, nav.stops.length - 1)];
       anchor = nav.continuous ? continuousPage : prev ? primaryPage(prev) : 0;
+      if (showPageId) {
+        const shown = pages.findIndex((p) => p.id === showPageId);
+        if (shown >= 0) anchor = shown;
+        setShowPageId(null);
+      }
     } else if (pendingStart) {
       toLast = pendingStart === 'last';
       anchor = toLast ? pages.length - 1 : 0;
@@ -246,11 +268,12 @@ export function ReaderScreen() {
     hideTimer.current = setTimeout(() => setBarsVisible(false), BAR_HIDE_MS);
   }, []);
   useEffect(() => {
-    if (barsVisible && !fullscreen && !annotating) scheduleHide();
+    // The bars stay while the page panel is open.
+    if (barsVisible && !fullscreen && !annotating && !panelOpen) scheduleHide();
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
-  }, [barsVisible, fullscreen, annotating, scheduleHide]);
+  }, [barsVisible, fullscreen, annotating, panelOpen, scheduleHide]);
 
   const showBanner = useCallback((text: string) => {
     setBanner(text);
@@ -455,6 +478,64 @@ export function ReaderScreen() {
   });
   const gestures = useCompetingGestures(zoomPinch, zoomMove, pan, tap);
 
+  // -------------------------------------------------------------- page panel
+  const addFiles = async (kind: 'pdf' | 'image') => {
+    const files = await pickFiles(kind);
+    if (files.length === 0) return;
+    setPanelBusy(true);
+    try {
+      const s = getServices();
+      const result = await importPages(
+        { repo: s.repo, storage: s.storage, engine: s.engine, askPassword: askPdfPassword },
+        files,
+      );
+      if (result.failures.length > 0) reportImport({ documentIds: [], failures: result.failures });
+      const first = result.pages[0];
+      if (first) {
+        execute(
+          insertPagesCommand(currentPage + 1, result.pages),
+          t(kind === 'pdf' ? 'pages.addPdf' : 'pages.addImage'),
+        );
+        setShowPageId(first.id);
+        dialogs.toast(t('pages.added', { count: result.pages.length }));
+      }
+    } finally {
+      setPanelBusy(false);
+    }
+  };
+  const pageActions: PagePanelActions = {
+    goTo: (i) => goToPage(i),
+    move: (from, to) => {
+      const cmd = movePageCommand(pages, from, to);
+      if (!cmd) return;
+      const keep = pages[currentPage]?.id;
+      execute(cmd, t('pages.moved'));
+      if (keep) setShowPageId(keep);
+    },
+    duplicate: (i) => {
+      const r = model ? duplicatePageCommand(model, i, newId) : null;
+      if (!r) return;
+      execute(r.command, t('pages.duplicate'));
+      setShowPageId(r.copyId);
+      dialogs.toast(t('pages.duplicated'));
+    },
+    remove: (i) => {
+      const cmd = removePageCommand(pages, i);
+      if (!cmd) return;
+      const next = i === currentPage ? pageAfterRemoval(pages, i) : pages[currentPage]?.id;
+      execute(cmd, t('pages.delete'));
+      if (next) setShowPageId(next);
+      dialogs.toast(t('pages.deleted'));
+    },
+    addBlank: () => {
+      const page = blankPageLike(pages[currentPage], newId());
+      execute(insertPagesCommand(currentPage + 1, [page]), t('pages.addBlank'));
+      setShowPageId(page.id);
+      dialogs.toast(t('pages.blankAdded'));
+    },
+    addFiles: (kind) => void addFiles(kind),
+  };
+
   // ------------------------------------------------------------------- menus
   const chooseMode = () =>
     void dialogs.menu(
@@ -592,6 +673,8 @@ export function ReaderScreen() {
     : undefined;
 
   const showBars = (barsVisible || annotating) && !fullscreen;
+  // Phones: fewer icons in the top bar (the rest go to a "more" menu).
+  const compactBar = size.width < 560;
   const canUndo = (history?.past.length ?? 0) > 0;
   const canRedo = (history?.future.length ?? 0) > 0;
   const annotatedPage = annotating && currentStop?.kind === 'page' ? pages[currentStop.page] : undefined;
@@ -836,16 +919,44 @@ export function ReaderScreen() {
                       icon="undo"
                       label={t('common.undo')}
                       color="#FFFFFF"
-                      onPress={undo}
+                      onPress={() => {
+                        undo();
+                        scheduleHide(); // undoing several times: the bar stays visible
+                      }}
                       disabled={!canUndo}
+                      testID="reader-undo"
                     />
-                    <IconButton icon="crop" label={t('reader.crop')} color="#FFFFFF" onPress={cropMenu} />
                     <IconButton
-                      icon="theme-light-dark"
-                      label={t('reader.display')}
+                      icon="view-grid-outline"
+                      label={t('pages.open')}
                       color="#FFFFFF"
-                      onPress={chooseDisplay}
+                      onPress={() => setPanelOpen(true)}
+                      testID="reader-pages"
                     />
+                    {compactBar ? (
+                      <IconButton
+                        icon="dots-horizontal"
+                        label={t('library.moreOptions')}
+                        color="#FFFFFF"
+                        onPress={() =>
+                          void dialogs.menu([
+                            { label: t('reader.crop'), icon: 'crop', onPress: cropMenu },
+                            { label: t('reader.display'), icon: 'theme-light-dark', onPress: chooseDisplay },
+                          ])
+                        }
+                        testID="reader-more"
+                      />
+                    ) : (
+                      <>
+                        <IconButton icon="crop" label={t('reader.crop')} color="#FFFFFF" onPress={cropMenu} />
+                        <IconButton
+                          icon="theme-light-dark"
+                          label={t('reader.display')}
+                          color="#FFFFFF"
+                          onPress={chooseDisplay}
+                        />
+                      </>
+                    )}
                     <IconButton
                       icon="book-open-variant"
                       label={t('reader.viewMode')}
@@ -964,6 +1075,15 @@ export function ReaderScreen() {
             </View>
           ) : null}
         </View>
+        {panelOpen && model && !annotating ? (
+          <PagePanel
+            pages={pages}
+            current={currentPage}
+            busy={panelBusy}
+            onClose={() => setPanelOpen(false)}
+            actions={pageActions}
+          />
+        ) : null}
       </PageAnnotationsContext.Provider>
     </View>
   );

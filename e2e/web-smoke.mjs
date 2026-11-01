@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 // Browser test of the main user journeys: import, read, turn pages with pedal keys,
-// zoom (wheel, keys, pinch), view modes, write on the PDF (pen and text), concert
+// zoom (wheel, keys, pinch), page panel, view modes, write on the PDF (pen and text), concert
 // folders, dragging pieces onto folders and reordering them, settings, protected PDFs.
 import { createRequire } from 'node:module';
 
@@ -222,6 +222,46 @@ await step('zoom: Ctrl + wheel, keys, pinch with two fingers, then turning reset
   if ((await zoomOf()).scale !== 1) throw new Error('turning did not reset the zoom');
   await page.keyboard.press('Home');
   await page.waitForTimeout(600);
+});
+
+await step('page panel: blank page, duplicate, move, delete, add a PDF, undo', async () => {
+  const count = () => page.locator('[data-testid^="page-item-"]').count();
+  await showBars();
+  await page.getByTestId('reader-pages').click();
+  await page.getByTestId('page-panel').waitFor();
+  if ((await count()) !== 6) throw new Error(`rows ${await count()}`);
+  await page.getByTestId('page-add-blank').click();
+  await page.waitForTimeout(400);
+  if ((await count()) !== 7) throw new Error('blank page');
+  if (!(await page.getByTestId('page-item-2').textContent())?.includes('En blanco'))
+    throw new Error('blank at 2');
+  await page.getByTestId('page-dup-1').click();
+  await page.waitForTimeout(400);
+  if ((await count()) !== 8) throw new Error('duplicate');
+  await page.getByTestId('page-down-3').click();
+  await page.waitForTimeout(400);
+  if (!(await page.getByTestId('page-item-4').textContent())?.includes('En blanco'))
+    throw new Error('move down');
+  await page.getByTestId('page-del-4').click();
+  await page.waitForTimeout(400);
+  if ((await count()) !== 7) throw new Error('delete');
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByTestId('page-add-pdf').click();
+  await (await chooser).setFiles('test-fixtures/piano-prueba.pdf');
+  await page.getByTestId('page-item-10').waitFor({ timeout: 15000 });
+  await page.screenshot({ path: `${shots}/04c-panel-paginas.png` });
+  await page.getByTestId('page-panel-close').click();
+  await page.waitForTimeout(400);
+  // Undo everything: the document is back to its 6 original pages.
+  for (let i = 0; i < 5; i++) {
+    await showBars();
+    await page.getByTestId('reader-undo').click();
+    await page.waitForTimeout(250);
+  }
+  await page.keyboard.press('Home');
+  await page.waitForTimeout(600);
+  await showBars();
+  if ((await indicator()) !== 'Página 1 de 6') throw new Error(`after undo: ${await indicator()}`);
 });
 
 await step('annotations are saved: reopening shows them', async () => {

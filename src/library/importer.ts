@@ -178,3 +178,28 @@ export async function importFiles(
   }
   return result;
 }
+
+/**
+ * Copies files into the library and returns their pages, to be inserted into an
+ * existing document (another PDF merged into it, or images as new pages).
+ */
+export async function importPages(
+  deps: ImporterDeps,
+  files: ExternalFile[],
+): Promise<{ pages: PageRef[]; failures: ImportResult['failures'] }> {
+  const pages: PageRef[] = [];
+  const failures: ImportResult['failures'] = [];
+  const newSources: NewSource[] = [];
+  for (const file of files) {
+    try {
+      const r = await importSource(deps, file);
+      newSources.push(r.source);
+      pages.push(...r.pages);
+    } catch (e) {
+      console.warn(`[import] ${file.name}:`, e);
+      failures.push({ name: file.name, reason: reasonOf(e) });
+    }
+  }
+  await deps.repo.addSources(newSources);
+  return { pages, failures };
+}

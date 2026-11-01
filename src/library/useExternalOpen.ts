@@ -26,13 +26,16 @@ export function reportImport(result: ImportResult) {
   }
 }
 
+/** Asks for the password of a protected PDF (null when the user cancels). */
+export const askPdfPassword = (name: string, retry: boolean) =>
+  dialogs.prompt(i18n.t('library.passwordTitle'), {
+    message: i18n.t(retry ? 'library.passwordWrong' : 'library.passwordPrompt', { name }),
+    secure: true,
+  });
+
 export async function importAndReport(files: ExternalFile[], folderId: string | null): Promise<ImportResult> {
   const s = getServices();
-  const askPassword = (name: string, retry: boolean) =>
-    dialogs.prompt(i18n.t('library.passwordTitle'), {
-      message: i18n.t(retry ? 'library.passwordWrong' : 'library.passwordPrompt', { name }),
-      secure: true,
-    });
+  const askPassword = askPdfPassword;
   const result = await importFiles(
     { repo: s.repo, storage: s.storage, engine: s.engine, askPassword },
     files,

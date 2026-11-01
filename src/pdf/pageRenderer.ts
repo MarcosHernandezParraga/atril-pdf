@@ -27,6 +27,9 @@ export class PageRenderer {
   private images: LruCache<string, RenderedPage>;
   private grays = new LruCache<string, GrayImage>(24);
   private imageSources = new LruCache<string, RenderedPage>(16, (_k, v) => revoke(v.uri));
+  /** Small images for the page panel, kept apart so they never push out the pages being read. */
+  private thumbs = new LruCache<string, RenderedPage>(160, (_k, v) => revoke(v.uri));
+  private thumbQueue: Promise<unknown> = Promise.resolve();
 
   constructor(
     private engine: PdfEngine,
@@ -88,6 +91,33 @@ export class PageRenderer {
     return p;
   }
 
+  /** Thumbnail already available (synchronous), or undefined. */
+  peekThumb(page: PageRef, widthPx: number): RenderedPage | undefined {
+    if (page.kind === 'image') return this.imageSources.get(`img:${page.sourceId}`);
+    if (page.kind !== 'pdf') return undefined;
+    return this.thumbs.get(`${page.sourceId}:${page.pageIndex}:t${widthBucket(widthPx, 64, 512)}`);
+  }
+
+  /** Renders a thumbnail; thumbnails are made one at a time, after the pages being read. */
+  renderThumb(page: PageRef, widthPx: number): Promise<RenderedPage | null> {
+    if (page.kind === 'image') return this.render(page, widthPx);
+    if (page.kind !== 'pdf') return Promise.resolve(null);
+    const w = widthBucket(widthPx, 64, 512);
+    const k = `${page.sourceId}:${page.pageIndex}:t${w}`;
+    const cached = this.thumbs.get(k);
+    if (cached) return Promise.resolve(cached);
+    const run = this.thumbQueue.then(async () => {
+      const again = this.thumbs.get(k);
+      if (again) return again;
+      const h = await this.handleFor(page.sourceId);
+      const r = await h.render(page.pageIndex, w);
+      this.thumbs.set(k, r);
+      return r;
+    });
+    this.thumbQueue = run.catch(() => undefined);
+    return run;
+  }
+
   private async renderImageSource(sourceId: string, k: string): Promise<RenderedPage> {
     const cached = this.imageSources.get(k);
     if (cached) return cached;
@@ -144,6 +174,7 @@ export class PageRenderer {
     this.images.clear();
     this.grays.clear();
     this.imageSources.clear();
+    this.thumbs.clear();
     await Promise.all(hs.map((h) => h.then((x) => x.close()).catch(() => undefined)));
   }
 }

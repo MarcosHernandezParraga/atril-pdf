@@ -5,7 +5,7 @@
 // other rows make room smoothly. Used for the pieces of a concert and the
 // pages of a document.
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
@@ -23,6 +23,7 @@ function SortRow({
   dragging,
   dy,
   enabled,
+  longPress,
   onStart,
   onMove,
   onEnd,
@@ -35,6 +36,7 @@ function SortRow({
   dragging: boolean;
   dy: number;
   enabled: boolean;
+  longPress: boolean;
   onStart: (index: number) => void;
   onMove: (dy: number) => void;
   onEnd: () => void;
@@ -59,6 +61,7 @@ function SortRow({
 
   // Stable gesture configuration (re-creating it while dragging would cancel the drag).
   const latest = useRef({ index, onStart, onMove, onEnd });
+  const active = useRef(false);
   useEffect(() => {
     latest.current = { index, onStart, onMove, onEnd };
   });
@@ -66,9 +69,18 @@ function SortRow({
     runOnJS: true,
     enabled,
     minDistance: 3,
-    onActivate: () => latest.current.onStart(latest.current.index),
+    activateAfterLongPress: longPress ? 300 : undefined,
+    onActivate: () => {
+      active.current = true;
+      latest.current.onStart(latest.current.index);
+    },
     onUpdate: (e) => latest.current.onMove(e.translationY),
-    onFinalize: () => latest.current.onEnd(),
+    // Only a real drag ends a drag (a simple tap must stay a tap).
+    onFinalize: () => {
+      if (!active.current) return;
+      active.current = false;
+      latest.current.onEnd();
+    },
   });
 
   return (
@@ -100,6 +112,7 @@ export function DragSortList<T>({
   renderRow,
   onReorder,
   enabled,
+  longPress = false,
   onDragChange,
   testIDPrefix,
 }: {
@@ -107,16 +120,30 @@ export function DragSortList<T>({
   keyOf: (item: T) => string;
   /** Height of each row including the gap below it. */
   rowHeight: number;
-  renderRow: (item: T, index: number, dragging: boolean) => ReactNode;
+  /**
+   * `guard` wraps a press handler so that it is ignored right after a drag (in a
+   * browser, releasing the mouse after a drag also counts as a click).
+   */
+  renderRow: (item: T, index: number, dragging: boolean, guard: (fn: () => void) => () => void) => ReactNode;
   onReorder: (from: number, to: number) => void;
   /** Dragging is only possible when enabled (e.g. "Reorder" mode). */
   enabled: boolean;
+  /** Press and hold before dragging, so a quick swipe still scrolls the list. */
+  longPress?: boolean;
   /** Lets the parent stop scrolling while a row is dragged. */
   onDragChange?: (dragging: boolean) => void;
   testIDPrefix?: string;
 }) {
   const [drag, setDrag] = useState<{ from: number; dy: number } | null>(null);
   const to = drag ? dropIndex(drag.from, drag.dy, rowHeight, items.length) : -1;
+  const lastDrag = useRef(0);
+  const guard = useCallback(
+    (fn: () => void) => () => {
+      if (Date.now() - lastDrag.current < 400) return;
+      fn();
+    },
+    [],
+  );
 
   return (
     <View style={{ height: items.length * rowHeight }}>
@@ -130,12 +157,15 @@ export function DragSortList<T>({
           dragging={drag?.from === i}
           dy={drag?.from === i ? drag.dy : 0}
           enabled={enabled}
+          longPress={longPress}
           onStart={(index) => {
+            lastDrag.current = Date.now();
             setDrag({ from: index, dy: 0 });
             onDragChange?.(true);
           }}
           onMove={(dy) => setDrag((d) => (d ? { ...d, dy } : d))}
           onEnd={() => {
+            lastDrag.current = Date.now();
             setDrag((d) => {
               if (d) {
                 const target = dropIndex(d.from, d.dy, rowHeight, items.length);
@@ -146,7 +176,7 @@ export function DragSortList<T>({
             onDragChange?.(false);
           }}
         >
-          {renderRow(item, i, drag?.from === i)}
+          {renderRow(item, i, drag?.from === i, guard)}
         </SortRow>
       ))}
     </View>
