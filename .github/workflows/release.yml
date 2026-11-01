@@ -45,8 +45,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: escritorio-${{ matrix.os }}
+          # One installer per processor (x64, arm64); the combined one would be twice as big.
           path: |
             desktop/release/*.exe
+            !desktop/release/*-win.exe
             desktop/release/*.appx
             desktop/release/*.dmg
             desktop/release/*.AppImage
@@ -81,7 +83,8 @@ jobs:
           ATRIL_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           cd android
-          ./gradlew assembleRelease bundleRelease --no-daemon
+          # Phones, tablets and Chromebooks (ARM). Half the download size of including emulator processors.
+          ./gradlew assembleRelease bundleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
       - name: Collect
         run: |
           mkdir -p out
