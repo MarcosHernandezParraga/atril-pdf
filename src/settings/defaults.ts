@@ -66,7 +66,7 @@ export interface AppSettings {
   annotations: AnnotationSettings;
   thumbnails: { side: 'left' | 'right'; size: 'small' | 'medium' | 'large' };
   library: { view: 'grid' | 'list'; sort: DocumentSort; desktopImportMode: 'copy' | 'link' };
-  hints: { performanceExitShown: boolean };
+  hints: { performanceExitShown: boolean; installShown: boolean };
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -101,7 +101,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   thumbnails: { side: 'left', size: 'medium' },
   library: { view: 'grid', sort: 'recent', desktopImportMode: 'copy' },
-  hints: { performanceExitShown: false },
+  hints: { performanceExitShown: false, installShown: false },
 };
 
 type Plain = Record<string, unknown>;

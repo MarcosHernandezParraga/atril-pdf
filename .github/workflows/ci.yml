@@ -45,6 +45,10 @@ jobs:
           sleep 1
           mkdir -p e2e-shots
           node e2e/web-smoke.mjs http://localhost:8765 e2e-shots
+      - name: Installable web version (GitHub Pages, offline)
+        run: |
+          npm run export:pages
+          node e2e/pwa-smoke.mjs dist-pages /atril-pdf
       - name: Desktop (Electron) smoke test
         run: |
           node scripts/desktop.mjs prepare

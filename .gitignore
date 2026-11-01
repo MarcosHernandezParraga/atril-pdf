@@ -75,3 +75,4 @@ e2e-shots/
 modules/*/android/build/
 modules/*/android/.cxx/
 modules/*/ios/build/
+dist-pages/

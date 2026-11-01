@@ -24,6 +24,7 @@
     "check": "npm run typecheck && npm run lint && npm test -- --ci",
     "postinstall": "node scripts/copy-vendor.mjs",
     "export:web": "expo export -p web --output-dir dist",
+    "export:pages": "EXPO_PUBLIC_BASE_PATH=/atril-pdf expo export -p web --output-dir dist-pages && node scripts/web-pwa.mjs dist-pages /atril-pdf",
     "desktop:prepare": "node scripts/desktop.mjs prepare",
     "desktop:start": "npm run export:web && node scripts/desktop.mjs prepare && electron desktop/app",
     "desktop:dist": "npm run export:web && node scripts/desktop.mjs prepare && electron-builder --config desktop/electron-builder.config.js",

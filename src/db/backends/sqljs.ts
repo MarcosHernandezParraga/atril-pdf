@@ -5,6 +5,7 @@
 
 import { idbStore, loadScript } from '../../platform/loadScript';
 import { normalizeParams, SerialQueue, type SqlExecutor, type SqlQuery, type SqlResult } from '../executor';
+import { assetUrl } from '../../platform/basePath';
 
 interface SqlJsStatement {
   bind(params: unknown[]): void;
@@ -23,9 +24,9 @@ type InitSqlJs = (opts: { locateFile: (f: string) => string }) => Promise<{
 }>;
 
 export async function createSqlJsExecutor(): Promise<SqlExecutor> {
-  await loadScript('/vendor/sqljs/sql-wasm-browser.js');
+  await loadScript(assetUrl('/vendor/sqljs/sql-wasm-browser.js'));
   const init = (window as unknown as { initSqlJs: InitSqlJs }).initSqlJs;
-  const SQL = await init({ locateFile: (f) => `/vendor/sqljs/${f}` });
+  const SQL = await init({ locateFile: (f) => assetUrl(`/vendor/sqljs/${f}`) });
   const store = idbStore('atril-dev-db');
   const saved = await store.get<Uint8Array>('db');
   const db = new SQL.Database(saved ?? undefined);

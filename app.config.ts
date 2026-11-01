@@ -129,6 +129,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
+    // Web version published in a sub-folder (GitHub Pages): e.g. EXPO_PUBLIC_BASE_PATH=/atril-pdf
+    ...(process.env.EXPO_PUBLIC_BASE_PATH ? { baseUrl: process.env.EXPO_PUBLIC_BASE_PATH } : {}),
   },
   extra: {
     author: identity.author,

@@ -15,6 +15,7 @@ import {
   type RenderedPage,
   type SearchHit,
 } from './types';
+import { assetUrl } from '../platform/basePath';
 
 // Minimal typing of the parts of pdf.js used here.
 interface PdfJsViewport {
@@ -52,10 +53,10 @@ let libPromise: Promise<PdfJsLib> | null = null;
 
 export function loadPdfJs(): Promise<PdfJsLib> {
   if (!libPromise) {
-    libPromise = loadScript('/vendor/pdfjs/pdf.min.mjs', 'module').then(() => {
+    libPromise = loadScript(assetUrl('/vendor/pdfjs/pdf.min.mjs'), 'module').then(() => {
       const lib = (globalThis as unknown as { pdfjsLib?: PdfJsLib }).pdfjsLib;
       if (!lib) throw new Error('pdf.js not available');
-      lib.GlobalWorkerOptions.workerSrc = '/vendor/pdfjs/pdf.worker.min.mjs';
+      lib.GlobalWorkerOptions.workerSrc = assetUrl('/vendor/pdfjs/pdf.worker.min.mjs');
       return lib;
     });
     libPromise.catch(() => {
@@ -99,11 +100,11 @@ export async function openPdfJsDocument(data: Uint8Array, password?: string): Pr
     return await lib.getDocument({
       data,
       password,
-      cMapUrl: '/vendor/pdfjs/cmaps/',
+      cMapUrl: assetUrl('/vendor/pdfjs/cmaps/'),
       cMapPacked: true,
-      standardFontDataUrl: '/vendor/pdfjs/standard_fonts/',
-      wasmUrl: '/vendor/pdfjs/wasm/',
-      iccUrl: '/vendor/pdfjs/iccs/',
+      standardFontDataUrl: assetUrl('/vendor/pdfjs/standard_fonts/'),
+      wasmUrl: assetUrl('/vendor/pdfjs/wasm/'),
+      iccUrl: assetUrl('/vendor/pdfjs/iccs/'),
       isEvalSupported: false,
       enableXfa: false,
       useSystemFonts: false,

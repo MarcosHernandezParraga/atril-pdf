@@ -7,6 +7,7 @@ module.exports = defineConfig([
   {
     ignores: [
       'dist/*',
+      'dist-pages/*',
       'android/*',
       'ios/*',
       'desktop/app/*',

@@ -1,0 +1,50 @@
+# Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
+# Publishes the web version (installable on iPhone, iPad and any browser) on
+# GitHub Pages: https://<user>.github.io/<repository>/
+# Runs for every new version (tag v1.2.3) and can also be started by hand
+# (Actions → Web (GitHub Pages) → Run workflow).
+name: Web (GitHub Pages)
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Export the web version
+        run: npx expo export -p web --output-dir dist
+      - name: Make it installable and usable offline
+        run: node scripts/web-pwa.mjs dist "$EXPO_PUBLIC_BASE_PATH"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

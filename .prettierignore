@@ -7,3 +7,4 @@ desktop/release
 public/vendor
 coverage
 *.md
+dist-pages/

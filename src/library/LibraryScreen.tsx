@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -18,6 +19,7 @@ import {
 } from 'react-native';
 
 import { APP_AUTHOR, APP_NAME } from '../config/identity';
+import { getDesktopBridge } from '../platform/desktopBridge';
 import type { DocumentRow, FolderRow } from '../db/schema';
 import { getServices } from '../services';
 import { useSettings } from '../settings/store';
@@ -33,6 +35,7 @@ import {
   startConcert,
 } from './actions';
 import { DocumentCard, FolderTile, NewFolderTile, Thumbnail } from './DocumentCard';
+import { InstallHint } from './InstallHint';
 import { useDragToFolder } from './useDragToFolder';
 import { useLibraryRefresh } from './libraryEvents';
 import { pickFiles } from './pickFiles';
@@ -208,6 +211,7 @@ export function LibraryScreen() {
             style={{ marginBottom: SPACING.lg }}
             accessibilityHint={t('library.importHint')}
           />
+          <InstallHint />
           <View style={[styles.search, { backgroundColor: theme.surface }, cardShadow(theme, 1)]}>
             <Icon name="magnify" color={theme.textSecondary} />
             <TextInput
@@ -330,7 +334,9 @@ export function LibraryScreen() {
         </AppText>
         {view === 'all' && !search.trim() ? (
           <AppText secondary style={{ marginTop: SPACING.sm, textAlign: 'center', maxWidth: 420 }}>
-            {t('library.emptyHint', { app: APP_NAME })}
+            {t(Platform.OS === 'web' && !getDesktopBridge() ? 'library.emptyHintWeb' : 'library.emptyHint', {
+              app: APP_NAME,
+            })}
           </AppText>
         ) : null}
       </View>

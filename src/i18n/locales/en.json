@@ -93,7 +93,11 @@
     "subfolders": "Subfolders",
     "dragToFolder": "Drop on a folder to add it",
     "dragHint": "Press and hold a piece and drag it to a folder",
-    "alreadyInFolder": "Already in “{{name}}”"
+    "alreadyInFolder": "Already in “{{name}}”",
+    "installTitle": "Install Atril PDF on your iPad or iPhone",
+    "installSteps": "Tap Safari’s Share button (the square with an arrow pointing up), then “Add to Home Screen”. You will get the Atril PDF icon; it opens full screen and works offline.",
+    "installOk": "Got it",
+    "emptyHintWeb": "Tap “Open / Import” to add your first score. You can also drag a PDF into this window."
   },
   "reader": {
     "page": "Page {{page}} of {{total}}",

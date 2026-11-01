@@ -93,7 +93,11 @@
     "subfolders": "Subcarpetas",
     "dragToFolder": "Suelta sobre una carpeta para añadirla",
     "dragHint": "Mantén pulsada una obra y arrástrala a una carpeta",
-    "alreadyInFolder": "Ya estaba en «{{name}}»"
+    "alreadyInFolder": "Ya estaba en «{{name}}»",
+    "installTitle": "Instala Atril PDF en tu iPad o iPhone",
+    "installSteps": "Toca el botón Compartir de Safari (el cuadrado con una flecha hacia arriba) y después «Añadir a pantalla de inicio». Tendrás el icono de Atril PDF, se abrirá a pantalla completa y funcionará sin conexión.",
+    "installOk": "Entendido",
+    "emptyHintWeb": "Pulsa «Abrir / Importar» para añadir tu primera partitura. También puedes arrastrar un PDF a esta ventana."
   },
   "reader": {
     "page": "Página {{page}} de {{total}}",
