@@ -238,7 +238,13 @@
     "show": "Show annotations",
     "hide": "Hide annotations",
     "stylusHint": "Pencil only: the finger no longer draws (you can rest your hand).",
-    "fingerHint": "Pencil and finger: both draw."
+    "fingerHint": "Pencil and finger: both draw.",
+    "select": "Move",
+    "staff": "Staff",
+    "image": "Image",
+    "duplicate": "Duplicate",
+    "whiteBackground": "White background",
+    "selectHint": "Tap a staff or an image to move it, or resize it with its corners."
   },
   "pages": {
     "title": "Pages",

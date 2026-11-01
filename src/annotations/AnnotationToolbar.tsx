@@ -26,6 +26,7 @@ export function AnnotationToolbar({
   onUndo,
   onRedo,
   onClose,
+  onInsert,
   bottom,
 }: {
   tools: ToolState;
@@ -37,6 +38,8 @@ export function AnnotationToolbar({
   onUndo: () => void;
   onRedo: () => void;
   onClose: () => void;
+  /** Places a small staff or an image on the page (then it can be moved and resized). */
+  onInsert: (kind: 'staff' | 'image') => void;
   bottom: number;
 }) {
   const { t } = useTranslation();
@@ -73,8 +76,28 @@ export function AnnotationToolbar({
     );
   };
 
+  const actionButton = (id: string, icon: IconName, label: string, onPress: () => void) => (
+    <Pressable
+      key={id}
+      testID={id}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => [styles.tool, { transform: [{ scale: pressed ? 0.92 : 1 }] }]}
+    >
+      <Icon name={icon} size={24} color={theme.text} />
+      <Text style={[styles.toolLabel, { color: theme.textSecondary }]} numberOfLines={1}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+
   const colors =
-    tools.tool === 'highlighter' ? HIGHLIGHTER_COLORS : tools.tool === 'eraser' ? [] : PEN_COLORS;
+    tools.tool === 'highlighter'
+      ? HIGHLIGHTER_COLORS
+      : tools.tool === 'eraser' || tools.tool === 'select'
+        ? []
+        : PEN_COLORS;
   const current =
     tools.tool === 'highlighter'
       ? tools.highlighterColor
@@ -104,6 +127,9 @@ export function AnnotationToolbar({
           {toolButton('highlighter', 'marker', t('annotate.highlighter'))}
           {toolButton('eraser', 'eraser', t('annotate.eraser'))}
           {toolButton('text', 'format-text', t('annotate.text'))}
+          {toolButton('select', 'cursor-move', t('annotate.select'))}
+          {actionButton('insert-staff', 'view-headline', t('annotate.staff'), () => onInsert('staff'))}
+          {actionButton('insert-image', 'image-plus', t('annotate.image'), () => onInsert('image'))}
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
           {colors.map((c) => (
             <Pressable

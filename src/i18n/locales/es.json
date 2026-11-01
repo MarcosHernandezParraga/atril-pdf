@@ -238,7 +238,13 @@
     "show": "Mostrar anotaciones",
     "hide": "Ocultar anotaciones",
     "stylusHint": "Solo lápiz: el dedo ya no dibuja (sirve para apoyar la mano).",
-    "fingerHint": "Lápiz y dedo: los dos dibujan."
+    "fingerHint": "Lápiz y dedo: los dos dibujan.",
+    "select": "Mover",
+    "staff": "Pentagrama",
+    "image": "Imagen",
+    "duplicate": "Duplicar",
+    "whiteBackground": "Fondo blanco",
+    "selectHint": "Toca un pentagrama o una imagen para moverlo o cambiar su tamaño con las esquinas."
   },
   "pages": {
     "title": "Páginas",

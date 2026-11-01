@@ -1,7 +1,8 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 // Browser test of the main user journeys: import, read, turn pages with pedal keys,
-// zoom (wheel, keys, pinch), page panel, view modes, write on the PDF (pen and text), concert
-// folders, dragging pieces onto folders and reordering them, settings, protected PDFs.
+// write on the PDF (pen and text), view modes, zoom (wheel, keys, pinch), page panel,
+// staff and image on the page, concert folders, dragging pieces onto folders and
+// reordering them, settings, protected PDFs.
 import { createRequire } from 'node:module';
 
 // Uses the Playwright installed in the project (or on the machine).
@@ -262,6 +263,42 @@ await step('page panel: blank page, duplicate, move, delete, add a PDF, undo', a
   await page.waitForTimeout(600);
   await showBars();
   if ((await indicator()) !== 'Página 1 de 6') throw new Error(`after undo: ${await indicator()}`);
+});
+
+await step('staff and image on the page: insert, move, resize, duplicate, delete', async () => {
+  const frame = () => page.getByTestId('object-frame').boundingBox();
+  await showBars();
+  await page.getByTestId('reader-annotate').click();
+  await page.getByTestId('annotation-toolbar').waitFor();
+  await page.getByTestId('insert-staff').click();
+  const f1 = await frame();
+  await page.mouse.move(f1.x + f1.width / 2, f1.y + f1.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(f1.x + f1.width / 2 - 40, f1.y + f1.height / 2 - 120, { steps: 10 });
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  const f2 = await frame();
+  if (!(f2.y < f1.y - 80)) throw new Error(`move: ${f1.y} -> ${f2.y}`);
+  const hd = await page.getByTestId('object-handle-d').boundingBox();
+  await page.mouse.move(hd.x + hd.width / 2, hd.y + hd.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(hd.x + hd.width / 2 + 60, hd.y + hd.height / 2 + 30, { steps: 10 });
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  const f3 = await frame();
+  if (!(f3.width > f2.width + 40 && f3.height > f2.height + 20)) throw new Error('resize');
+  await page.getByTestId('object-duplicate').click();
+  await page.getByTestId('object-delete').click();
+  await page.waitForTimeout(200);
+  if ((await page.getByTestId('object-frame').count()) !== 0) throw new Error('delete');
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByTestId('insert-image').click();
+  await (await chooser).setFiles('assets/images/icon.png');
+  await page.getByTestId('object-frame').waitFor({ timeout: 10000 });
+  await page.screenshot({ path: `${shots}/04d-pentagrama-imagen.png` });
+  await page.getByTestId('object-done').click();
+  await page.getByTestId('annotate-done').click();
+  await page.waitForTimeout(600);
 });
 
 await step('annotations are saved: reopening shows them', async () => {

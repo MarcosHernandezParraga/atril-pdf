@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
-// "Annotate" mode for the current page: pen, highlighter, eraser and text.
+// "Annotate" mode for the current page: pen, highlighter, eraser, text, and
+// "move" for the staves and images placed on the page.
 // The finger can be excluded ("stylus only") so only the pencil writes and the
 // palm resting on the screen never leaves marks.
 
@@ -30,6 +31,8 @@ import { RADIUS, SPACING, useTheme } from '../theme';
 import { IconButton } from '../ui/primitives';
 import { fitWidth, PageView, pageHeightForWidth } from '../reader/PageView';
 import { InkCanvas } from './AnnotationLayer';
+import { ObjectEditor } from './ObjectEditor';
+import { duplicateObject, isPlacedObject, objectHit, type PlacedObject } from './objects';
 import { pointerAllowed } from './input';
 import {
   hasRealPressure,
@@ -41,7 +44,7 @@ import {
   textHit,
 } from './ink';
 
-export type AnnotationTool = 'pen' | 'highlighter' | 'eraser' | 'text';
+export type AnnotationTool = 'pen' | 'highlighter' | 'eraser' | 'text' | 'select';
 
 export interface ToolState {
   tool: AnnotationTool;
@@ -80,6 +83,8 @@ export function AnnotateView({
   onAdd,
   onRemove,
   onUpdate,
+  selectedId,
+  onSelect,
 }: {
   page: PageRef;
   annotations: Annotation[];
@@ -92,6 +97,9 @@ export function AnnotateView({
   onAdd: (a: Annotation[]) => void;
   onRemove: (ids: string[]) => void;
   onUpdate: (a: Annotation) => void;
+  /** Staff or image selected with the "move" tool. */
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -111,6 +119,10 @@ export function AnnotateView({
     () => annotations.filter((a): a is TextAnnotation => a.type === 'text'),
     [annotations],
   );
+  const objects = useMemo(() => annotations.filter(isPlacedObject), [annotations]);
+  const [draft, setDraft] = useState<PlacedObject | null>(null);
+  const selecting = tools.tool === 'select';
+  const selected = selecting ? (objects.find((o) => o.id === selectedId) ?? null) : null;
 
   // Saves the text being written (empty text = nothing / removed).
   const commit = () => {
@@ -156,7 +168,7 @@ export function AnnotateView({
     if (changed) setErasing([...erased.current]);
   };
 
-  const drawing = tools.tool !== 'text';
+  const drawing = tools.tool !== 'text' && tools.tool !== 'select';
   const pan = usePanGesture({
     runOnJS: true,
     enabled: drawing,
@@ -220,12 +232,17 @@ export function AnnotateView({
 
   const tap = useTapGesture({
     runOnJS: true,
-    enabled: tools.tool === 'text',
+    enabled: tools.tool === 'text' || selecting,
     maxDistance: 10,
     onActivate: (e) => {
       if (!pointerAllowed(inputMode === 'off' ? 'both' : inputMode, e.pointerType)) return;
-      commit();
       const p = viewToPage(page, w, { x: e.x, y: e.y });
+      if (selecting) {
+        // Touch a staff or an image to select it; touch elsewhere to unselect.
+        onSelect(objectHit(objects, p.x, p.y, 10 / scale)?.id ?? null);
+        return;
+      }
+      commit();
       const hit = textHit(texts, p.x, p.y);
       if (hit) {
         setEditing({ ann: hit, isNew: false });
@@ -270,7 +287,11 @@ export function AnnotateView({
     ];
   })();
 
-  const hidden = new Set([...erasing, ...(editing && !editing.isNew ? [editing.ann.id] : [])]);
+  const hidden = new Set([
+    ...erasing,
+    ...(editing && !editing.isNew ? [editing.ann.id] : []),
+    ...(draft ? [draft.id] : []),
+  ]);
   const editPos = editing ? pageToView(page, w, { x: editing.ann.x, y: editing.ann.y }) : null;
   const setEdit = (patch: Partial<TextAnnotation>) =>
     setEditing((e) => (e ? { ...e, ann: { ...e.ann, ...patch } } : e));
@@ -292,7 +313,10 @@ export function AnnotateView({
             style={[
               StyleSheet.absoluteFill,
               Platform.OS === 'web'
-                ? ({ cursor: tools.tool === 'text' ? 'text' : 'crosshair', touchAction: 'none' } as object)
+                ? ({
+                    cursor: tools.tool === 'text' ? 'text' : selecting ? 'default' : 'crosshair',
+                    touchAction: 'none',
+                  } as object)
                 : null,
             ]}
             collapsable={false}
@@ -300,6 +324,31 @@ export function AnnotateView({
             <InkCanvas paths={livePath} width={w} height={h} />
           </View>
         </GestureDetector>
+        {selected ? (
+          <ObjectEditor
+            key={selected.id}
+            page={page}
+            viewWidth={w}
+            viewHeight={h}
+            object={selected}
+            draft={draft?.id === selected.id ? draft : null}
+            onDraft={setDraft}
+            onCommit={(o) => onUpdate(o)}
+            onDuplicate={() => {
+              const copy = duplicateObject(selected, newId());
+              onAdd([copy]);
+              onSelect(copy.id);
+            }}
+            onDelete={() => {
+              onRemove([selected.id]);
+              onSelect(null);
+            }}
+            onToggleBackground={() =>
+              selected.type === 'staff' && onUpdate({ ...selected, opaque: !selected.opaque })
+            }
+            onDone={() => onSelect(null)}
+          />
+        ) : null}
         {editing && editPos ? (
           <View style={[styles.editor, { left: Math.min(editPos.x, w - 160), top: editPos.y }]}>
             <View style={[styles.editBar, { backgroundColor: theme.overlay }]}>

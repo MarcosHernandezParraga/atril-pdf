@@ -50,7 +50,8 @@ import {
 import { swipeAction, tapZoneAction } from '../core/tapZones';
 import { newId } from '../core/ids';
 import { useReaderKeys } from '../input/useReaderKeys';
-import { importPages } from '../library/importer';
+import { newImage, newStaff } from '../annotations/objects';
+import { importPages, importSource } from '../library/importer';
 import { pickFiles } from '../library/pickFiles';
 import { askPdfPassword, reportImport } from '../library/useExternalOpen';
 import { getServices } from '../services';
@@ -146,6 +147,8 @@ export function ReaderScreen() {
   const [panelBusy, setPanelBusy] = useState(false);
   // After a change in the page panel, the page to show (by id).
   const [showPageId, setShowPageId] = useState<string | null>(null);
+  // Staff or image selected with the "move" tool.
+  const [selectedObject, setSelectedObject] = useState<string | null>(null);
   const continuousRef = useRef<ContinuousHandle>(null);
   const viewState = useMemo(() => parseViewState(doc?.viewStateJson), [doc]);
   const inputMode: InputMode =
@@ -478,6 +481,32 @@ export function ReaderScreen() {
   });
   const gestures = useCompetingGestures(zoomPinch, zoomMove, pan, tap);
 
+  // ------------------------------------------- staff and image on the page
+  const insertObject = async (kind: 'staff' | 'image') => {
+    const target = annotating && currentStop?.kind === 'page' ? pages[currentStop.page] : undefined;
+    if (!target) return;
+    let object;
+    if (kind === 'staff') {
+      object = newStaff(newId(), target.size);
+    } else {
+      const [file] = await pickFiles('image');
+      if (!file) return;
+      try {
+        const s = getServices();
+        const { source } = await importSource({ repo: s.repo, storage: s.storage, engine: s.engine }, file);
+        await s.repo.addSources([source]);
+        const [pw, ph] = source.pageSizes[0] ?? [1, 1];
+        object = newImage(newId(), source.id, { width: pw, height: ph }, target.size);
+      } catch {
+        reportImport({ documentIds: [], failures: [{ name: file.name, reason: 'unsupported' }] });
+        return;
+      }
+    }
+    execute({ type: 'addAnnotations', pageId: target.id, annotations: [object] }, t(`annotate.${kind}`));
+    setTools((prev) => ({ ...prev, tool: 'select' }));
+    setSelectedObject(object.id);
+  };
+
   // -------------------------------------------------------------- page panel
   const addFiles = async (kind: 'pdf' | 'image') => {
     const files = await pickFiles(kind);
@@ -752,9 +781,11 @@ export function ReaderScreen() {
                   onUpdate={(a) =>
                     execute(
                       { type: 'updateAnnotations', pageId: annotatedPage.id, annotations: [a] },
-                      t('annotate.text'),
+                      t('reader.annotate'),
                     )
                   }
+                  selectedId={selectedObject}
+                  onSelect={setSelectedObject}
                 />
               </View>
             ) : isContinuous ? (
@@ -1051,7 +1082,12 @@ export function ReaderScreen() {
           {annotating && !fullscreen ? (
             <AnnotationToolbar
               tools={tools}
-              onChange={setTools}
+              onChange={(next) => {
+                if (next.tool !== 'select') setSelectedObject(null);
+                else if (tools.tool !== 'select') dialogs.toast(t('annotate.selectHint'));
+                setTools(next);
+              }}
+              onInsert={(kind) => void insertObject(kind)}
               inputMode={inputMode}
               onInputMode={(m) => {
                 updateSettings((s) => ({ ...s, annotations: { ...s.annotations, inputMode: m } }));

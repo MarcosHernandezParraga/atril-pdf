@@ -26,7 +26,7 @@ export class PageRenderer {
   private inflight = new Map<string, Promise<RenderedPage>>();
   private images: LruCache<string, RenderedPage>;
   private grays = new LruCache<string, GrayImage>(24);
-  private imageSources = new LruCache<string, RenderedPage>(16, (_k, v) => revoke(v.uri));
+  private imageSources = new LruCache<string, RenderedPage>(32, (_k, v) => revoke(v.uri));
   /** Small images for the page panel, kept apart so they never push out the pages being read. */
   private thumbs = new LruCache<string, RenderedPage>(160, (_k, v) => revoke(v.uri));
   private thumbQueue: Promise<unknown> = Promise.resolve();
@@ -116,6 +116,15 @@ export class PageRenderer {
     });
     this.thumbQueue = run.catch(() => undefined);
     return run;
+  }
+
+  /** An image file of the library (images placed on a page). */
+  sourceImage(sourceId: string): Promise<RenderedPage> {
+    return this.renderImageSource(sourceId, `img:${sourceId}`);
+  }
+
+  peekSourceImage(sourceId: string): RenderedPage | undefined {
+    return this.imageSources.get(`img:${sourceId}`);
   }
 
   private async renderImageSource(sourceId: string, k: string): Promise<RenderedPage> {

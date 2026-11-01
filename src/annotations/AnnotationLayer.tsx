@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
 // Draws the annotations of a page as vectors on top of it (sharp at any zoom):
-// ink with Skia, text boxes as native text.
+// images and small staves first, then ink with Skia, then text boxes as native text.
 
 import { Canvas, Path, Skia } from '@shopify/react-native-skia';
 import { memo, useMemo } from 'react';
@@ -10,6 +10,30 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { Annotation, InkAnnotation, PageRef, TextAnnotation } from '../core/model';
 import { pageToView, viewScale } from '../core/pageTransform';
 import { hasRealPressure, penOutlinePath, polylinePath } from './ink';
+import { isPlacedObject, type PlacedObject } from './objects';
+import { ImageShape, StaffShape } from './PlacedObjects';
+
+/** Images and staves, images underneath. */
+export function PlacedObjectsView({
+  page,
+  viewWidth,
+  objects,
+}: {
+  page: PageRef;
+  viewWidth: number;
+  objects: PlacedObject[];
+}) {
+  return (
+    <>
+      {objects.map((o) =>
+        o.type === 'image' ? <ImageShape key={o.id} page={page} viewWidth={viewWidth} ann={o} /> : null,
+      )}
+      {objects.map((o) =>
+        o.type === 'staff' ? <StaffShape key={o.id} page={page} viewWidth={viewWidth} ann={o} /> : null,
+      )}
+    </>
+  );
+}
 
 export interface InkPathSpec {
   id: string;
@@ -120,10 +144,12 @@ export const AnnotationLayer = memo(function AnnotationLayer({
   const visible = hiddenIds ? annotations.filter((a) => !hiddenIds.has(a.id)) : annotations;
   const inks = visible.filter((a): a is InkAnnotation => a.type === 'ink');
   const texts = visible.filter((a): a is TextAnnotation => a.type === 'text');
+  const objects = visible.filter(isPlacedObject);
   const paths = useMemo(() => inkPaths(page, viewWidth, inks), [page, viewWidth, inks]);
   if (visible.length === 0) return null;
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { width: viewWidth, height: viewHeight }]}>
+      <PlacedObjectsView page={page} viewWidth={viewWidth} objects={objects} />
       <InkCanvas paths={paths} width={viewWidth} height={viewHeight} />
       {texts.map((t) => (
         <TextBox key={t.id} page={page} viewWidth={viewWidth} ann={t} />
