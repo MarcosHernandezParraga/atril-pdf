@@ -236,8 +236,8 @@ Gratis, sin anuncios, sin cuentas y sin conexión.
 ## Paso 3.2. Esperar a que se fabrique todo (unos 40 minutos)
 
 1. Pulsa la pestaña **Actions**.
-2. Verás dos tareas trabajando, con un **círculo amarillo**: **Release** (los instaladores) y **Web (GitHub Pages)**.
-3. Espera a que las dos tengan un **✓ verde**. La del Mac es la más lenta.
+2. Verás la tarea **Release** (los instaladores) trabajando, con un **círculo amarillo**. Tarda unos 30-40 minutos.
+3. Cuando termine con un **✓ verde**, empieza sola otra tarea, **Web (GitHub Pages)**, que publica la versión web en unos 5 minutos.
 4. Si alguna tiene una **✗ roja**: no pasa nada grave, **avísame** y lo arreglo.
 
 ## Paso 3.3. Comprobar el resultado

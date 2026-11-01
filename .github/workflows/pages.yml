@@ -1,13 +1,16 @@
 # Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 # Publishes the web version (installable on iPhone, iPad and any browser) on
 # GitHub Pages: https://<user>.github.io/<repository>/
-# Runs for every new version (tag v1.2.3) and can also be started by hand
-# (Actions → Web (GitHub Pages) → Run workflow).
+# Runs when a new version (tag v1.2.3) has been built by "Release", with the
+# code of that version, and can also be started by hand (Actions → Web (GitHub
+# Pages) → Run workflow). It starts from the main branch so that the
+# "github-pages" environment, which only accepts main, lets it publish.
 name: Web (GitHub Pages)
 
 on:
-  push:
-    tags: ['v*']
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -21,11 +24,19 @@ concurrency:
 
 jobs:
   build:
+    # Only after a version (tag) was built successfully, or when started by hand.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     env:
       EXPO_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The exact code of the version that was just published.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
