@@ -1,8 +1,7 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
 // Packaging for Windows (NSIS installer + AppX/MSIX for the Microsoft Store),
-// macOS (universal DMG) and Linux (AppImage + deb). Flatpak is built from the
-// manifest in packaging/flatpak (Flathub builds it from source).
+// macOS (universal DMG) and Linux (AppImage + deb).
 const identity = require('../src/config/identity.json');
 const electronVersion = require('electron/package.json').version;
 

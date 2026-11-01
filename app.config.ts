@@ -11,6 +11,15 @@ const PERMISSION_TEXTS = {
     'El acceso a tus fotos se usa solo para insertar imágenes que tú elijas o guardar páginas exportadas. / Photo access is only used to insert images you choose or to save exported pages.',
 };
 
+/**
+ * Android needs a number that grows with every version (Google Play refuses an
+ * update with the same number): 1.2.3 -> 10203.
+ */
+function versionCodeOf(version: string): number {
+  const [major = 0, minor = 0, patch = 0] = version.split('.').map((n) => parseInt(n, 10) || 0);
+  return Math.max(1, major * 10000 + minor * 100 + patch);
+}
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: identity.name,
@@ -68,6 +77,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: identity.appId,
+    versionCode: versionCodeOf(packageJson.version),
     adaptiveIcon: {
       backgroundColor: '#F4EBDD',
       foregroundImage: './assets/images/android-icon-foreground.png',

@@ -1,17 +1,32 @@
-Atril PDF es un lector de partituras PDF pensado para músicos: estudiantes, profesorado, conservatorios, bandas, orquestas y coros. También sirve para leer libros y documentos.
+<b>Atril PDF — tu atril digital.</b> Hecho por un músico para todos los músicos.
 
-Es libre y gratuito: sin anuncios, sin cuentas, sin suscripciones, sin compras dentro de la app y sin recogida de datos. Funciona 100 % sin internet.
+Lleva todas tus partituras en la tableta, el móvil o el ordenador y olvídate de las fotocopias, las pinzas y las páginas que se caen. Pensado para estudiantes, profesorado, conservatorios, bandas, orquestas y coros.
 
-<b>Pensado para tocar</b>
-• Pasar página instantáneo, tocando la pantalla, deslizando o con un pedal Bluetooth (AirTurn, PageFlip, Donner, iRig BlueTurn, Cubilux…), sin configurar nada.
-• Media página «estilo atril»: ves la parte de arriba de la página siguiente mientras terminas la actual, con el corte entre sistemas, nunca a mitad de un pentagrama.
-• Vertical con anticipación: el primer sistema de la página siguiente siempre visible abajo.
-• Dos páginas como un libro, avanzando de 1 en 1 o de 2 en 2.
-• Modo actuación: pantalla completa total y la pantalla no se apaga.
-• Modo noche, sepia y recorte automático de márgenes para ver los pentagramas más grandes.
+<b>Gratis de verdad:</b> sin anuncios, sin cuentas, sin suscripciones, sin compras y sin recoger ningún dato. Funciona sin internet, también en el escenario.
 
-<b>Biblioteca</b>
-• Importa PDF e imágenes; todo PDF que abras desde otra app se guarda solo en la biblioteca.
-• Carpetas, favoritos, búsqueda, recientes y papelera recuperable.
+<b>PARA TOCAR</b>
+• Pasar página al instante: tocando, deslizando, con el teclado o con un <b>pedal Bluetooth</b>, sin configurar nada.
+• Animación de página suave y rápida, o fundido, o sin animación.
+• <b>Media página «estilo atril»</b>: ves la parte de arriba de la página siguiente mientras terminas la actual.
+• Vertical con anticipación, continuo, o <b>dos páginas</b> como un libro.
+• <b>Amplía con dos dedos</b> (o Ctrl + rueda en el ordenador) para leer los pasajes pequeños con total nitidez.
+• Modo actuación a pantalla completa, sin que se apague la pantalla.
+• Modo noche, sepia y recorte de márgenes para ver los pentagramas más grandes.
 
-Código abierto (licencia MIT). Desarrollada por Marcos Hernández Párraga.
+<b>CONCIERTOS</b>
+• Carpetas para cada concierto o repertorio: <b>arrastra</b> tus obras dentro y ordénalas arrastrando.
+• <b>Iniciar concierto</b>: todas las obras seguidas; al terminar una, se abre la siguiente.
+
+<b>ESCRIBE SOBRE LA PARTITURA</b>
+• Lápiz, subrayador, borrador y texto. Con Apple Pencil o lápiz digital, y opción «solo lápiz» para que la mano no pinte.
+• <b>Pentagrama</b> de cinco líneas para añadir compases o correcciones, del tamaño que quieras.
+• Pega <b>imágenes</b> sobre la página, muévelas y cámbialas de tamaño.
+• Tus anotaciones nunca modifican el PDF original y se pueden deshacer.
+
+<b>ORGANIZA LAS PÁGINAS</b>
+• Panel con todas las páginas numeradas: reordena, duplica, elimina, añade páginas en blanco, otro PDF o una imagen.
+
+<b>BIBLIOTECA</b>
+• Importa PDF e imágenes, búsqueda, favoritos, más recientes y papelera recuperable.
+
+Código abierto (licencia MIT). Hecho por Marcos Hernández Párraga.

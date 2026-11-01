@@ -2,17 +2,19 @@
 
 Esta guía está escrita para alguien que no sabe programar. Cada paso dice exactamente qué pulsar y qué deberías ver.
 
+> 📁 **Las guías completas de publicación, una por cada tienda, están en [`docs/publicar/`](publicar/README.md).** Esta página es el resumen.
+
 **Idea general:** el código de la app se guarda en **GitHub** (una web gratuita para guardar proyectos). Cuando el código está allí, GitHub **fabrica solo** los instaladores de Windows, Mac, Linux y Android cada vez que se lo pidas. Después, cada tienda (Microsoft Store, Google Play, App Store…) recibe esos instaladores. Por eso el **paso 1 es imprescindible**: sin él no se puede publicar en ningún sitio.
 
 | Dónde | ¿Gratis? | Qué hace falta de ti |
 | --- | --- | --- |
 | Descarga directa desde GitHub (Windows, Mac, Linux, Android) | ✅ Gratis | Solo el paso 1 |
 | Microsoft Store (Windows) | ✅ Gratis para particulares | Cuenta de desarrollador de Microsoft con tu DNI |
-| Linux (Flathub) | ✅ Gratis | Nada de dinero; la hago yo con tu visto bueno |
-| Android fuera de Google Play (F-Droid / IzzyOnDroid) | ✅ Gratis | Nada de dinero |
+| Linux (AppImage y .deb) | ✅ Gratis | Solo el paso 1 (Flathub: ver `docs/publicar/06-linux.md`) |
+| Android fuera de Google Play (Obtainium) | ✅ Gratis | Solo el paso 1 (F-Droid/IzzyOnDroid: ver `docs/publicar/07-…`) |
 | **Google Play** (Android) | 💶 25 USD, **una sola vez** | Cuenta de Google Play + 12 personas que la prueben 14 días |
 | **App Store** (iPhone y iPad) y Mac App Store | 💶 **99 USD al año** | Cuenta de Apple Developer |
-| iPhone/iPad **sin pagar** | ✅ Gratis (alternativa) | Versión web que se instala desde Safari (ver apartado 8) |
+| iPhone/iPad **sin pagar** | ✅ Gratis (alternativa) | Versión web que se instala desde Safari (ver apartado 8) — **ya preparada** |
 
 ---
 
@@ -109,14 +111,18 @@ Si decides pagarla:
 
 ---
 
-## 8. iPhone/iPad sin pagar: la versión web
+## 8. iPhone/iPad sin pagar: la versión web (ya preparada)
 
-Hay una alternativa gratuita: publicar **Atril PDF como web** en una dirección gratuita de GitHub (por ejemplo `https://marcoshernandezparraga.github.io`). En el iPad se abre con Safari y se pulsa **Compartir → Añadir a pantalla de inicio**: aparece un icono como el de cualquier app y funciona a pantalla completa y **sin internet** una vez abierta.
+**Atril PDF ya funciona como web instalable.** Cuando el código esté en GitHub y actives *Pages* (guía `docs/publicar/01-github.md`, paso 3), estará en:
 
-- ✅ Funcionan los pedales Bluetooth, el Apple Pencil, las carpetas-concierto y las anotaciones.
-- ⚠️ Limitaciones: los PDF se abren desde la propia app (no aparece en «Abrir con» de otras apps) y las partituras se guardan dentro de Safari.
+**https://marcoshernandezparraga.github.io/atril-pdf/**
 
-Si te interesa, dímelo y la preparo.
+En el iPad o iPhone: ábrela en **Safari → Compartir → Añadir a pantalla de inicio**. Aparece el icono de Atril PDF, se abre a pantalla completa y **funciona sin internet**. La propia app lo explica la primera vez que se abre en Safari.
+
+- ✅ Pedal Bluetooth, Apple Pencil, zoom con dos dedos, carpetas-concierto, panel de páginas, pentagrama e imágenes.
+- ⚠️ No aparece en «Abrir con» de otras apps (los PDF se importan desde la app) y las partituras se guardan dentro de Safari.
+
+Todos los detalles: `docs/publicar/03-web-iphone-ipad.md`.
 
 ---
 
@@ -157,8 +163,16 @@ Desde ese momento, todas las versiones de Android saldrán firmadas por ti.
 ## 10. Cómo usar la app (resumen)
 
 - **Abrir / Importar**: añade PDF o fotos de partituras. Un PDF abierto desde otra app con «Abrir con… Atril PDF» también se guarda solo.
-- **Carpetas · Conciertos**: pulsa **Nueva carpeta** (por ejemplo «Concierto de Navidad»). Dentro: **Añadir obras**, **Ordenar** (flechas para subir y bajar) y **Iniciar concierto**, que toca todas las obras seguidas: al pasar la última página de una obra se abre la primera de la siguiente.
+- **Carpetas · Conciertos**: pulsa **Nueva carpeta** (por ejemplo «Concierto de Navidad»).
+  - Para meter obras: **mantén pulsada una partitura** de la pantalla de inicio y **arrástrala** hasta la carpeta (o a la barra de carpetas que aparece arriba). También con **Añadir obras** dentro de la carpeta.
+  - **Ordenar**: arrastra cada obra arriba o abajo con el dedo, o usa las flechas.
+  - **Iniciar concierto** toca todas las obras seguidas: al pasar la última página de una obra se abre la primera de la siguiente.
 - **Todos los documentos**: debajo, del más reciente al más antiguo.
 - **Pasar página**: tocando el lado derecho o izquierdo, deslizando, con el teclado o con el **pedal Bluetooth**. Pruébalo en **Ajustes → Pedal / teclado → Probar pedal**.
-- **Escribir sobre el PDF**: en el lector, pulsa el **lápiz** (Anotar). Puedes usar el bolígrafo, el subrayador, el borrador y el **texto** (tocas donde quieras escribir). El botón **«Lápiz y dedo» / «Solo lápiz»** sirve para que el dedo no dibuje cuando escribes con lápiz.
+- **Ampliar (zoom)**: separa **dos dedos** sobre la partitura; con un dedo mueves la página ampliada. En el ordenador: **Ctrl + rueda del ratón**, el gesto de pellizco del trackpad, o **Ctrl +** / **Ctrl −** / **Ctrl 0**. Al pasar de página vuelve al tamaño normal; el botón con el porcentaje también lo restablece.
+- **Páginas** (icono de cuadrícula arriba): se abre un panel a la derecha con todas las páginas numeradas. Puedes **ordenarlas** (mantén pulsada y arrastra, o flechas), **duplicar**, **eliminar**, añadir **página en blanco**, **otro PDF** (sus páginas se unen al documento) o **una imagen** como página. Todo se puede **deshacer**.
+- **Escribir sobre el PDF**: pulsa el **lápiz** (Anotar). Bolígrafo, subrayador, borrador y **texto**. El botón **«Lápiz y dedo» / «Solo lápiz»** sirve para que el dedo no dibuje cuando escribes con lápiz.
+  - **Pentagrama**: añade un pentagrama de cinco líneas sin clave. Con **Mover** lo arrastras y con las **esquinas** lo haces más ancho, estrecho, alto o bajo. Opción «Fondo blanco» para tapar lo que haya debajo.
+  - **Imagen**: pega una imagen encima de la página; muévela y cambia su tamaño por las esquinas.
+- **Etiquetas**: en el ordenador, al pasar el ratón por un icono aparece su nombre; en la tableta, mantén el dedo sobre el icono.
 - **Pantalla completa**: doble toque en el centro. Para salir, mantén el dedo en el borde superior (o Esc en el ordenador).

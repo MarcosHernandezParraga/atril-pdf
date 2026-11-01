@@ -1,17 +1,32 @@
-Atril PDF is a PDF sheet music reader made for musicians: students, teachers, music schools, bands, orchestras and choirs. It is also great for books and documents.
+<b>Atril PDF — your digital music stand.</b> Made by a musician for every musician.
 
-It is free and open source: no ads, no accounts, no subscriptions, no in-app purchases and no data collection. Works 100% offline.
+Carry all your scores on your tablet, phone or computer: no more photocopies, clips or falling pages. For students, teachers, conservatories, bands, orchestras and choirs.
 
-<b>Made for playing</b>
-• Instant page turns by tapping, swiping or with a Bluetooth pedal (AirTurn, PageFlip, Donner, iRig BlueTurn, Cubilux…), no setup needed.
-• Music-stand half-page turns: see the top of the next page while you finish the current one, split between systems, never through a staff.
-• Vertical with look-ahead: the first system of the next page is always visible at the bottom.
-• Two pages like a book, advancing by one or by two.
-• Performance mode: true full screen and the screen never sleeps.
-• Night mode, sepia and automatic margin crop to make staves bigger.
+<b>Truly free:</b> no ads, no accounts, no subscriptions, no purchases and no data collection. Works offline, on stage too.
 
-<b>Library</b>
-• Import PDFs and images; any PDF opened from another app is saved to the library automatically.
-• Folders, favourites, search, recent documents and a recoverable trash.
+<b>MADE FOR PLAYING</b>
+• Instant page turns: tap, swipe, keyboard or a <b>Bluetooth pedal</b>, with no setup.
+• Smooth, quick page animation, a fade, or none at all.
+• <b>Half-page turns</b> like a real stand: see the top of the next page while you finish the current one.
+• Vertical with look-ahead, continuous, or <b>two pages</b> like a book.
+• <b>Pinch to zoom</b> (or Ctrl + wheel on a computer) to read small passages perfectly sharp.
+• Full-screen performance mode that keeps the screen on.
+• Night mode, sepia and margin cropping for bigger staves.
 
-Open source (MIT License). Developed by Marcos Hernández Párraga.
+<b>CONCERTS</b>
+• A folder for each concert or repertoire: <b>drag</b> your pieces in and reorder them by dragging.
+• <b>Start concert</b>: all pieces in a row; when one ends, the next one opens.
+
+<b>WRITE ON YOUR SCORE</b>
+• Pen, highlighter, eraser and text. Works with Apple Pencil and styluses, with a "pencil only" option so your palm never draws.
+• A five-line <b>staff</b> to add bars or corrections, at any size.
+• Place <b>images</b> on the page, move and resize them.
+• Your notes never change the original PDF and can always be undone.
+
+<b>ORGANISE PAGES</b>
+• A panel with every page numbered: reorder, duplicate, delete, add blank pages, another PDF or an image.
+
+<b>LIBRARY</b>
+• Import PDFs and images, search, favourites, most recent and a recoverable trash.
+
+Open source (MIT licence). Made by Marcos Hernández Párraga.
