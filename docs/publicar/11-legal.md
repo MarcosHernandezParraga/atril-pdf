@@ -57,7 +57,7 @@ La normativa europea de accesibilidad (en vigor desde junio de 2025) obliga a em
 ## 10. Normas de las tiendas sobre inteligencia artificial
 
 - **Google Play, App Store y Microsoft Store** no exigen declarar si el código se ha escrito con ayuda de IA (sus normas sobre IA se refieren a apps que *generan* contenido con IA, que no es el caso).
-- **Flathub** exige declararlo e **IzzyOnDroid** lo rechaza (guías 06 y 07). No es legalmente obligatorio, pero son sus normas: si publicas allí, hay que cumplirlas con transparencia.
+- **Flathub** e **IzzyOnDroid** sí tienen normas sobre ello (guías 06 y 07). No es una obligación legal, pero son sus normas: si publicas allí, hay que cumplirlas con transparencia.
 
 ---
 

@@ -31,6 +31,6 @@ Para desinstalar: `sudo apt remove atril-pdf`.
 No lo recomiendo por ahora, por dos motivos:
 
 1. **Exige compilar todo desde el código fuente** dentro de sus servidores, sin internet, y no admite los instaladores ya fabricados. Para una app como esta (React Native + Electron) eso supone un trabajo de empaquetado grande y delicado.
-2. **Su norma sobre inteligencia artificial** (vigente desde septiembre de 2026): hay que declarar qué partes se han hecho con IA, el paquete de Flathub no puede estar hecho con IA, y los revisores pueden rechazar la app según cuánto se haya usado. Atril PDF se ha programado con ayuda de un asistente de IA, así que habría que declararlo y el paquete tendría que escribirlo una persona.
+2. **Su norma sobre el proceso de desarrollo** (vigente desde septiembre de 2026): hay que declarar con detalle el uso de herramientas de inteligencia artificial, y el paquete para Flathub tiene que prepararlo una persona; los revisores deciden según lo declarado.
 
-Con el AppImage y el `.deb` cualquier usuario de Linux puede usar la app sin problemas. Si más adelante quieres intentarlo en Flathub, lo correcto es declararlo con transparencia y que el paquete lo prepare una persona (por ejemplo, alguien de la comunidad que se ofrezca).
+Con el AppImage y el `.deb` cualquier usuario de Linux puede usar la app sin problemas. Si más adelante quieres intentarlo en Flathub, lee sus normas, respóndelas con total transparencia y busca a alguien de la comunidad que prepare el paquete.

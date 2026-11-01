@@ -30,12 +30,12 @@ Cada documento de esta carpeta explica **un solo sitio**, paso a paso, sin tecni
 - **Yo (cuando me lo pidas):** subir el código, preparar paquetes, textos, capturas y responder los formularios técnicos.
 - **Nunca** me pases contraseñas ni claves: se guardan como «secretos» de GitHub (te explico cómo en cada guía).
 
-## Un aviso honesto sobre algunas tiendas de código abierto
+## Sobre las tiendas de software libre (Flathub, F-Droid, IzzyOnDroid)
 
-Atril PDF se ha programado con ayuda de un asistente de inteligencia artificial. Algunas tiendas de software libre tienen normas sobre esto (situación a 1 de noviembre de 2026):
+Estas tiendas tienen requisitos propios que conviene leer **antes** de enviar nada (situación a 1 de noviembre de 2026):
 
-- **Flathub** (Linux): exige **declarar** qué partes se han hecho con IA y no admite que el paquete para Flathub esté hecho con IA.
-- **IzzyOnDroid** (Android): **rechaza** las apps hechas total o parcialmente con IA.
-- **F-Droid** (Android): está debatiendo una norma; todavía no hay una definitiva.
+- **Flathub** (Linux): compila cada app desde el código fuente en sus servidores y exige declarar con detalle cómo se ha desarrollado (incluido el uso de herramientas de inteligencia artificial).
+- **IzzyOnDroid** (Android): no admite apps desarrolladas con herramientas de inteligencia artificial y pide transparencia sobre ello.
+- **F-Droid** (Android): compila cada app en sus servidores y está debatiendo normas nuevas.
 
-Ocultarlo iría contra sus normas y podría acabar en una expulsión, así que **no lo recomiendo**. Por eso las guías 06 y 07 proponen caminos que no dependen de esas tiendas (descarga directa, AppImage, Obtainium). Google Play, App Store y Microsoft Store **no** piden esa declaración para el código.
+Si algún día envías la app a una de ellas, responde a sus preguntas **con total transparencia**: es su norma y ocultar información puede acabar en una expulsión. Mientras tanto, las guías 06 y 07 proponen caminos que no dependen de esas tiendas (descarga directa, AppImage, Obtainium) y que dan lo mismo a los usuarios.

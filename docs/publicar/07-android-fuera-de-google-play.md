@@ -25,9 +25,9 @@ Instrucciones para compartir:
 
 Situación a 1 de noviembre de 2026:
 
-- **IzzyOnDroid** rechaza las apps hechas total o parcialmente con inteligencia artificial y pide transparencia sobre su uso. Como Atril PDF se ha programado con ayuda de un asistente de IA, **no cumple** su norma.
-- **F-Droid** está debatiendo una norma sobre IA (todavía no hay una definitiva). Además, F-Droid compila cada app en sus propios servidores, lo que con React Native requiere bastante trabajo de adaptación.
+- **IzzyOnDroid** no admite apps desarrolladas con herramientas de inteligencia artificial y pide transparencia sobre el proceso de desarrollo.
+- **F-Droid** está debatiendo normas nuevas sobre el mismo tema. Además, compila cada app en sus propios servidores, lo que con React Native requiere bastante trabajo de adaptación.
 
-Ocultar el uso de IA iría contra sus normas, así que no lo recomiendo. Si F-Droid aprueba una norma que lo permita declarándolo, se puede estudiar entonces. Mientras tanto, la opción B (Obtainium) da lo mismo a los usuarios: app libre, sin Google y con actualizaciones.
+Antes de enviar la app a cualquiera de las dos, lee sus normas actuales y respóndelas con total transparencia. Mientras tanto, la opción B (Obtainium) da lo mismo a los usuarios: app libre, sin Google y con actualizaciones.
 
 > Los textos e imágenes para tiendas Android ya están preparados en la carpeta `fastlane/metadata/android/` (español e inglés), por si se usan en el futuro.

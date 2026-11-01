@@ -115,7 +115,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - En iOS, el modo noche/sepia usa una capa de mezcla (React Native en iOS no admite el filtro `invert`); pendiente de comprobar en un iPad.
 - En el entorno de desarrollo en la nube, Maven Central limita las descargas: para compilar Android allí se usa el espejo de Google (solo afecta a ese entorno).
 - El APK de prueba de esta tanda ya se compila **sin permiso de Internet** (`ATRIL_OFFLINE_BUILD=1`), igual que las versiones que publicará GitHub. Está firmado con una clave de prueba: antes de instalar la primera versión oficial firmada con la clave de Marcos hay que desinstalarlo.
-- Flathub e IzzyOnDroid tienen normas sobre código hecho con ayuda de IA (Flathub exige declararlo; IzzyOnDroid lo rechaza). No se publicará allí sin cumplirlas; ver `docs/publicar/06-linux.md` y `07-android-fuera-de-google-play.md`.
+- Flathub, F-Droid e IzzyOnDroid tienen requisitos propios sobre el proceso de desarrollo; no se enviará la app allí sin leerlos y cumplirlos con transparencia (ver `docs/publicar/06-linux.md` y `07-android-fuera-de-google-play.md`).
 - La prueba automática «pasar página sin indicador de carga» no distingue si la página venía pre-renderizada con PDF sencillos (pdf.js es muy rápido); el pre-renderizado se corrigió por análisis del código y queda pendiente medirlo con partituras escaneadas pesadas.
 
 ## Siguiente paso
