@@ -17,6 +17,8 @@ Desarrollada por **Marcos Hernández Párraga** · Licencia [MIT](LICENSE)
 - **Carpetas · Conciertos**: cada carpeta es un concierto con sus obras numeradas; se añaden **arrastrando** las partituras hasta la carpeta y se ordenan **arrastrando** o con flechas. «Iniciar concierto» las toca todas seguidas (al pasar la última página de una obra se abre la siguiente).
 - **Escribir sobre el PDF**: bolígrafo sensible a la presión, subrayador, borrador y texto; modo «Solo lápiz» para que el dedo y la palma no dibujen. **Pentagrama** de cinco líneas sin clave e **imágenes** sobre la página, que se mueven y cambian de tamaño.
 - **Panel de páginas**: miniaturas numeradas para reordenar, duplicar y eliminar páginas, y añadir páginas en blanco, otro PDF o imágenes.
+- **Compartir** la partitura en PDF, con tus anotaciones o sin ellas: por correo, WhatsApp, AirDrop… o guardándola en el dispositivo.
+- **Bibliotecas grandes**: cientos de partituras y partituras de director de cientos de páginas, también escaneadas, sin que la app se vuelva lenta.
 - **Zoom**: con dos dedos en tableta y móvil; con Ctrl + rueda, trackpad o Ctrl +/− en el ordenador, siempre nítido.
 - **Lector** con 6 modos: página a página (sin animación o con deslizar/fundido), **media página** (estilo atril o desplazamiento, con corte inteligente entre sistemas), **dos páginas** (avance de 1 en 1 o de 2 en 2, portada sola), **vertical con anticipación** (se ve el primer sistema de la página siguiente) y **vertical continuo** (avance de una pantalla menos un solapamiento).
 - **Pedal Bluetooth y teclado**: funciona sin configurar (flechas, Av Pág/Re Pág, espacio, Intro, pista siguiente/anterior), modo aprender, prueba de teclas en vivo, anti-rebote y botones de volumen en Android.
@@ -24,7 +26,7 @@ Desarrollada por **Marcos Hernández Párraga** · Licencia [MIT](LICENSE)
 - Modo noche, sepia, recorte automático de márgenes, girar páginas, deshacer/rehacer, recordar la última página y el modo de cada documento.
 - **21 idiomas** (español, inglés, portugués, francés, alemán, italiano, catalán, gallego, euskera, neerlandés, polaco, rumano, griego, ruso, ucraniano, árabe, chino, japonés, coreano…): usa el idioma del dispositivo y se cambia en Ajustes. Tema claro/oscuro.
 
-Funciones en desarrollo: formas y sellos musicales, exportación y copias de seguridad. Consulta [docs/PROGRESO.md](docs/PROGRESO.md).
+Funciones en desarrollo: formas y sellos musicales, imprimir y copias de seguridad. Consulta [docs/PROGRESO.md](docs/PROGRESO.md).
 
 ## Plataformas
 

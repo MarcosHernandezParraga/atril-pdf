@@ -3,7 +3,7 @@
 // Copies the runtime files that the web/desktop build loads locally (no CDN):
 //  - pdf.js library, worker, character maps, standard fonts and decoders
 //  - CanvasKit (Skia for web) WebAssembly binary
-//  - sql.js (SQLite for the plain-browser development mode only)
+//  - sql.js (SQLite for the web version)
 import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';

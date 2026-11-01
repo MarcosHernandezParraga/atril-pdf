@@ -39,7 +39,7 @@ Un documento es un **modelo**: lista ordenada de `PageRef` (página de un PDF, e
 `drizzle-orm/sqlite-proxy` sobre un `SqlExecutor` común:
 - iOS/Android: `expo-sqlite`.
 - Escritorio: SQLite integrado en Electron (`node:sqlite`) en el proceso principal, por IPC.
-- Navegador (solo desarrollo): sql.js guardado en IndexedDB.
+- Versión web (iPhone, iPad y navegadores): sql.js guardado en IndexedDB. Los archivos de la biblioteca van en IndexedDB en trozos de 1 MB (`src/storage/chunkedFiles.ts`) y se leen por partes.
 - Tests: `node:sqlite`.
 
 Las migraciones están en `src/db/migrations.ts` (`PRAGMA user_version`).
@@ -47,7 +47,11 @@ Las migraciones están en `src/db/migrations.ts` (`PRAGMA user_version`).
 ## Renderizado
 
 - Móvil: el módulo nativo rasteriza la página N al ancho pedido y la guarda como PNG en caché (PdfRenderer solo admite una página abierta a la vez: el acceso está serializado).
-- Escritorio: pdf.js con su *worker* local (sin CDN).
+- Escritorio y web: pdf.js con un único *worker* local (sin CDN); los PDF de más de 4 MB se leen por rangos, sin cargarlos enteros.
+
+## Compartir
+
+`src/export/`: PDF con o sin anotaciones (`@cantoo/pdf-lib`). Las páginas originales se copian en vectorial con la misma geometría que pdf.js (recorte, giro, /Rotate); trazos, pentagramas e imágenes encima; el texto se dibuja con las fuentes del sistema. Entrega con la hoja de compartir del sistema, descarga o «Guardar como».
 - `PageRenderer` mantiene una caché LRU y pre-renderiza las páginas siguiente y anterior.
 - Las páginas en blanco y pautadas se dibujan como vectores.
 

@@ -1,10 +1,16 @@
 # Progreso del proyecto
 
-*Actualizado: 1 de noviembre de 2026 — versión 1.0.1 preparada (1.0.0 publicada)*
+*Actualizado: 1 de noviembre de 2026 — versión 1.0.1 publicada*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
 
-## Versión 1.0.1: bibliotecas grandes, partituras enormes y compartir ✅ (preparada; falta publicarla)
+## Limpieza tras la 1.0.1 ✅
+
+- Quitadas dependencias que no se usaban: `@pdf-lib/fontkit`, `expo-crypto`, `expo-device`, `fflate` como dependencia directa (la sigue usando el generador de PDF), `better-sqlite3`, `@types/better-sqlite3`, `opentype.js` y el script `glyphs` (apuntaba a un archivo que no existía).
+- `desktop/app/icon.png` ya no se guarda en el repositorio: lo copia `scripts/desktop.mjs prepare`.
+- Lista de licencias completada con lo que se incluye en la app y no era dependencia directa: `sql.js` (web), `electron` (ordenador) y las librerías del generador de PDF (`culori`, `fflate`, `html-entities`, `node-html-better-parser`, `tslib`).
+
+## Versión 1.0.1: bibliotecas grandes, partituras enormes y compartir ✅ (publicada el 1 de noviembre de 2026)
 
 - ✅ **Compartir** (`src/export/`): PDF con o sin anotaciones. Páginas originales copiadas en vectorial con `@cantoo/pdf-lib` (`embedPage` + matriz igual que pdf.js, también con /Rotate, recorte y giro); lápiz, subrayador (multiplicar, 38 %), pentagramas e imágenes en vectorial/imagen; texto dibujado con las fuentes del sistema (lienzo en web y escritorio, Skia en Android/iOS) para cualquier idioma; PDF protegidos con su contraseña; páginas que no se pueden copiar, como imagen del lector. Sin cambios ni anotaciones → el archivo original tal cual.
   - Entrega: hoja de compartir del sistema (`expo-sharing` en Android/iOS, `navigator.share` en el navegador), «Guardar en el dispositivo» (descarga en web, carpeta elegida en Android) y «Guardar como» en el ordenador.

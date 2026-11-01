@@ -16,6 +16,15 @@ const EXTRA = [
   '@expo/vector-icons',
   'expo-modules-core',
   'react-native-screens',
+  // SQLite of the web version (copied to public/vendor) and the desktop app itself.
+  'sql.js',
+  'electron',
+  // Used by the PDF writer (@cantoo/pdf-lib) to share scores.
+  'culori',
+  'fflate',
+  'html-entities',
+  'node-html-better-parser',
+  'tslib',
 ];
 // Assets that are not npm packages.
 const ASSETS = [

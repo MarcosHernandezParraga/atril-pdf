@@ -13,6 +13,7 @@ expo-env.d.ts
 
 # Desktop build output
 desktop/app/main.js
+desktop/app/icon.png
 desktop/app/preload.js
 desktop/app/web/
 desktop/app/*.map
