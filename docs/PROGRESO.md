@@ -1,8 +1,24 @@
 # Progreso del proyecto
 
-*Actualizado: 31 de octubre de 2026 (segunda tanda: cambios pedidos por Marcos)*
+*Actualizado: 1 de noviembre de 2026 (tercera tanda: correcciones y novedades pedidas por Marcos) — versión 0.2.0*
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
+
+## Tercera tanda (versión 0.2.0) ✅
+
+- ✅ **Paso de página** «pasar hoja» rápido y casi imperceptible desde la esquina inferior derecha (180 ms) y **fundido más rápido**.
+- ✅ **Arrastrar partituras** desde el inicio hasta una carpeta (mantener pulsado y arrastrar; barra de carpetas siempre visible mientras se arrastra; vibración en el móvil). Probado en navegador; corregido que el navegador iniciaba su propio «arrastrar imagen» y que, al soltar, se abría la partitura.
+- ✅ **Ordenar arrastrando** en la carpeta-concierto (además de las flechas). Pantalla de carpeta rehecha para tabletas (sin animaciones de lista, colores explícitos, botón «Iniciar concierto» legible en modo oscuro).
+- ✅ **Etiquetas** al pasar el ratón por los iconos; en tableta, manteniendo el dedo.
+- ✅ **Zoom**: dos dedos (y un dedo para mover lo ampliado, con inercia), Ctrl + rueda, pellizco del trackpad (también Safari en Mac), Ctrl + / − / 0. Re-renderizado nítido con límite de memoria (16 Mpx). Pasar de página lo restablece. También en modo continuo. Probado con gestos táctiles simulados de dos dedos.
+- ✅ **Panel de páginas** desde la derecha: miniaturas numeradas con caché propia (no desplaza las páginas que se leen), reordenar (mantener pulsado y arrastrar, o flechas), duplicar, eliminar (nunca la última), página en blanco, **añadir otro PDF** (se une) e **imagen como página**. Todo con deshacer; el lector va a la página afectada.
+- ✅ **Pentagrama** de 5 líneas sin clave (vectorial, nítido a cualquier zoom) e **imagen sobre la página**: herramienta «Mover», marco con esquinas para cambiar tamaño (el pentagrama libre en ancho y alto; la imagen proporcional), duplicar, borrar, «fondo blanco».
+- ✅ **Seguridad** (ver `docs/SEGURIDAD.md`): IPC del escritorio solo atiende al marco principal de `app://atril/`; sin DevTools ni `<webview>` en la versión publicada; navegación, redirecciones y ventanas nuevas bloqueadas; enlaces externos solo a github.com; fusibles de Electron (RunAsNode, NODE_OPTIONS e inspección desactivados; solo carga su asar). Comprobado en el programa empaquetado de Linux y en el ejecutable de Windows. Huellas SHA-256 en cada versión. `npm audit`: avisos solo en herramientas de desarrollo.
+- ✅ **Icono propio** en el `.exe` de Windows (con nombre, autor y versión) y en Linux.
+- ✅ **Versión web instalable** (PWA) para iPhone/iPad y navegadores, publicada en GitHub Pages con su icono, funciona **sin conexión** (service worker), enlaces profundos (404.html), política de contenido estricta y aviso de instalación en Safari. Prueba automática `e2e/pwa-smoke.mjs` (también en la CI).
+- ✅ **Guías de publicación** separadas en `docs/publicar/` (GitHub, descargas, web, Microsoft Store, winget, Linux, Android sin Google Play, Google Play, App Store, Apple sin ánimo de lucro, legal, textos de tienda). Textos promocionales, gráfico y capturas de Google Play en `fastlane/`.
+- ✅ Android: número de versión (`versionCode`) calculado de la versión (0.2.0 → 200).
+- 🟡 Pendiente de probar en tableta real: arrastres, pellizco y la pantalla de carpeta (este entorno no tiene emulador de Android). Si algo no va bien en la tableta, una foto o captura de pantalla ayuda mucho.
 
 ## Cambios pedidos por Marcos (segunda tanda) ✅
 
@@ -18,7 +34,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Estado general
 
 - **Fase actual:** 3–5 en curso (fases 0, 1 y 2 terminadas).
-- **Pruebas automáticas:** 127 tests unitarios, de base de datos y de seguridad de rutas en verde; prueba en navegador real (11 recorridos: importar, pasar página con teclas de pedal, anotar, modos, conciertos, ajustes, PDF protegido) y prueba de escritorio en Electron en verde.
+- **Pruebas automáticas:** 147 tests unitarios (modelo, navegación, zoom, panel de páginas, pentagrama e imágenes, arrastrar, base de datos, seguridad de rutas) en verde; prueba en navegador real (15 recorridos: importar, pasar página con teclas de pedal, anotar, modos, zoom con rueda/teclas/dos dedos, panel de páginas, pentagrama e imagen, conciertos, arrastrar a carpetas y reordenar, ajustes, PDF protegido); prueba de la versión web instalable sin conexión; prueba de escritorio en Electron.
 - **Calidad:** `tsc --noEmit` y ESLint sin errores ni avisos.
 
 ## Fase 0 — Entorno ✅
@@ -54,8 +70,8 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - ✅ Modo actuación: pantalla completa total, pantalla siempre encendida, salida con pulsación larga en el borde superior o Esc/F11, pista la primera vez, número de página opcional.
 - ✅ Modo noche y sepia; recorte automático de márgenes (no destructivo, con deshacer); girar página; ir a página; volver a donde estaba.
 - ✅ Recuerda por documento la última página y el modo.
-- ⏳ Animación «pasar hoja» (de momento se usa deslizar).
-- ⏳ Zoom con pellizco / doble toque / Ctrl+rueda y re-renderizado nítido.
+- ✅ Animación «pasar hoja» rápida y suave.
+- ✅ Zoom con pellizco / Ctrl+rueda / trackpad / teclado y re-renderizado nítido.
 - ⏳ Ajuste manual del recorte y de la línea de corte/franja arrastrando.
 - ⏳ Barra deslizante de páginas, marcadores con nombre, índice del PDF, buscar y copiar texto, brillo.
 
@@ -70,7 +86,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - ✅ Inicio con «Abrir / Importar», recientes, todos los documentos (cuadrícula/lista), carpetas anidadas con color, migas de pan, búsqueda, ordenación, favoritos, papelera (30 días) con deshacer, menú contextual (pulsación larga / clic derecho): abrir, renombrar, favorito, mover a…, duplicar, restaurar original, eliminar.
 - ✅ Escritorio: arrastrar archivos desde el explorador para importarlos; «Abrir con» probado.
 - 🟡 Android «Abrir con» (`ACTION_VIEW`) e iOS (`CFBundleDocumentTypes`) configurados; falta probar en dispositivo.
-- ⏳ **Arrastrar documentos encima de una carpeta** (selección múltiple, resaltado, vibración).
+- ✅ **Arrastrar documentos encima de una carpeta** (resaltado, vibración). ⏳ Selección múltiple.
 - ✅ Repertorios: resueltos con las carpetas-concierto (ver arriba).
 - ⏳ «Compartir» desde otras apps en Android (`ACTION_SEND`).
 
@@ -79,19 +95,32 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - ✅ Bolígrafo, subrayador, borrador de trazo completo, texto, deshacer/rehacer, modos de entrada lápiz/dedo, mostrar/ocultar.
 - ⏳ Borrador parcial, formas, sellos musicales, lazo de selección, capas.
 
-## Fases 6 y 8 a 11 ⏳
+## Fase 6 — Organización de páginas ✅
 
-Panel de miniaturas y organización de páginas, pentagramas e imágenes, exportación (PDF con/sin anotaciones, imágenes, imprimir, combinar, copia de seguridad), publicación en tiendas y fase 2 opcional.
+- ✅ Panel de miniaturas numeradas, reordenar, duplicar, eliminar, página en blanco, insertar otro PDF e imágenes como página, deshacer.
+- ⏳ Selección múltiple de páginas, girar desde el panel, extraer páginas a un documento nuevo.
+
+## Fase 8 — Pentagramas e imágenes ✅
+
+- ✅ Pentagrama de 5 líneas sin clave e imágenes sobre la página, mover y redimensionar.
+- ⏳ Pentagramas con clave, varias líneas y sistema de piano (el modelo ya lo admite).
+
+## Fases 9 a 11 ⏳ / 🟡
+
+- ⏳ Exportación (PDF con/sin anotaciones, imágenes, imprimir, combinar) y **copias de seguridad** (`.atril`).
+- 🟡 Publicación: todo preparado (`docs/publicar/`); falta que Marcos cree el repositorio y las cuentas.
 
 ## Problemas conocidos
 
 - En iOS, el modo noche/sepia usa una capa de mezcla (React Native en iOS no admite el filtro `invert`); pendiente de comprobar en un iPad.
 - En el entorno de desarrollo en la nube, Maven Central limita las descargas: para compilar Android allí se usa el espejo de Google (solo afecta a ese entorno).
-- El APK de prueba incluye el permiso de Internet (lo añade React Native) aunque no lo usa; las versiones publicadas por GitHub Actions se compilan sin él (`ATRIL_OFFLINE_BUILD=1`).
+- El APK de prueba de esta tanda ya se compila **sin permiso de Internet** (`ATRIL_OFFLINE_BUILD=1`), igual que las versiones que publicará GitHub. Está firmado con una clave de prueba: antes de instalar la primera versión oficial firmada con la clave de Marcos hay que desinstalarlo.
+- Flathub e IzzyOnDroid tienen normas sobre código hecho con ayuda de IA (Flathub exige declararlo; IzzyOnDroid lo rechaza). No se publicará allí sin cumplirlas; ver `docs/publicar/06-linux.md` y `07-android-fuera-de-google-play.md`.
 - La prueba automática «pasar página sin indicador de carga» no distingue si la página venía pre-renderizada con PDF sencillos (pdf.js es muy rápido); el pre-renderizado se corrigió por análisis del código y queda pendiente medirlo con partituras escaneadas pesadas.
 
 ## Siguiente paso
 
-1. Marcos crea el repositorio en GitHub → subir el código y comprobar que la CI pasa.
-2. Marcos prueba el APK en su Android y el instalador de Windows (lo genera GitHub Actions al crear la etiqueta `v0.1.0`).
-3. Continuar con: arrastrar a carpetas y repertorios (fase 5), zoom (fase 3) y panel de miniaturas (fase 6).
+1. Marcos crea el repositorio en GitHub (`docs/publicar/01-github.md`) → subir el código, comprobar la CI y activar GitHub Pages.
+2. Marcos prueba en su tableta Android el APK 0.2.0 (arrastrar a carpetas, ordenar, zoom con dos dedos, panel de páginas, pentagrama) y en Windows el ZIP 0.2.0. Si algo falla, foto o captura.
+3. Publicar la versión `v0.2.0` (guía 01, paso 5) y la web.
+4. Siguiente desarrollo: copias de seguridad `.atril` y exportación a PDF con anotaciones.
