@@ -20,6 +20,8 @@ app.setName(identity.name);
 if (process.platform === 'win32') app.setAppUserModelId(identity.appId);
 
 const OPENABLE_EXTENSIONS = new Set(['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.heic', '.atril']);
+/** Largest piece of a library file sent to the window at once. */
+const MAX_READ_RANGE = 16 * 1024 * 1024;
 
 let mainWindow: BrowserWindow | null = null;
 let pendingFiles: PickedFile[] = [];
@@ -230,6 +232,21 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
   handle('db:exec', (_e, script: string) => executor.exec(script));
 
   handle('fs:read', async (_e, rel: string) => new Uint8Array(await fsp.readFile(libraryPath(root, rel))));
+  // Large scores are read in pieces, only the pages being shown.
+  handle('fs:readRange', async (_e, rel: string, start: number, end: number) => {
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || end < start) {
+      throw new Error('Invalid range');
+    }
+    if (end - start > MAX_READ_RANGE) throw new Error('Range too large');
+    const file = await fsp.open(libraryPath(root, rel), 'r');
+    try {
+      const buffer = Buffer.alloc(end - start);
+      const { bytesRead } = await file.read(buffer, 0, end - start, start);
+      return new Uint8Array(buffer.buffer, buffer.byteOffset, bytesRead);
+    } finally {
+      await file.close();
+    }
+  });
   handle('fs:write', async (_e, rel: string, data: Uint8Array) => {
     const p = libraryPath(root, rel);
     await fsp.mkdir(join(p, '..'), { recursive: true });

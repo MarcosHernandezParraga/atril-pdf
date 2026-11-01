@@ -7,7 +7,7 @@
 import { Platform } from 'react-native';
 
 import type { GrayImage } from '../core/contentDetection';
-import type { PageRef } from '../core/model';
+import type { PageRef, Size } from '../core/model';
 import type { SourceRow } from '../db/schema';
 import type { StorageAdapter } from '../storage/types';
 import { LruCache, widthBucket } from './lru';
@@ -19,6 +19,24 @@ const isWeb = Platform.OS === 'web';
 
 function revoke(uri: string) {
   if (isWeb && uri.startsWith('blob:')) URL.revokeObjectURL(uri);
+}
+
+const CLOSE_DELAY_MS = 5000;
+
+/** Page sizes saved with the source when it was imported (undefined if unreadable). */
+function savedPageSizes(json: string): Size[] | undefined {
+  try {
+    const list = JSON.parse(json) as unknown;
+    if (!Array.isArray(list)) return undefined;
+    const sizes = list.map((p) =>
+      Array.isArray(p) && typeof p[0] === 'number' && typeof p[1] === 'number'
+        ? { width: p[0], height: p[1] }
+        : null,
+    );
+    return sizes.every((x) => x !== null) ? (sizes as Size[]) : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export class PageRenderer {
@@ -36,20 +54,40 @@ export class PageRenderer {
     private storage: StorageAdapter,
     private lookup: SourceLookup,
     capacity = 14,
+    /** Documents kept open at once; the least recently used one is closed. */
+    private maxOpenDocuments = 4,
   ) {
     this.images = new LruCache(capacity, (_k, v) => revoke(v.uri));
   }
 
   private handleFor(sourceId: string): Promise<PdfDocumentHandle> {
-    let h = this.handles.get(sourceId);
-    if (!h) {
-      h = (async () => {
-        const src = await this.lookup(sourceId);
-        if (!src) throw new Error('missing source');
-        return this.engine.open({ relPath: src.path, password: src.password ?? undefined });
-      })();
-      this.handles.set(sourceId, h);
-      h.catch(() => this.handles.delete(sourceId));
+    const hit = this.handles.get(sourceId);
+    if (hit) {
+      // Most recently used goes last.
+      this.handles.delete(sourceId);
+      this.handles.set(sourceId, hit);
+      return hit;
+    }
+    const h = (async () => {
+      const src = await this.lookup(sourceId);
+      if (!src) throw new Error('missing source');
+      return this.engine.open({
+        relPath: src.path,
+        password: src.password ?? undefined,
+        pageSizes: savedPageSizes(src.pageSizesJson),
+      });
+    })();
+    this.handles.set(sourceId, h);
+    h.catch(() => {
+      if (this.handles.get(sourceId) === h) this.handles.delete(sourceId);
+    });
+    // A library has hundreds of scores (the thumbnails open each of them): only
+    // a few stay open, so memory and open files do not grow with the library.
+    while (this.handles.size > this.maxOpenDocuments) {
+      const [oldId, old] = this.handles.entries().next().value as [string, Promise<PdfDocumentHandle>];
+      this.handles.delete(oldId);
+      // A moment later, so that a page being drawn from it can finish.
+      setTimeout(() => void old.then((x) => x.close()).catch(() => undefined), CLOSE_DELAY_MS);
     }
     return h;
   }

@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Marcos Hernández Párraga. Licensed under the MIT License.
 //
-// Plain-browser development mode only (not used by the desktop app): SQLite
-// compiled to WebAssembly (sql.js), saved in IndexedDB.
+// Web version (not used by the desktop app): SQLite compiled to WebAssembly
+// (sql.js), saved in IndexedDB.
 
 import { idbStore, loadScript } from '../../platform/loadScript';
 import { normalizeParams, SerialQueue, type SqlExecutor, type SqlQuery, type SqlResult } from '../executor';
@@ -32,11 +32,37 @@ export async function createSqlJsExecutor(): Promise<SqlExecutor> {
   const db = new SQL.Database(saved ?? undefined);
   db.exec('PRAGMA foreign_keys = ON;');
   const queue = new SerialQueue();
+  // Changes are saved a moment after they happen (several quick changes are
+  // saved together) and right away when the app goes to the background or is
+  // closed, so that nothing is lost when the system closes it. A failed save
+  // is tried again with the next change or the next time the app is hidden.
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
-  const persist = () => {
+  let unsaved = false;
+  const save = async () => {
     if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => void store.set('db', db.export()), 250);
+    saveTimer = null;
+    if (!unsaved) return;
+    unsaved = false;
+    try {
+      await store.set('db', db.export());
+    } catch (e) {
+      unsaved = true;
+      console.warn('[db] not saved yet:', e);
+    }
   };
+  const persist = () => {
+    unsaved = true;
+    if (saveTimer) clearTimeout(saveTimer);
+    // In the background, at once: the system may close the app at any moment.
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') void save();
+    else saveTimer = setTimeout(() => void save(), 250);
+  };
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') void save();
+    });
+    window.addEventListener('pagehide', () => void save());
+  }
 
   const runOne = (q: SqlQuery): SqlResult => {
     const params = normalizeParams(q.params);

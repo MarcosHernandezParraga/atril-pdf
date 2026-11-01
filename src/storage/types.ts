@@ -6,6 +6,13 @@ export type ExternalFile =
   | { kind: 'path'; path: string; name: string; size: number }
   | { kind: 'blob'; blob: Blob; name: string };
 
+/** A stored file read in pieces, so that very large scores never have to be in memory whole. */
+export interface RangedFile {
+  readonly length: number;
+  /** Bytes from `begin` (included) to `end` (excluded). */
+  read(begin: number, end: number): Promise<Uint8Array>;
+}
+
 /**
  * Files of the library (imported PDFs and images, thumbnails, exports),
  * addressed by a path relative to the library directory.
@@ -21,6 +28,8 @@ export interface StorageAdapter {
   readExternal(file: ExternalFile): Promise<Uint8Array>;
   /** Native file URI (iOS/Android) for engines that open files directly; null elsewhere. */
   nativeUri(relPath: string): string | null;
+  /** Reads the file in pieces (web and desktop; Android and iOS open files directly). */
+  openRanged?(relPath: string): Promise<RangedFile>;
 }
 
 export function externalName(file: ExternalFile): string {

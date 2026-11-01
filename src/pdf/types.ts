@@ -54,6 +54,8 @@ export interface PdfOpenRequest {
   /** Relative path of the file inside the library. */
   relPath: string;
   password?: string;
+  /** Page sizes already known (saved when importing): opening is faster. */
+  pageSizes?: Size[];
 }
 
 export interface PdfEngine {

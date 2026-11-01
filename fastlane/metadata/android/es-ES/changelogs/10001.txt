@@ -1,1 +1,1 @@
-Versión web: las partituras muy grandes (escaneadas de cientos de páginas) ya se importan y se abren en segundos, y la app pide al navegador que no las borre aunque falte espacio. APK más ligero.
+Pensada para bibliotecas grandes: cientos de partituras y partituras de director de cientos de páginas. Las partituras enormes se abren en segundos y la memoria ya no crece con la biblioteca. Los cambios se guardan al instante al cambiar de app. APK más ligero.

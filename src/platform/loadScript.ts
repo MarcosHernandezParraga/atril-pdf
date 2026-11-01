@@ -45,10 +45,23 @@ export function idbStore(dbName: string, storeName = 'kv') {
       t.onerror = () => reject(t.error ?? req.error ?? new Error('IndexedDB error'));
     });
   };
+  // Several writes or deletions in one transaction: all of them are saved, or none.
+  const many = async (fn: (s: IDBObjectStore) => void): Promise<void> => {
+    const db = await dbp;
+    return new Promise<void>((resolve, reject) => {
+      const t = db.transaction(storeName, 'readwrite');
+      fn(t.objectStore(storeName));
+      t.oncomplete = () => resolve();
+      t.onabort = () => reject(t.error ?? new Error('IndexedDB transaction aborted'));
+      t.onerror = () => reject(t.error ?? new Error('IndexedDB error'));
+    });
+  };
   return {
     get: <T>(key: string) => tx<T | undefined>('readonly', (s) => s.get(key) as IDBRequest<T | undefined>),
     set: (key: string, value: unknown) => tx('readwrite', (s) => s.put(value, key)).then(() => undefined),
+    setMany: (entries: [string, unknown][]) => many((s) => entries.forEach(([k, v]) => s.put(v, k))),
     delete: (key: string) => tx('readwrite', (s) => s.delete(key)).then(() => undefined),
+    deleteMany: (keys: string[]) => many((s) => keys.forEach((k) => s.delete(k))),
     keys: () => tx<IDBValidKey[]>('readonly', (s) => s.getAllKeys()).then((k) => k.map(String)),
   };
 }

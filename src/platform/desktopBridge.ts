@@ -28,6 +28,8 @@ export interface DesktopBridge {
   /** Files inside the library directory, addressed by relative path. */
   fs: {
     read(relPath: string): Promise<Uint8Array>;
+    /** Bytes from `start` to `end` (excluded) of a library file; at most 16 MB at a time. */
+    readRange(relPath: string, start: number, end: number): Promise<Uint8Array>;
     write(relPath: string, data: Uint8Array): Promise<void>;
     exists(relPath: string): Promise<boolean>;
     remove(relPath: string): Promise<void>;

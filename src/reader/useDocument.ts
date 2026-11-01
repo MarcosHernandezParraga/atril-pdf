@@ -6,12 +6,14 @@
 // being shown until the next one is ready, so the screen never goes blank.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, Platform } from 'react-native';
 
 import { applyCommand, type Command } from '../core/commands';
 import { canRedo, canUndo, createHistory, pushHistory, redo, undo, type History } from '../core/history';
 import type { DocumentModel } from '../core/model';
 import type { DocumentRow } from '../db/schema';
 import { getServices } from '../services';
+import { keepUnsaved } from './unsavedChanges';
 
 export interface ViewState {
   page: number;
@@ -43,7 +45,9 @@ export function useDocument(id: string) {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Model and id of the document whose changes are pending, and what was last saved.
-  const pending = useRef<{ id: string; model: DocumentModel; saved: DocumentModel } | null>(null);
+  const pending = useRef<{ id: string; model: DocumentModel; saved: DocumentModel; edited: boolean } | null>(
+    null,
+  );
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const flush = useCallback(async () => {
@@ -70,7 +74,7 @@ export function useDocument(id: string) {
         setError('missing');
         return;
       }
-      pending.current = { id, model, saved: model };
+      pending.current = { id, model, saved: model, edited: false };
       setError(null);
       setLoaded({ doc: row, history: createHistory(model) });
       void repo.markOpened(id);
@@ -83,11 +87,32 @@ export function useDocument(id: string) {
   // Save pending changes when leaving the reader.
   useEffect(() => () => void flush(), [flush]);
 
+  // And at once when the app goes to the background: the system may close it
+  // (switching apps on a tablet, locking the screen, closing the browser tab).
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') void flush();
+    });
+    return () => sub.remove();
+  }, [flush]);
+
+  // Web and desktop: closing the tab or window right after a change.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    const onClose = () => {
+      const p = pending.current;
+      if (p?.edited) keepUnsaved(p.id, p.model);
+    };
+    window.addEventListener('pagehide', onClose);
+    return () => window.removeEventListener('pagehide', onClose);
+  }, []);
+
   const scheduleSave = useCallback(
     (docId: string, model: DocumentModel) => {
       const p = pending.current;
       if (!p || p.id !== docId) return;
       p.model = model;
+      p.edited = true;
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => void flush(), 400);
     },

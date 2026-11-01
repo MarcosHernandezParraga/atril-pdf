@@ -29,6 +29,7 @@ const bridge: DesktopBridge = {
   },
   fs: {
     read: (p) => ipcRenderer.invoke('fs:read', p),
+    readRange: (p, start, end) => ipcRenderer.invoke('fs:readRange', p, start, end),
     write: (p, d) => ipcRenderer.invoke('fs:write', p, d),
     exists: (p) => ipcRenderer.invoke('fs:exists', p),
     remove: (p) => ipcRenderer.invoke('fs:remove', p),

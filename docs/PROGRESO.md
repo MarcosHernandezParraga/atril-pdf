@@ -4,12 +4,28 @@
 
 Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅ hecho y probado · 🟡 hecho, falta probar en dispositivo real · ⏳ pendiente.
 
-## Versión 1.0.1: partituras muy grandes en la web ✅ (preparada; falta publicarla)
+## Versión 1.0.1: bibliotecas grandes y partituras enormes ✅ (preparada; falta publicarla)
 
-- ✅ Web: los archivos se guardan como Blob en IndexedDB (Chrome no admite valores de más de unos 128 MB como lista de bytes y la importación se quedaba colgada). Comprobado con una partitura escaneada de 300 páginas y 384 MB: importar y abrir 3,4 s, ir a la última página 0,5 s, sigue tras recargar. Las bibliotecas guardadas por la 1.0.0 se siguen abriendo (comprobado).
-- ✅ IndexedDB: cada operación termina cuando la transacción se completa o falla (antes una escritura fallida podía dejar la app esperando).
-- ✅ Web: `navigator.storage.persist()` al abrirla instalada y tras importar (`src/platform/persistentStorage.ts`).
-- 🟡 Probar en un iPad real con una partitura grande (en el servidor solo hay Chromium).
+- ✅ Web: archivos en trozos de 1 MB en IndexedDB (`src/storage/chunkedFiles.ts`). Chrome no admite valores de más de unos 128 MB y Safari en iOS ha tenido fallos al leer Blobs guardados tras reiniciar (WebKit 235687), así que no se usan Blobs. Lo guardado por la 1.0.0 (un solo Uint8Array) se sigue leyendo (comprobado con la 1.0.0 real).
+- ✅ Web y escritorio: pdf.js lee por rangos (`PDFDataRangeTransport`) los archivos de más de 4 MB; en escritorio, canal `fs:readRange` (máx. 16 MB por petición). Tamaños de página guardados al importar: abrir no recorre todas las páginas.
+- ✅ Un solo worker de pdf.js para todos los documentos; `PageRenderer` mantiene abiertos como mucho 4 documentos (2 para miniaturas) y cierra los demás. Lista con `windowSize` 5.
+- ✅ Guardado: `AppState` → guardar al pasar a segundo plano; sql.js guarda al instante si la página está oculta; al cerrar la pestaña o la ventana, el documento editado se conserva en localStorage y se guarda al arrancar (`src/reader/unsavedChanges.ts`).
+- ✅ Android: importación desde proveedores `content://` copiada por trozos de 4 MB.
+
+### Pruebas realizadas (1 de noviembre de 2026)
+
+| Prueba | Web (Chromium) | Ordenador (Electron, Linux) |
+| --- | --- | --- |
+| Importar 151 partituras de golpe | 3,3 s | 2,1 s |
+| Importar escaneadas de 128 MB + 384 MB | 8–13 s | 1,4–3 s |
+| Abrir la app con 153 partituras | 0,6 s | 1,1 s |
+| Escaneada de 384 MB: abrir e ir a la página 300 | 0,5 s (reabrir 1,8 s) | 1,2 s |
+| Partitura de director de 300 páginas | 0,9 s | 0,9 s |
+| Anotación guardada al cerrar justo después | ✅ | ✅ |
+| Memoria con 151 / 302 / 453 partituras | 43 MB (JS) | 346 / 303 / 373 MB (antes 663 / 824 / 925) |
+| Biblioteca de la 1.0.0 tras actualizar | ✅ | — |
+
+- 🟡 Pendiente de probar en aparatos reales: iPad (Safari) y Android con una partitura grande y una biblioteca grande. En el servidor no hay emulador de Android ni Safari.
 
 ## Versión 1.0.0: la versión base para publicar ✅
 

@@ -382,6 +382,11 @@ export function LibraryScreen() {
           data={docs ?? []}
           keyExtractor={(d) => d.id}
           numColumns={layout === 'grid' ? columns : 1}
+          // Libraries of hundreds of scores: only the cards near the screen are
+          // kept, so memory does not grow with the number of scores.
+          initialNumToRender={6}
+          maxToRenderPerBatch={6}
+          windowSize={5}
           ListHeaderComponent={header}
           ListEmptyComponent={empty}
           contentContainerStyle={{

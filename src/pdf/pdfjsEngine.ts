@@ -6,7 +6,7 @@
 import { rgbaToGray, type GrayImage } from '../core/contentDetection';
 import type { Size } from '../core/model';
 import { loadScript } from '../platform/loadScript';
-import type { StorageAdapter } from '../storage/types';
+import type { RangedFile, StorageAdapter } from '../storage/types';
 import {
   PdfError,
   type OutlineItem,
@@ -43,13 +43,40 @@ interface PdfJsDocument {
   getPageIndex(ref: unknown): Promise<number>;
   loadingTask: { destroy(): Promise<void> };
 }
+interface PdfJsRangeTransport {
+  requestDataRange(begin: number, end: number): void;
+  onDataRange(begin: number, chunk: Uint8Array): void;
+}
+interface PdfJsLoadingTask {
+  promise: Promise<PdfJsDocument>;
+  destroy(): Promise<void>;
+}
+interface PdfJsWorker {
+  destroyed: boolean;
+}
 interface PdfJsLib {
   GlobalWorkerOptions: { workerSrc: string };
-  getDocument(o: Record<string, unknown>): { promise: Promise<PdfJsDocument> };
+  PDFWorker: new (o?: { name?: string }) => PdfJsWorker;
+  getDocument(o: Record<string, unknown>): PdfJsLoadingTask;
+  PDFDataRangeTransport: new (length: number, initialData: Uint8Array | null) => PdfJsRangeTransport;
   PasswordException?: new () => Error;
 }
 
+/** Larger files are read in pieces: only the parts of the pages being shown. */
+const RANGED_FROM = 4 * 1024 * 1024;
+
 let libPromise: Promise<PdfJsLib> | null = null;
+let sharedWorker: PdfJsWorker | null = null;
+
+/**
+ * One pdf.js worker for every document. Otherwise each document starts its own
+ * (a new copy of pdf.js in memory): importing or showing the thumbnails of a
+ * library of hundreds of scores would use a lot of memory and time.
+ */
+function workerFor(lib: PdfJsLib): PdfJsWorker {
+  if (!sharedWorker || sharedWorker.destroyed) sharedWorker = new lib.PDFWorker({ name: 'atril-pdf' });
+  return sharedWorker;
+}
 
 export function loadPdfJs(): Promise<PdfJsLib> {
   if (!libPromise) {
@@ -94,11 +121,20 @@ function canvasToBlobUrl(canvas: HTMLCanvasElement): Promise<string> {
   });
 }
 
-export async function openPdfJsDocument(data: Uint8Array, password?: string): Promise<PdfJsDocument> {
+async function loadDocument(
+  source: (lib: PdfJsLib) => {
+    options: Record<string, unknown>;
+    onTask?: (task: PdfJsLoadingTask) => void;
+    failed?: () => boolean;
+  },
+  password?: string,
+): Promise<PdfJsDocument> {
   const lib = await loadPdfJs();
+  const { options, onTask, failed } = source(lib);
   try {
-    return await lib.getDocument({
-      data,
+    const task = lib.getDocument({
+      ...options,
+      worker: workerFor(lib),
       password,
       cMapUrl: assetUrl('/vendor/pdfjs/cmaps/'),
       cMapPacked: true,
@@ -108,12 +144,52 @@ export async function openPdfJsDocument(data: Uint8Array, password?: string): Pr
       isEvalSupported: false,
       enableXfa: false,
       useSystemFonts: false,
-    }).promise;
+    });
+    onTask?.(task);
+    return await task.promise;
   } catch (e) {
+    if (failed?.()) throw new PdfError('missing');
     const name = (e as { name?: string }).name;
     if (name === 'PasswordException') throw new PdfError('password');
     throw new PdfError('invalid', (e as Error).message);
   }
+}
+
+export function openPdfJsDocument(data: Uint8Array, password?: string): Promise<PdfJsDocument> {
+  return loadDocument(() => ({ options: { data } }), password);
+}
+
+/**
+ * Opens a stored file without loading it whole: pdf.js asks for the byte
+ * ranges it needs (the index of the file, then the pages that are shown).
+ * Memory stays low with scores of hundreds of pages and hundreds of megabytes.
+ */
+function openPdfJsRanged(file: RangedFile, password?: string): Promise<PdfJsDocument> {
+  return loadDocument((lib) => {
+    const transport = new lib.PDFDataRangeTransport(file.length, null);
+    let readFailed = false;
+    let task: PdfJsLoadingTask | null = null;
+    transport.requestDataRange = (begin, end) => {
+      file.read(begin, end).then(
+        (chunk) => {
+          try {
+            transport.onDataRange(begin, chunk);
+          } catch {
+            // The document was closed meanwhile.
+          }
+        },
+        () => {
+          readFailed = true;
+          void task?.destroy();
+        },
+      );
+    };
+    return {
+      options: { range: transport, length: file.length, disableAutoFetch: true, disableStream: true },
+      onTask: (t) => (task = t),
+      failed: () => readFailed,
+    };
+  }, password);
 }
 
 async function pageSizes(doc: PdfJsDocument): Promise<Size[]> {
@@ -203,7 +279,9 @@ class PdfJsHandle implements PdfDocumentHandle {
   }
 
   async close(): Promise<void> {
-    // pdf.js 6: the document is released through its loading task.
+    // After the pages already being drawn. pdf.js 6: the document is released
+    // through its loading task.
+    await this.queue;
     await this.doc.loadingTask.destroy();
   }
 }
@@ -214,14 +292,30 @@ export function createPdfJsEngine(storage: StorageAdapter): PdfEngine {
     canSearch: true,
     canReadOutline: true,
     async open(req) {
-      let data: Uint8Array;
-      try {
-        data = await storage.read(req.relPath);
-      } catch {
-        throw new PdfError('missing');
+      let doc: PdfJsDocument;
+      if (storage.openRanged) {
+        let file: RangedFile;
+        try {
+          file = await storage.openRanged(req.relPath);
+        } catch {
+          throw new PdfError('missing');
+        }
+        doc =
+          file.length > RANGED_FROM
+            ? await openPdfJsRanged(file, req.password)
+            : await openPdfJsDocument(await file.read(0, file.length), req.password);
+      } else {
+        let data: Uint8Array;
+        try {
+          data = await storage.read(req.relPath);
+        } catch {
+          throw new PdfError('missing');
+        }
+        doc = await openPdfJsDocument(data, req.password);
       }
-      const doc = await openPdfJsDocument(data, req.password);
-      return new PdfJsHandle(doc, await pageSizes(doc));
+      // Page sizes saved when importing: no need to read every page again.
+      const known = req.pageSizes;
+      return new PdfJsHandle(doc, known && known.length === doc.numPages ? known : await pageSizes(doc));
     },
   };
 }

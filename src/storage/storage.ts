@@ -6,7 +6,11 @@
 import { getDesktopBridge, type DesktopBridge } from '../platform/desktopBridge';
 import { idbStore } from '../platform/loadScript';
 import { isInstalledWebApp, keepStoragePersistent } from '../platform/persistentStorage';
-import type { ExternalFile, StorageAdapter } from './types';
+import { chunkedFiles } from './chunkedFiles';
+import type { ExternalFile, RangedFile, StorageAdapter } from './types';
+
+/** Largest piece asked to the desktop app at once. */
+const DESKTOP_PIECE = 8 * 1024 * 1024;
 
 function desktopStorage(bridge: DesktopBridge): StorageAdapter {
   return {
@@ -27,43 +31,48 @@ function desktopStorage(bridge: DesktopBridge): StorageAdapter {
       throw new Error('Unsupported file');
     },
     nativeUri: () => null,
+    async openRanged(rel): Promise<RangedFile> {
+      const length = await bridge.fs.size(rel);
+      return {
+        length,
+        async read(begin, end) {
+          const stop = Math.min(end, length);
+          const out = new Uint8Array(Math.max(0, stop - begin));
+          for (let at = begin; at < stop; at += DESKTOP_PIECE) {
+            out.set(await bridge.fs.readRange(rel, at, Math.min(stop, at + DESKTOP_PIECE)), at - begin);
+          }
+          return out;
+        },
+      };
+    },
   };
-}
-
-/** Bytes of a stored file: a Blob, or a byte array in libraries saved by earlier versions. */
-async function bytesOf(value: Blob | Uint8Array): Promise<Uint8Array> {
-  return value instanceof Blob ? new Uint8Array(await value.arrayBuffer()) : value;
 }
 
 function browserStorage(): StorageAdapter {
-  const store = idbStore('atril-dev-files');
+  const files = chunkedFiles(idbStore('atril-dev-files'));
   // The scores must survive when the device runs low on space.
   if (isInstalledWebApp()) keepStoragePersistent();
-  // Files are kept as Blobs: the browser stores them as separate files, with no
-  // size limit per score (byte arrays are limited, about 128 MB in Chrome).
-  const save = async (rel: string, blob: Blob) => {
-    await store.set(rel, blob);
-    keepStoragePersistent();
-  };
   return {
-    async read(rel) {
-      const v = await store.get<Blob | Uint8Array>(rel);
-      if (!v) throw new Error(`File not found: ${rel}`);
-      return bytesOf(v);
+    read: (rel) => files.read(rel),
+    async write(rel, data) {
+      await files.write(rel, data);
+      keepStoragePersistent();
     },
-    write: (rel, data) => save(rel, new Blob([data as BlobPart])),
-    exists: async (rel) => (await store.get(rel)) !== undefined,
-    remove: (rel) => store.delete(rel),
-    async size(rel) {
-      const v = await store.get<Blob | Uint8Array>(rel);
-      return v ? (v instanceof Blob ? v.size : v.byteLength) : 0;
-    },
+    exists: (rel) => files.exists(rel),
+    remove: (rel) => files.remove(rel),
+    size: (rel) => files.size(rel),
     async importExternal(ext: ExternalFile, rel: string) {
       let blob: Blob;
-      if (ext.kind === 'blob') blob = ext.blob.slice(0, ext.blob.size, ext.blob.type);
+      if (ext.kind === 'blob') blob = ext.blob;
       else if (ext.kind === 'uri') blob = await (await fetch(ext.uri)).blob();
       else throw new Error('Unsupported file');
-      await save(rel, blob);
+      // Copied piece by piece: a score of any size, without loading it whole.
+      await files.saveFrom(
+        rel,
+        blob.size,
+        async (b, e) => new Uint8Array(await blob.slice(b, e).arrayBuffer()),
+      );
+      keepStoragePersistent();
       return blob.size;
     },
     async readExternal(ext) {
@@ -72,6 +81,7 @@ function browserStorage(): StorageAdapter {
       throw new Error('Unsupported file');
     },
     nativeUri: () => null,
+    openRanged: (rel) => files.open(rel),
   };
 }
 

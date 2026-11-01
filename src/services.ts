@@ -8,6 +8,7 @@ import { LibraryRepository } from './library/repository';
 import { ThumbnailService } from './library/thumbnails';
 import { createPdfEngine } from './pdf/createEngine';
 import { PageRenderer } from './pdf/pageRenderer';
+import { restoreUnsaved } from './reader/unsavedChanges';
 import type { PdfEngine } from './pdf/types';
 import { createStorage } from './storage/storage';
 import type { StorageAdapter } from './storage/types';
@@ -29,6 +30,8 @@ export function initServices(): Promise<Services> {
     starting = (async () => {
       const { db } = await openAppDatabase();
       const repo = new LibraryRepository(db);
+      // A change kept when the window was closed before it could be saved.
+      await restoreUnsaved(repo);
       const storage = createStorage();
       const engine = createPdfEngine(storage);
       const sourceCache = new Map<string, SourceRow>();
@@ -40,7 +43,7 @@ export function initServices(): Promise<Services> {
         return row;
       };
       const renderer = new PageRenderer(engine, storage, lookup);
-      const thumbnails = new ThumbnailService(repo, storage, new PageRenderer(engine, storage, lookup, 6));
+      const thumbnails = new ThumbnailService(repo, storage, new PageRenderer(engine, storage, lookup, 6, 2));
       services = { repo, storage, engine, renderer, thumbnails };
       return services;
     })();

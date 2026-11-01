@@ -2,11 +2,19 @@
 
 ## [1.0.1] — 2026-11-01
 
+Versión pensada para bibliotecas grandes: cientos de partituras guardadas y partituras de director de cientos de páginas.
+
 ### Corregido
-- **Versión web:** las partituras muy grandes (más de unos 128 MB, por ejemplo escaneadas de cientos de páginas) se quedaban en «Importando…» en Chrome, Edge y Android. Ahora se guardan como archivos y una de 300 páginas y 384 MB se importa y se abre en unos segundos.
-- **Versión web:** si el navegador no puede guardar algo (por ejemplo, por falta de espacio), ahora se avisa en vez de quedarse esperando.
+- **Versión web:** las partituras muy grandes (más de unos 128 MB, por ejemplo escaneadas de cientos de páginas) se quedaban en «Importando…» en Chrome, Edge y Android. Ahora se guardan en trozos de 1 MB, que todos los navegadores aceptan (también Safari en iPhone y iPad).
+- **Bibliotecas grandes:** al crear las miniaturas, la app dejaba abiertas todas las partituras y la memoria crecía con cada una (en Android podía agotar los archivos abiertos). Ahora solo hay unas pocas abiertas a la vez: con 453 partituras, el programa de ordenador usa la misma memoria que con 150.
+- **Guardado de cambios:** al pasar la app a segundo plano (cambiar de app, bloquear la tableta) los cambios se guardan al instante. Si se cierra la pestaña o la ventana justo después de escribir, el cambio se conserva y se guarda al volver a abrirla.
+- **Versión web:** si el navegador no puede guardar algo (por ejemplo, por falta de espacio), ahora se avisa en vez de quedarse esperando, y nunca queda una partitura a medio guardar.
+- **Android:** las partituras grandes abiertas desde otras apps (Drive, correo…) se copian por partes, sin cargarlas enteras en memoria.
 
 ### Cambiado
+- **Web y ordenador:** las partituras grandes se leen por partes, solo las páginas que se ven. Una partitura escaneada de 300 páginas y 384 MB se abre en unos 2 segundos y salta a la última página en medio segundo.
+- **Web y ordenador:** un único motor de PDF para todas las partituras: importar 151 partituras de golpe pasa de unos 20 segundos a 2 o 3.
+- La lista de partituras solo prepara las tarjetas cercanas a la pantalla.
 - **Versión web:** pide al navegador «almacenamiento persistente» para que no borre las partituras aunque el aparato se quede sin espacio (Safari lo concede a la app abierta desde la pantalla de inicio).
 - APK de Android la mitad de ligero (procesadores ARM: móviles, tabletas y Chromebooks).
 - Windows: un instalador por tipo de procesador.

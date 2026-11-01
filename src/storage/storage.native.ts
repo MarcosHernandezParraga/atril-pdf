@@ -3,7 +3,7 @@
 // iOS / Android storage: the library lives in the app's private documents
 // directory (backed up by the system, never visible to other apps).
 
-import { Directory, File, Paths } from 'expo-file-system';
+import { Directory, File, FileMode, Paths } from 'expo-file-system';
 
 import type { ExternalFile, StorageAdapter } from './types';
 
@@ -12,6 +12,29 @@ const ROOT = new Directory(Paths.document, 'library');
 function fileFor(rel: string): File {
   if (!rel || rel.includes('..')) throw new Error('Invalid path');
   return new File(ROOT, ...rel.split('/'));
+}
+
+/** Pieces copied at a time when a file cannot be copied directly. */
+const COPY_PIECE = 4 * 1024 * 1024;
+
+/** Copies a file a few megabytes at a time: never the whole score in memory. */
+async function copyInPieces(from: File, to: File) {
+  to.create({ intermediates: true, overwrite: true });
+  const src = from.open(FileMode.ReadOnly);
+  try {
+    const dst = to.open(FileMode.WriteOnly);
+    try {
+      for (;;) {
+        const piece = await src.readBytes(COPY_PIECE);
+        if (piece.byteLength === 0) break;
+        await dst.writeBytes(piece);
+      }
+    } finally {
+      dst.close();
+    }
+  } finally {
+    src.close();
+  }
 }
 
 function ensureParent(file: File) {
@@ -49,10 +72,15 @@ export function createStorage(): StorageAdapter {
       try {
         await new File(ext.uri).copy(dest);
       } catch {
-        // Some providers (content:// URIs) cannot be copied directly: stream the bytes instead.
-        const bytes = await new File(ext.uri).bytes();
-        dest.create({ intermediates: true, overwrite: true });
-        await dest.write(bytes);
+        // Some providers (content:// URIs) cannot be copied directly: copy the
+        // bytes in pieces, and as a last resort all at once.
+        try {
+          await copyInPieces(new File(ext.uri), dest);
+        } catch {
+          const bytes = await new File(ext.uri).bytes();
+          dest.create({ intermediates: true, overwrite: true });
+          await dest.write(bytes);
+        }
       }
       return dest.size;
     },
