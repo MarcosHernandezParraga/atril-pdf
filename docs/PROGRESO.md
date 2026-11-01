@@ -9,7 +9,10 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 - ✅ Número de versión 1.0.0 (Android `versionCode` 10000). Las 0.x fueron de prueba y no se publicaron.
 - ✅ Guía única y ordenada para publicar desde cero: `docs/publicar/00-EMPIEZA-AQUI.md`.
 - ✅ Textos de «Novedades» de las tiendas para la primera versión (`fastlane/metadata/android/*/changelogs/10000.txt` y guía 12).
-- ⏳ Crear el repositorio en GitHub, subir el código, clave de firma de Android y publicar `v1.0.0` (los pasos de Marcos están en la guía 00).
+- ✅ Repositorio público `MarcosHernandezParraga/atril-pdf` con todo el historial; revisión automática (CI) en verde.
+- ✅ **Versión v1.0.0 publicada** (1 de noviembre de 2026): 12 archivos (Windows x64/arm64 y .appx, Mac universal, Linux AppImage/.deb x64/arm64, Android APK/AAB firmados con la clave de Marcos, `SHA256SUMS.txt`). Web publicada en https://marcoshernandezparraga.github.io/atril-pdf/ y comprobada en navegador de ordenador e iPad (funciona sin conexión).
+- ✅ A partir de la próxima versión: APK solo para procesadores ARM (la mitad de tamaño) y un instalador de Windows por procesador. La web se publica sola al terminar cada versión (desde `main`, porque el entorno `github-pages` solo admite esa rama).
+- ⏳ Tiendas: Microsoft Store, Google Play y App Store (guía 00, etapas 5 a 7).
 
 ## Cuarta tanda (versión 0.3.0): idiomas ✅
 

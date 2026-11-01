@@ -162,8 +162,8 @@ keytool -genkeypair -v -keystore $HOME\Documents\atril-release.keystore -alias a
 | ¿Cuáles son su nombre y su apellido? | `Marcos Hernandez Parraga` (mejor sin tildes; no se ve en ningún sitio) |
 | ¿Cuál es el nombre de su unidad de organización? | Pulsa **Intro** sin escribir nada |
 | ¿Cuál es el nombre de su organización? | Pulsa **Intro** sin escribir nada |
-| ¿Cuál es el nombre de su ciudad o localidad? | Tu ciudad |
-| ¿Cuál es el nombre de su estado o provincia? | Tu provincia |
+| ¿Cuál es el nombre de su ciudad o localidad? | Tu ciudad, o pulsa **Intro** para dejarlo vacío (quien examine la app con herramientas técnicas puede verlo) |
+| ¿Cuál es el nombre de su estado o provincia? | Tu provincia, o **Intro** para dejarlo vacío |
 | ¿Cuál es el código de país de dos letras? | `ES` |
 | ¿Es correcto CN=…? | Escribe la letra `s` y pulsa **Intro** (si tu Windows está en inglés, escribe `yes`) |
 

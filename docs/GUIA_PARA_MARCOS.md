@@ -137,7 +137,7 @@ Es tu «firma» digital: **guárdala muy bien**, porque si la pierdes no podrás
 winget install EclipseAdoptium.Temurin.21.JDK
 ```
 
-3. Cierra esa ventana y abre otra igual. Copia y pega esto y pulsa Intro. Te pedirá **inventar una contraseña** (apúntala) y tu nombre y ciudad:
+3. Cierra esa ventana y abre otra igual. Copia y pega esto y pulsa Intro. Te pedirá **inventar una contraseña** (apúntala) y tu nombre; la ciudad y la provincia puedes dejarlas vacías pulsando Intro:
 
 ```powershell
 keytool -genkeypair -v -keystore $HOME\Documents\atril-release.keystore -alias atril -keyalg RSA -keysize 4096 -validity 10000
