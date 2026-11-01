@@ -35,6 +35,8 @@ Tiempo total: 1 hora de trabajo + 1 a 3 días de espera para la verificación + 
 
 ## Paso 4. Rellenar la ficha (lo que verá la gente)
 
+> **Ficha de la tienda («Descripción de Store») ya preparada:** todos los textos en español e inglés están en [`ficha-microsoft-store.txt`](ficha-microsoft-store.txt). Las capturas de Windows (3840 x 2160) se generan con `node scripts/store-screenshots-windows.mjs http://localhost:8765 <carpeta>` (con la web servida en ese puerto); el icono de 300 x 300 sale de `assets/images/icon.png`.
+
 En Partner Center, pulsa **Iniciar envío (Start submission)** y rellena cada apartado:
 
 **Precios y disponibilidad**

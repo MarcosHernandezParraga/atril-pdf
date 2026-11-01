@@ -1,0 +1,246 @@
+ATRIL PDF — FICHA DE LA MICROSOFT STORE
+========================================
+
+Hay dos fichas: «Español (España)» y «Inglés (Estados Unidos)».
+Rellena cada una con su texto y sube las imágenes de su carpeta (es-ES o en-US).
+Los campos que aquí dicen «DEJAR VACÍO» no se rellenan.
+
+
+######################################################################
+  FICHA EN ESPAÑOL (España)
+######################################################################
+
+--- Nombre del producto ---
+Atril PDF
+
+--- Descripción ---
+Atril PDF, tu atril digital. Hecho por un músico para todos los músicos.
+
+Lleva todas tus partituras en el ordenador, la tableta o el portátil con pantalla táctil y olvídate de las fotocopias, las pinzas y las páginas que se caen. Pensado para estudiantes, profesorado, conservatorios, bandas, orquestas, coros y directores.
+
+Gratis de verdad: sin anuncios, sin cuentas, sin suscripciones, sin compras y sin recoger ningún dato. Funciona sin internet, también en el escenario.
+
+PARA TOCAR
+• Pasa página al instante con un pedal Bluetooth, el teclado, el ratón o la pantalla táctil, sin configurar nada.
+• Animación de página suave y rápida, fundido o sin animación.
+• Media página «estilo atril»: ves la parte de arriba de la página siguiente mientras terminas la actual.
+• Dos páginas como un libro abierto (ideal en pantallas panorámicas), vertical con anticipación o continuo.
+• Amplía con Ctrl + rueda del ratón, el gesto del trackpad o dos dedos, siempre nítido.
+• Modo actuación a pantalla completa, sin que se apague la pantalla.
+• Modo noche, sepia y recorte automático de márgenes para ver los pentagramas más grandes.
+
+CONCIERTOS
+• Una carpeta para cada concierto o repertorio: arrastra tus obras dentro y ordénalas arrastrando.
+• Iniciar concierto: todas las obras seguidas; al terminar una, se abre la siguiente.
+
+ESCRIBE SOBRE LA PARTITURA
+• Bolígrafo, subrayador, borrador y texto, con ratón, dedo o lápiz digital, y opción «Solo lápiz» para que la mano no pinte.
+• Pentagramas de cinco líneas para añadir compases o correcciones, del tamaño que quieras.
+• Imágenes sobre la página, que se mueven y cambian de tamaño.
+• Tus anotaciones nunca modifican el PDF original y se pueden deshacer.
+
+COMPARTE
+• Envía la partitura en PDF con tus anotaciones o sin ellas, o guárdala donde quieras. Sale igual que la ves en la app.
+
+ORGANIZA LAS PÁGINAS
+• Panel con todas las páginas numeradas: reordena, duplica, elimina y añade páginas en blanco, otro PDF o una imagen.
+
+BIBLIOTECA
+• Importa PDF e imágenes, también arrastrándolos a la ventana o con «Abrir con» desde el Explorador de archivos.
+• Búsqueda, favoritos, más recientes y papelera recuperable.
+• Pensada para bibliotecas grandes: cientos de partituras y partituras de director de cientos de páginas, también escaneadas, que se abren en segundos.
+
+EN TU IDIOMA
+• 21 idiomas, entre ellos español, catalán, gallego, euskera, inglés, portugués, francés, alemán, italiano, griego, ruso, árabe, chino y japonés. Usa el idioma de Windows y se puede cambiar en Ajustes.
+
+PRIVACIDAD
+• Tus partituras se quedan en tu ordenador. La app no se conecta a internet ni recoge datos.
+
+Código abierto (licencia MIT). Hecho por Marcos Hernández Párraga.
+
+--- Novedades de esta versión ---
+DEJAR VACÍO (es la primera vez que se publica en la tienda)
+
+--- Características del producto (una por casilla; sin viñetas) ---
+Pasa página con pedal Bluetooth, teclado, ratón o pantalla táctil, sin configurar nada
+Media página «estilo atril», dos páginas como un libro, vertical o continuo
+Carpetas para cada concierto e «Iniciar concierto»: las obras se abren seguidas
+Escribe sobre la partitura con bolígrafo, subrayador, texto y lápiz digital
+Añade pentagramas e imágenes sobre la página
+Comparte la partitura en PDF, con tus anotaciones o sin ellas
+Panel de páginas: reordena, duplica, elimina y añade páginas, otro PDF o imágenes
+Zoom nítido con Ctrl + rueda, trackpad o dos dedos
+Pantalla completa para actuar, sin que se apague la pantalla
+Modo noche, sepia y recorte automático de márgenes
+Bibliotecas grandes: cientos de partituras y obras de cientos de páginas
+Búsqueda, favoritos, más recientes y papelera recuperable
+21 idiomas: usa el idioma de Windows
+Funciona sin internet
+Sin anuncios, sin cuentas, sin compras y sin recoger datos
+Código abierto (licencia MIT)
+
+--- Capturas de pantalla (Escritorio) y su texto ---
+Sube, en este orden, las 7 imágenes de la carpeta es-ES. Debajo de cada una, este texto:
+1-dos-paginas.png   →  Dos páginas como un libro abierto, con tus anotaciones
+2-biblioteca.png    →  Tu biblioteca: una carpeta para cada concierto y todas tus partituras
+3-concierto.png     →  Ordena las obras del concierto y tócalas seguidas con «Iniciar concierto»
+4-escribir.png      →  Escribe sobre la partitura: bolígrafo, subrayador, texto, pentagramas e imágenes
+5-paginas.png       →  Panel de páginas: reordena, duplica, elimina y añade páginas
+6-compartir.png     →  Comparte la partitura en PDF, con tus anotaciones o sin ellas
+7-idiomas.png       →  21 idiomas: usa el de Windows o elige otro en Ajustes
+
+--- Logotipos de la tienda ---
+Icono de mosaico de aplicación 1:1 (300 x 300)  →  logos/icono-300x300.png
+Póster 2:3 y carátula 1:1  →  NO HACE FALTA (son para juegos)
+
+--- Tráileres y recursos adicionales ---
+Tráileres  →  NINGUNO
+Imagen de héroe 16:9 (Super hero art, 3840 x 2160)  →  logos/imagen-heroe-16x9-3840x2160.png
+
+--- Campos complementarios ---
+Título corto: Atril PDF
+Título de ordenación: DEJAR VACÍO
+Título de voz: DEJAR VACÍO
+Descripción breve:
+Tu atril digital: lee tus partituras PDF, pasa página con pedal, teclado o ratón, prepara tus conciertos y escribe sobre la partitura. Gratis, sin anuncios, sin cuentas y sin conexión. Hecho por un músico para todos los músicos.
+
+Requisitos de sistema adicionales
+  Hardware mínimo (una por casilla):
+Teclado y ratón, o pantalla táctil
+  Hardware recomendado (una por casilla):
+Pedal Bluetooth para pasar página (opcional)
+Lápiz digital para escribir sobre la partitura (opcional)
+Pantalla táctil o tableta con Windows
+
+Términos de búsqueda (si aparece el campo; uno por casilla):
+partituras
+atril
+lector de partituras
+pasapáginas pedal
+anotar partituras
+conciertos
+música
+
+Información de copyright y marca comercial (si aparece): © 2026 Marcos Hernández Párraga
+Desarrollado por (si aparece): Marcos Hernández Párraga
+Términos de licencia adicionales: DEJAR VACÍO
+
+
+######################################################################
+  FICHA EN INGLÉS (Estados Unidos) — STORE LISTING IN ENGLISH
+######################################################################
+
+--- Product name ---
+Atril PDF
+
+--- Description ---
+Atril PDF, your digital music stand. Made by a musician for every musician.
+
+Carry all your scores on your computer, tablet or touchscreen laptop: no more photocopies, clips or falling pages. Made for students, teachers, conservatories, bands, orchestras, choirs and conductors.
+
+Truly free: no ads, no accounts, no subscriptions, no purchases and no data collection. Works offline, on stage too.
+
+MADE FOR PLAYING
+• Turn pages instantly with a Bluetooth pedal, the keyboard, the mouse or the touchscreen, with no setup.
+• Smooth, quick page animation, a fade, or none at all.
+• Half-page turns like a real stand: see the top of the next page while you finish the current one.
+• Two pages like an open book (great on widescreen displays), vertical with look-ahead, or continuous.
+• Zoom with Ctrl + mouse wheel, the trackpad gesture or two fingers, always sharp.
+• Full-screen performance mode that keeps the screen on.
+• Night mode, sepia and automatic margin cropping for bigger staves.
+
+CONCERTS
+• A folder for each concert or repertoire: drag your pieces in and reorder them by dragging.
+• Start concert: all pieces in a row; when one ends, the next one opens.
+
+WRITE ON YOUR SCORE
+• Pen, highlighter, eraser and text, with mouse, finger or digital pen, and a "pencil only" option so your palm never draws.
+• Five-line staves to add bars or corrections, at any size.
+• Images on the page that you can move and resize.
+• Your notes never change the original PDF and can always be undone.
+
+SHARE
+• Send the score as a PDF with or without your notes, or save it wherever you like. It looks exactly as in the app.
+
+ORGANISE PAGES
+• A panel with every page numbered: reorder, duplicate, delete and add blank pages, another PDF or an image.
+
+LIBRARY
+• Import PDFs and images, also by dragging them onto the window or with "Open with" from File Explorer.
+• Search, favourites, most recent and a recoverable trash.
+• Built for large libraries: hundreds of scores and conductor scores of hundreds of pages, scanned ones too, open in seconds.
+
+IN YOUR LANGUAGE
+• 21 languages, including English, Spanish, Portuguese, French, German, Italian, Greek, Russian, Arabic, Chinese, Japanese and Korean. It follows the Windows language and can be changed in Settings.
+
+PRIVACY
+• Your scores stay on your computer. The app does not connect to the internet or collect any data.
+
+Open source (MIT licence). Made by Marcos Hernández Párraga.
+
+--- What's new in this version ---
+LEAVE EMPTY (first submission)
+
+--- Product features (one per box, no bullets) ---
+Turn pages with a Bluetooth pedal, keyboard, mouse or touchscreen, with no setup
+Half-page turns, two pages like a book, vertical or continuous
+A folder for each concert and "Start concert": pieces open one after another
+Write on the score with pen, highlighter, text and digital pen
+Add staves and images on the page
+Share the score as a PDF, with or without your notes
+Page panel: reorder, duplicate, delete and add pages, another PDF or images
+Sharp zoom with Ctrl + wheel, trackpad or two fingers
+Full-screen performance mode that keeps the screen on
+Night mode, sepia and automatic margin cropping
+Large libraries: hundreds of scores and pieces of hundreds of pages
+Search, favourites, most recent and a recoverable trash
+21 languages: follows the Windows language
+Works offline
+No ads, no accounts, no purchases and no data collection
+Open source (MIT licence)
+
+--- Screenshots (Desktop) and captions ---
+Upload, in this order, the 7 images from the en-US folder, with these captions:
+1-dos-paginas.png   →  Two pages like an open book, with your notes
+2-biblioteca.png    →  Your library: a folder for each concert and all your scores
+3-concierto.png     →  Order the pieces of a concert and play them in a row with Start concert
+4-escribir.png      →  Write on the score: pen, highlighter, text, staves and images
+5-paginas.png       →  Page panel: reorder, duplicate, delete and add pages
+6-compartir.png     →  Share the score as a PDF, with or without your notes
+7-idiomas.png       →  21 languages: it follows Windows, or choose another one in Settings
+
+--- Store logos ---
+1:1 App tile icon (300 x 300)  →  logos/icono-300x300.png
+2:3 Poster art and 1:1 Box art  →  NOT NEEDED (games only)
+
+--- Trailers and additional assets ---
+Trailers  →  NONE
+16:9 Super hero art (3840 x 2160)  →  logos/imagen-heroe-16x9-3840x2160.png
+
+--- Supplemental fields ---
+Short title: Atril PDF
+Sort title: LEAVE EMPTY
+Voice title: LEAVE EMPTY
+Short description:
+Your digital music stand: read your PDF scores, turn pages with a pedal, keyboard or mouse, plan your concerts and write on your scores. Free, no ads, no accounts, works offline. Made by a musician for every musician.
+
+Additional system requirements
+  Minimum hardware (one per box):
+Keyboard and mouse, or a touchscreen
+  Recommended hardware (one per box):
+Bluetooth pedal to turn pages (optional)
+Digital pen to write on scores (optional)
+Touchscreen or Windows tablet
+
+Search terms (if the field is there; one per box):
+sheet music
+music stand
+score reader
+page turner pedal
+annotate scores
+concert
+musician
+
+Copyright and trademark info (if the field is there): © 2026 Marcos Hernández Párraga
+Developed by (if the field is there): Marcos Hernández Párraga
+Additional license terms: LEAVE EMPTY
