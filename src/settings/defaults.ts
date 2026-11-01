@@ -2,12 +2,13 @@
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_KEYMAP, sanitizeKeymap, type KeyMap } from '../core/keymap';
 import type { HalfPageStyle, TwoPageOptions, ViewMode } from '../core/navigation';
 import type { TapZoneLayout } from '../core/tapZones';
+import { isSupportedLanguage, type LanguagePreference } from '../i18n/languages';
 import type { DocumentSort } from '../library/repository';
 
 export type { TapZoneLayout };
 
 export type ThemePreference = 'system' | 'light' | 'dark';
-export type LanguagePreference = 'system' | 'es' | 'en';
+export type { LanguagePreference };
 export type PageTransition = 'slide' | 'fade' | 'curl';
 /** View modes offered to the user (horizontal comes with and without animation). */
 export type ReaderMode = ViewMode | 'horizontal-animated';
@@ -135,5 +136,6 @@ export function sanitizeSettings(stored: unknown): AppSettings {
   s.reader.continuousOverlap = Math.max(0, Math.min(0.5, s.reader.continuousOverlap));
   s.reader.brightness = Math.max(0.3, Math.min(1, s.reader.brightness));
   s.pedal.debounceMs = Math.max(0, Math.min(1000, Math.round(s.pedal.debounceMs)));
+  if (s.language !== 'system' && !isSupportedLanguage(s.language)) s.language = 'system';
   return s;
 }

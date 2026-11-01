@@ -21,6 +21,7 @@ import {
 import { APP_AUTHOR, APP_NAME } from '../config/identity';
 import { getDesktopBridge } from '../platform/desktopBridge';
 import type { DocumentRow, FolderRow } from '../db/schema';
+import { useBackIcon, useIsRtl } from '../i18n/useDirection';
 import { getServices } from '../services';
 import { useSettings } from '../settings/store';
 import { cardShadow, RADIUS, SPACING, TOUCH, useTheme } from '../theme';
@@ -48,6 +49,8 @@ type LibraryView = 'all' | 'favorites' | 'trash';
 export function LibraryScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const backIcon = useBackIcon();
+  const rtl = useIsRtl();
   const params = useLocalSearchParams<{ view?: LibraryView }>();
   const view: LibraryView = params.view ?? 'all';
   const { width } = useWindowDimensions();
@@ -220,7 +223,7 @@ export function LibraryScreen() {
               onChangeText={setSearch}
               placeholder={t('library.search')}
               placeholderTextColor={theme.textSecondary}
-              style={[styles.searchInput, { color: theme.text }]}
+              style={[styles.searchInput, { color: theme.text, textAlign: rtl ? 'right' : 'left' }]}
               accessibilityLabel={t('library.search')}
             />
             {search ? (
@@ -347,7 +350,7 @@ export function LibraryScreen() {
       <View ref={dragLayerRef as never} collapsable={false} style={{ flex: 1 }}>
         <View style={[styles.topBar, { paddingHorizontal: pagePad }]}>
           {view !== 'all' ? (
-            <IconButton icon="arrow-left" label={t('common.back')} onPress={() => router.back()} />
+            <IconButton icon={backIcon} label={t('common.back')} onPress={() => router.back()} />
           ) : null}
           {view === 'all' ? (
             <Image
@@ -356,7 +359,7 @@ export function LibraryScreen() {
               accessibilityIgnoresInvertColors
             />
           ) : null}
-          <View style={{ flex: 1, marginLeft: SPACING.md }}>
+          <View style={{ flex: 1, marginStart: SPACING.md }}>
             <AppText variant="title" numberOfLines={1} accessibilityRole="header">
               {title}
             </AppText>
@@ -404,7 +407,13 @@ export function LibraryScreen() {
           scrollEnabled={!dragging}
         />
         {dragging ? (
-          <View pointerEvents="box-none" style={StyleSheet.absoluteFill} testID="drag-layer">
+          <View
+            pointerEvents="box-none"
+            // Positions follow the finger on screen: always measured left to right.
+            style={[StyleSheet.absoluteFill, { direction: 'ltr' }]}
+            {...(Platform.OS === 'web' ? ({ dir: 'ltr' } as object) : {})}
+            testID="drag-layer"
+          >
             {/* Every folder, always reachable while dragging (even if scrolled away). */}
             <View
               pointerEvents="none"
@@ -429,7 +438,7 @@ export function LibraryScreen() {
                       ]}
                     >
                       <Icon name="folder-music" size={18} color="#FFFFFF" />
-                      <AppText variant="label" style={{ color: '#FFFFFF', marginLeft: 6 }} numberOfLines={1}>
+                      <AppText variant="label" style={{ color: '#FFFFFF', marginStart: 6 }} numberOfLines={1}>
                         {f.name}
                       </AppText>
                     </View>
@@ -456,7 +465,7 @@ export function LibraryScreen() {
               ) : (
                 <Icon name="tray-arrow-down" size={32} color={theme.primary} />
               )}
-              <AppText style={{ marginLeft: SPACING.md }}>{busy ?? t('library.dropHere')}</AppText>
+              <AppText style={{ marginStart: SPACING.md }}>{busy ?? t('library.dropHere')}</AppText>
             </View>
           </View>
         ) : null}
@@ -478,7 +487,7 @@ export function SectionTitle({
   return (
     <View style={styles.sectionTitle}>
       <Icon name={icon} size={22} color={theme.primary} />
-      <AppText variant="heading" style={{ flex: 1, marginLeft: SPACING.sm }}>
+      <AppText variant="heading" style={{ flex: 1, marginStart: SPACING.sm }}>
         {title}
       </AppText>
       {right}
@@ -516,7 +525,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: RADIUS.pill,
-    paddingLeft: SPACING.lg,
+    paddingStart: SPACING.lg,
     minHeight: TOUCH + 4,
   },
   searchInput: { flex: 1, fontSize: 16, paddingHorizontal: SPACING.sm, minHeight: TOUCH },

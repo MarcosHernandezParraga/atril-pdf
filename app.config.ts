@@ -4,6 +4,31 @@ import type { ConfigContext, ExpoConfig } from 'expo/config';
 import packageJson from './package.json';
 import identity from './src/config/identity.json';
 
+/** Languages of the app, as the systems name them (see src/i18n/languages.ts). */
+const APP_LOCALES = [
+  'es',
+  'en',
+  'pt-BR',
+  'pt-PT',
+  'fr',
+  'de',
+  'it',
+  'ca',
+  'gl',
+  'eu',
+  'nl',
+  'pl',
+  'ro',
+  'el',
+  'ru',
+  'uk',
+  'ar',
+  'zh-Hans',
+  'zh-Hant',
+  'ja',
+  'ko',
+];
+
 const PERMISSION_TEXTS = {
   camera:
     'La cámara se usa solo si tú lo pides, para añadir una foto de una partitura como página. / The camera is only used when you ask, to add a photo of sheet music as a page.',
@@ -130,7 +155,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     'expo-sqlite',
-    'expo-localization',
+    [
+      'expo-localization',
+      {
+        // The menus follow right-to-left languages by themselves (src/i18n/useDirection.ts);
+        // the score and the reader must always stay left to right, so the system must not
+        // mirror the whole app.
+        supportsRTL: false,
+        // Languages offered in the system's per-app language setting (same list as src/i18n/languages.ts).
+        supportedLocales: APP_LOCALES,
+      },
+    ],
     'expo-sharing',
     'expo-screen-orientation',
     './modules/atril-native/plugin/withAtrilNative.js',

@@ -176,7 +176,7 @@ export function DocumentCard({
             {...contextMenuProps(onMenu)}
           >
             <Thumbnail doc={doc} width={46} height={62} radius={8} />
-            <View style={{ flex: 1, marginLeft: SPACING.md }}>
+            <View style={{ flex: 1, marginStart: SPACING.md }}>
               <AppText variant="label" numberOfLines={2}>
                 {doc.title}
               </AppText>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   more: { position: 'absolute', bottom: 6, right: 6 },
   moreBtn: { minWidth: 34, minHeight: 34, borderRadius: 17, opacity: 0.92 },
   listRow: { borderRadius: RADIUS.lg, marginBottom: SPACING.sm },
-  listContent: { flexDirection: 'row', alignItems: 'center', padding: SPACING.sm, paddingLeft: SPACING.md },
+  listContent: { flexDirection: 'row', alignItems: 'center', padding: SPACING.sm, paddingStart: SPACING.md },
   folderContent: {
     padding: SPACING.lg,
     minHeight: 124,

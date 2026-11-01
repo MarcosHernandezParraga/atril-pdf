@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDirectionProps } from '../i18n/useDirection';
+
 import { assignKey, DEFAULT_KEYMAP, KEY_ACTIONS, removeKey, type KeyAction } from '../core/keymap';
 import { supportsVolumeKeys } from '../input/keySource';
 import { useRawKeys } from '../input/useReaderKeys';
@@ -20,6 +22,7 @@ import { useSettings } from './store';
 export function PedalScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { style: direction, ...dirProps } = useDirectionProps();
   const pedal = useSettings((s) => s.settings.pedal);
   const update = useSettings((s) => s.update);
   const [learning, setLearning] = useState<KeyAction | null>(null);
@@ -36,7 +39,11 @@ export function PedalScreen() {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={[{ flex: 1, backgroundColor: theme.background }, direction]}
+      edges={['top', 'left', 'right']}
+      {...dirProps}
+    >
       <Header title={t('settings.pedal')} onBack={() => router.back()} backLabel={t('common.back')} />
       <ScrollView
         contentContainerStyle={{

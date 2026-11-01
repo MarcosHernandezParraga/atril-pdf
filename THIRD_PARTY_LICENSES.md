@@ -38,6 +38,7 @@ Atril PDF is distributed under the MIT License. It includes the following third-
 | expo-system-ui | 58.0.7 | MIT | https://github.com/expo/expo |
 | fflate | 0.8.3 | MIT | https://github.com/101arrowz/fflate |
 | i18next | 26.5.12 | MIT | https://github.com/i18next/i18next |
+| intl-pluralrules | 2.0.1 | ISC | eemeli/intl-pluralrules |
 | pdfjs-dist | 6.4.299 | Apache-2.0 | https://github.com/mozilla/pdf.js |
 | perfect-freehand | 1.2.3 | MIT | https://github.com/steveruizok/perfect-freehand |
 | react | 19.3.0 | MIT | https://github.com/react/react |

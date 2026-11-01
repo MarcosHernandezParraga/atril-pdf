@@ -16,7 +16,8 @@
     "on": "Activado",
     "off": "Desactivado",
     "pages_one": "{{count}} página",
-    "pages_other": "{{count}} páginas"
+    "pages_other": "{{count}} páginas",
+    "pages_many": "{{count}} páginas"
   },
   "library": {
     "title": "Biblioteca",
@@ -39,6 +40,7 @@
     "importing": "Importando {{name}}…",
     "imported_one": "Documento añadido a la biblioteca",
     "imported_other": "{{count}} documentos añadidos a la biblioteca",
+    "imported_many": "{{count}} documentos añadidos a la biblioteca",
     "importFailed": "No se pudo importar «{{name}}»: {{reason}}",
     "notPdf": "el archivo no es un PDF válido o está dañado",
     "passwordProtected": "el PDF está protegido con contraseña",
@@ -63,6 +65,7 @@
     "color": "Color",
     "selected_one": "{{count}} seleccionado",
     "selected_other": "{{count}} seleccionados",
+    "selected_many": "{{count}} seleccionados",
     "passwordTitle": "PDF protegido",
     "passwordPrompt": "«{{name}}» está protegido con contraseña. Escríbela para abrirlo:",
     "passwordWrong": "La contraseña no es correcta. Vuelve a intentarlo:",
@@ -70,6 +73,7 @@
     "madeBy": "Hecho por {{author}}",
     "pieces_one": "{{count}} obra",
     "pieces_other": "{{count}} obras",
+    "pieces_many": "{{count}} obras",
     "startConcert": "Iniciar concierto",
     "addPieces": "Añadir obras",
     "importHere": "Importar aquí",
@@ -248,7 +252,9 @@
     "image": "Imagen",
     "duplicate": "Duplicar",
     "whiteBackground": "Fondo blanco",
-    "selectHint": "Toca un pentagrama o una imagen para moverlo o cambiar su tamaño con las esquinas."
+    "selectHint": "Toca un pentagrama o una imagen para moverlo o cambiar su tamaño con las esquinas.",
+    "smallerText": "Letra más pequeña",
+    "largerText": "Letra más grande"
   },
   "pages": {
     "title": "Páginas",
@@ -267,6 +273,7 @@
     "pdfPage": "Página {{n}} del PDF",
     "added_one": "Se ha añadido {{count}} página",
     "added_other": "Se han añadido {{count}} páginas",
+    "added_many": "Se han añadido {{count}} páginas",
     "deleted": "Página eliminada (puedes deshacerlo)",
     "duplicated": "Página duplicada",
     "moved": "Página movida",

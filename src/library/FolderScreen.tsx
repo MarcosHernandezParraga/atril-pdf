@@ -26,6 +26,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { newId } from '../core/ids';
 import type { DocumentRow, FolderRow } from '../db/schema';
+import { useBackIcon, useDirectionProps } from '../i18n/useDirection';
 import { getServices } from '../services';
 import { cardShadow, RADIUS, SPACING, TOUCH, useTheme } from '../theme';
 import { dialogs } from '../ui/dialogs';
@@ -45,6 +46,8 @@ export function FolderScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const theme = useTheme();
+  const backIcon = useBackIcon();
+  const { style: direction, ...dirProps } = useDirectionProps();
   const { width } = useWindowDimensions();
   const version = useLibraryRefresh((s) => s.version);
   const bump = useLibraryRefresh((s) => s.bump);
@@ -130,7 +133,7 @@ export function FolderScreen() {
   if (!folder && pieces !== null) {
     return (
       <SafeAreaView style={[styles.fill, styles.center, { backgroundColor: theme.background }]}>
-        <Button label={t('common.back')} icon="arrow-left" onPress={() => router.back()} />
+        <Button label={t('common.back')} icon={backIcon} onPress={() => router.back()} />
       </SafeAreaView>
     );
   }
@@ -143,12 +146,13 @@ export function FolderScreen() {
 
   return (
     <SafeAreaView
-      style={[styles.fill, { backgroundColor: theme.background }]}
+      style={[styles.fill, { backgroundColor: theme.background }, direction]}
       edges={['top', 'left', 'right']}
+      {...dirProps}
     >
       <View style={[styles.topBar, { paddingHorizontal: pad - SPACING.sm }]}>
         <IconButton
-          icon="arrow-left"
+          icon={backIcon}
           label={t('common.back')}
           onPress={() => router.back()}
           testID="folder-back"
@@ -184,7 +188,7 @@ export function FolderScreen() {
           <View style={[styles.hero, { backgroundColor: color }, cardShadow(theme, 2)]}>
             <View style={styles.heroRow}>
               <Icon name="folder-music" size={36} color="#FFFFFF" />
-              <View style={{ flex: 1, marginLeft: SPACING.md }}>
+              <View style={{ flex: 1, marginStart: SPACING.md }}>
                 <AppText variant="title" style={{ color: '#FFFFFF' }} numberOfLines={2} testID="folder-title">
                   {folder?.name ?? ''}
                 </AppText>
@@ -203,7 +207,7 @@ export function FolderScreen() {
               ]}
             >
               <Icon name="play" size={24} color={color} />
-              <AppText variant="label" style={{ color: '#1D1B18', marginLeft: SPACING.sm }}>
+              <AppText variant="label" style={{ color: '#1D1B18', marginStart: SPACING.sm }}>
                 {t('library.startConcert')}
               </AppText>
             </Pressable>
@@ -279,7 +283,7 @@ export function FolderScreen() {
                   </AppText>
                 </View>
                 <Thumbnail doc={item.doc} width={42} height={58} radius={8} />
-                <View style={{ flex: 1, marginLeft: SPACING.sm }}>
+                <View style={{ flex: 1, marginStart: SPACING.sm }}>
                   <AppText variant="label" numberOfLines={2}>
                     {item.doc.title}
                   </AppText>
@@ -452,7 +456,7 @@ function PickDocuments({
                     ) : null}
                   </View>
                   <Thumbnail doc={item} width={36} height={48} radius={6} />
-                  <AppText style={{ flex: 1, marginLeft: SPACING.md }} numberOfLines={2}>
+                  <AppText style={{ flex: 1, marginStart: SPACING.md }} numberOfLines={2}>
                     {item.title}
                   </AppText>
                 </Pressable>
@@ -522,7 +526,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: RADIUS.pill,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingLeft: SPACING.lg,
+    paddingStart: SPACING.lg,
     marginBottom: SPACING.md,
   },
   searchInput: { flex: 1, fontSize: 16, minHeight: TOUCH, paddingHorizontal: SPACING.sm },

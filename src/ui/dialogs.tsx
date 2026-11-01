@@ -18,6 +18,7 @@ import {
 import { create } from 'zustand';
 
 import i18n from '../i18n';
+import { useDirectionProps } from '../i18n/useDirection';
 import { RADIUS, SPACING, TOUCH, useTheme } from '../theme';
 import { AppText, Button, Icon, type IconName } from './primitives';
 
@@ -151,6 +152,7 @@ function PromptBody({ d, close }: { d: Extract<Dialog, { kind: 'prompt' }>; clos
 
 export function DialogHost() {
   const t = useTheme();
+  const { style: direction, ...dirProps } = useDirectionProps();
   const { dialog, toast, set, hideToast } = useDialogStore();
   const close = () => set(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -184,7 +186,11 @@ export function DialogHost() {
             onPress={dismiss}
             accessibilityLabel={i18n.t('common.close')}
           />
-          <View style={[styles.sheet, { backgroundColor: t.surface, borderColor: t.border }]} testID="dialog">
+          <View
+            style={[styles.sheet, { backgroundColor: t.surface, borderColor: t.border }, direction]}
+            {...dirProps}
+            testID="dialog"
+          >
             {dialog?.kind === 'prompt' ? <PromptBody key={dialog.title} d={dialog} close={close} /> : null}
             {dialog?.kind === 'confirm' ? (
               <>
@@ -236,7 +242,7 @@ export function DialogHost() {
                     {item.icon ? (
                       <Icon name={item.icon} color={item.color ?? (item.danger ? t.danger : t.text)} />
                     ) : null}
-                    <AppText style={{ marginLeft: SPACING.md, color: item.danger ? t.danger : t.text }}>
+                    <AppText style={{ marginStart: SPACING.md, color: item.danger ? t.danger : t.text }}>
                       {item.label}
                     </AppText>
                   </Pressable>
@@ -249,7 +255,8 @@ export function DialogHost() {
       {toast ? (
         <View pointerEvents="box-none" style={styles.toastWrap}>
           <View
-            style={[styles.toast, { backgroundColor: t.overlay }]}
+            style={[styles.toast, { backgroundColor: t.overlay }, direction]}
+            {...dirProps}
             accessibilityLiveRegion="polite"
             testID="toast"
           >

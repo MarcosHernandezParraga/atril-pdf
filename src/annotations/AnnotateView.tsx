@@ -354,14 +354,14 @@ export function AnnotateView({
             <View style={[styles.editBar, { backgroundColor: theme.overlay }]}>
               <IconButton
                 icon="format-font-size-decrease"
-                label="A-"
+                label={t('annotate.smallerText')}
                 color="#FFFFFF"
                 size={20}
                 onPress={() => setEdit({ fontSize: Math.max(8, editing.ann.fontSize - 2) })}
               />
               <IconButton
                 icon="format-font-size-increase"
-                label="A+"
+                label={t('annotate.largerText')}
                 color="#FFFFFF"
                 size={20}
                 onPress={() => setEdit({ fontSize: Math.min(72, editing.ann.fontSize + 2) })}

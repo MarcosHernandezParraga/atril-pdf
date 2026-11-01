@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Image, Linking, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDirectionProps } from '../i18n/useDirection';
+
 import { APP_AUTHOR, APP_COPYRIGHT, APP_NAME, APP_REPOSITORY_URL, APP_VERSION } from '../config/identity';
 import { getDesktopBridge } from '../platform/desktopBridge';
 import { SPACING, useTheme } from '../theme';
@@ -19,8 +21,13 @@ function openUrl(url: string) {
 export function AboutScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { style: direction, ...dirProps } = useDirectionProps();
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={[{ flex: 1, backgroundColor: theme.background }, direction]}
+      edges={['top', 'left', 'right']}
+      {...dirProps}
+    >
       <Header title={t('about.title')} onBack={() => router.back()} backLabel={t('common.back')} />
       <ScrollView
         contentContainerStyle={{

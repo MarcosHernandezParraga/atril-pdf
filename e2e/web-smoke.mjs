@@ -2,7 +2,7 @@
 // Browser test of the main user journeys: import, read, turn pages with pedal keys,
 // write on the PDF (pen and text), view modes, zoom (wheel, keys, pinch), page panel,
 // staff and image on the page, concert folders, dragging pieces onto folders and
-// reordering them, settings, protected PDFs.
+// reordering them, settings, languages, protected PDFs.
 import { createRequire } from 'node:module';
 
 // Uses the Playwright installed in the project (or on the machine).
@@ -430,6 +430,36 @@ await step('settings, pedal test and about', async () => {
     throw new Error('author');
   await page.screenshot({ path: `${shots}/09-acerca-de.png` });
 });
+
+await step(
+  'languages: change it in Settings, it stays after reopening, back to the device language',
+  async () => {
+    const chooseLanguage = async (label) => {
+      await page.getByTestId('language-choice').scrollIntoViewIfNeeded();
+      await page.getByTestId('language-choice').click();
+      await page.locator('[data-testid="dialog"]').getByText(label, { exact: false }).first().click();
+      await page.waitForTimeout(600);
+    };
+    await page.goto(base);
+    await page.getByTestId('open-settings').click();
+    await chooseLanguage('Deutsch');
+    if (!(await page.getByTestId('language-choice').textContent())?.includes('Sprache'))
+      throw new Error('German');
+    await page.waitForTimeout(1500);
+    await page.goto(base);
+    await page.getByTestId('import-button').waitFor();
+    if (
+      (await page.getByTestId('import-button').textContent())?.trim().endsWith('Öffnen / Importieren') !==
+      true
+    )
+      throw new Error(`after reopening: ${await page.getByTestId('import-button').textContent()}`);
+    await page.getByTestId('open-settings').click();
+    await chooseLanguage('Wie das System');
+    if (!(await page.getByTestId('language-choice').textContent())?.includes('Idioma'))
+      throw new Error('back to Spanish');
+    await page.waitForTimeout(1200);
+  },
+);
 
 await step('password-protected PDF asks for the password', async () => {
   await page.goto(base);

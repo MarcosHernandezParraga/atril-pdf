@@ -248,7 +248,9 @@
     "image": "Image",
     "duplicate": "Duplicate",
     "whiteBackground": "White background",
-    "selectHint": "Tap a staff or an image to move it, or resize it with its corners."
+    "selectHint": "Tap a staff or an image to move it, or resize it with its corners.",
+    "smallerText": "Smaller text",
+    "largerText": "Larger text"
   },
   "pages": {
     "title": "Pages",

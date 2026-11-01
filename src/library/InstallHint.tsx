@@ -38,7 +38,7 @@ export function InstallHint() {
     >
       <View style={styles.row}>
         <Icon name="export-variant" color={theme.primary} />
-        <AppText variant="label" style={{ marginLeft: SPACING.sm, flex: 1 }}>
+        <AppText variant="label" style={{ marginStart: SPACING.sm, flex: 1 }}>
           {t('library.installTitle')}
         </AppText>
       </View>

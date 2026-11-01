@@ -34,6 +34,7 @@ export const THIRD_PARTY: { name: string; license: string }[] = [
   { name: 'expo-system-ui', license: 'MIT' },
   { name: 'fflate', license: 'MIT' },
   { name: 'i18next', license: 'MIT' },
+  { name: 'intl-pluralrules', license: 'ISC' },
   { name: 'pdfjs-dist', license: 'Apache-2.0' },
   { name: 'perfect-freehand', license: 'MIT' },
   { name: 'react', license: 'MIT' },

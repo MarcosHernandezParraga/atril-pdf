@@ -4,15 +4,29 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDirectionProps } from '../i18n/useDirection';
+
+import { LANGUAGES, systemLanguage, type LanguagePreference } from '../i18n';
 import { isDesktop } from '../platform/desktopBridge';
 import { SPACING, useTheme } from '../theme';
+import { dialogs } from '../ui/dialogs';
 import { AppText, ChoiceList, Header, Row, Section, Segmented, Stepper, SwitchRow } from '../ui/primitives';
 import { READER_MODES, type AppSettings } from './defaults';
 import { useSettings } from './store';
 
+/** Each language is shown in its own name, so anyone can find theirs. */
+function nativeName(code: string): string {
+  return LANGUAGES.find((l) => l.code === code)?.name ?? code;
+}
+
 export function SettingsScreen() {
   const { t } = useTranslation();
+  const languageLabel = (code: LanguagePreference) =>
+    code === 'system'
+      ? `${t('settings.languageSystem')} · ${nativeName(systemLanguage())}`
+      : nativeName(code);
   const theme = useTheme();
+  const { style: direction, ...dirProps } = useDirectionProps();
   const s = useSettings((st) => st.settings);
   const update = useSettings((st) => st.update);
   const set = (recipe: (d: AppSettings) => void) =>
@@ -22,7 +36,11 @@ export function SettingsScreen() {
     });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={[{ flex: 1, backgroundColor: theme.background }, direction]}
+      edges={['top', 'left', 'right']}
+      {...dirProps}
+    >
       <Header title={t('settings.title')} onBack={() => router.back()} backLabel={t('common.back')} />
       <ScrollView
         contentContainerStyle={{
@@ -262,18 +280,23 @@ export function SettingsScreen() {
               { value: 'dark', label: t('settings.themeDark') },
             ]}
           />
-          <AppText variant="label">{t('settings.language')}</AppText>
-          <Segmented
-            testID="language-choice"
-            value={s.language}
-            onChange={(v) => set((d) => void (d.language = v))}
-            options={[
-              { value: 'system', label: t('settings.languageSystem') },
-              { value: 'es', label: 'Español' },
-              { value: 'en', label: 'English' },
-            ]}
-          />
           <View style={{ height: SPACING.sm }} />
+          <Row
+            title={t('settings.language')}
+            subtitle={languageLabel(s.language)}
+            icon="translate"
+            testID="language-choice"
+            onPress={() =>
+              void dialogs.menu(
+                (['system', ...LANGUAGES.map((l) => l.code)] as LanguagePreference[]).map((code) => ({
+                  label: `${code === s.language ? '✓ ' : ''}${languageLabel(code)}`,
+                  onPress: () => set((d) => void (d.language = code)),
+                })),
+                t('settings.language'),
+              )
+            }
+            last
+          />
         </Section>
 
         <Section>

@@ -20,6 +20,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useBackIcon, useDirectionProps, useIsRtl } from '../i18n/useDirection';
 import { cardShadow, RADIUS, SPACING, TOUCH, useTheme } from '../theme';
 import { Pressable3D } from './Pressable3D';
 
@@ -47,11 +48,14 @@ export function AppText({
   ...rest
 }: TextProps & { variant?: TextVariant; secondary?: boolean }) {
   const t = useTheme();
+  const rtl = useIsRtl();
   return (
     <Text
       {...rest}
       style={[
         TEXT_STYLES[variant],
+        // Arabic: every text starts on the right, also names written in Latin letters.
+        rtl && { textAlign: 'right' },
         { color: secondary ? t.textSecondary : t.text },
         style as StyleProp<TextStyle>,
       ]}
@@ -69,6 +73,7 @@ export function Screen({
   style?: ViewStyle;
 }) {
   const t = useTheme();
+  const { style: direction, ...dirProps } = useDirectionProps();
   const body = scroll ? (
     <ScrollView contentContainerStyle={[{ padding: SPACING.lg, paddingBottom: SPACING.xxl }, style]}>
       {children}
@@ -77,7 +82,11 @@ export function Screen({
     <View style={[{ flex: 1 }, style]}>{children}</View>
   );
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: t.background }} edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      style={[{ flex: 1, backgroundColor: t.background }, direction]}
+      edges={['top', 'left', 'right']}
+      {...dirProps}
+    >
       {body}
     </SafeAreaView>
   );
@@ -236,14 +245,15 @@ export function Header({
   right?: ReactNode;
 }) {
   const t = useTheme();
+  const backIcon = useBackIcon();
   return (
     <View style={[styles.header, { borderBottomColor: t.border, backgroundColor: t.background }]}>
       {onBack ? (
-        <IconButton icon="arrow-left" label={backLabel ?? 'Back'} onPress={onBack} testID="header-back" />
+        <IconButton icon={backIcon} label={backLabel ?? 'Back'} onPress={onBack} testID="header-back" />
       ) : null}
       <AppText
         variant="heading"
-        style={{ flex: 1, marginLeft: onBack ? SPACING.xs : SPACING.sm }}
+        style={{ flex: 1, marginStart: onBack ? SPACING.xs : SPACING.sm }}
         numberOfLines={1}
       >
         {title}
@@ -291,10 +301,11 @@ export function Row({
   last?: boolean;
 }) {
   const t = useTheme();
+  const rtl = useIsRtl();
   const content = (
     <>
       {icon ? (
-        <View style={{ marginRight: SPACING.md }}>
+        <View style={{ marginEnd: SPACING.md }}>
           <Icon name={icon} color={t.textSecondary} />
         </View>
       ) : null}
@@ -307,7 +318,9 @@ export function Row({
         ) : null}
       </View>
       {right}
-      {onPress && !right ? <Icon name="chevron-right" color={t.textSecondary} /> : null}
+      {onPress && !right ? (
+        <Icon name={rtl ? 'chevron-left' : 'chevron-right'} color={t.textSecondary} />
+      ) : null}
     </>
   );
   const style = [
