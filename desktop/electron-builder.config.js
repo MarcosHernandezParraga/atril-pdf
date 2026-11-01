@@ -23,6 +23,17 @@ module.exports = {
   // preload.js and the exported web interface.
   files: ['**/*', '!node_modules{,/**}'],
   asar: true,
+  // Electron "fuses": switches burnt into the program itself. These close doors
+  // that this app never uses, so nobody can misuse the installed program
+  // (for example to run other code with it).
+  electronFuses: {
+    runAsNode: false,
+    enableNodeOptionsEnvironmentVariable: false,
+    enableNodeCliInspectArguments: false,
+    enableCookieEncryption: true,
+    onlyLoadAppFromAsar: true,
+    grantFileProtocolExtraPrivileges: false,
+  },
   npmRebuild: false,
   nodeGypRebuild: false,
   artifactName: '${productName}-${version}-${os}-${arch}.${ext}',
@@ -37,7 +48,10 @@ module.exports = {
     },
   ],
   win: {
-    target: [{ target: 'nsis', arch: ['x64', 'arm64'] }, { target: 'appx', arch: ['x64', 'arm64'] }],
+    target: [
+      { target: 'nsis', arch: ['x64', 'arm64'] },
+      { target: 'appx', arch: ['x64', 'arm64'] },
+    ],
     legalTrademarks: identity.name,
     // Shown as "Publisher" in Windows. A real code-signing certificate can be added later.
     signtoolOptions: { publisherName: identity.author },
@@ -78,7 +92,10 @@ module.exports = {
     title: identity.name,
   },
   linux: {
-    target: [{ target: 'AppImage', arch: ['x64', 'arm64'] }, { target: 'deb', arch: ['x64', 'arm64'] }],
+    target: [
+      { target: 'AppImage', arch: ['x64', 'arm64'] },
+      { target: 'deb', arch: ['x64', 'arm64'] },
+    ],
     category: 'AudioVideo',
     maintainer: identity.author,
     vendor: identity.author,

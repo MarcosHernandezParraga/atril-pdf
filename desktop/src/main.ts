@@ -99,6 +99,9 @@ function createWindow() {
       sandbox: true,
       webSecurity: true,
       spellcheck: false,
+      webviewTag: false,
+      // The developer tools only exist while developing, never in the published app.
+      devTools: !app.isPackaged,
       additionalArguments: [`--atril-version=${app.getVersion()}`],
     },
   });
@@ -136,9 +139,12 @@ async function start() {
   registerAppProtocol(webRoot);
 
   // No permission is ever needed (no camera, microphone, location, notifications...).
+  const allowedPermission = (permission: string) =>
+    permission === 'clipboard-sanitized-write' || permission === 'fullscreen';
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) =>
-    cb(permission === 'clipboard-sanitized-write' || permission === 'fullscreen'),
+    cb(allowedPermission(permission)),
   );
+  session.defaultSession.setPermissionCheckHandler((_wc, permission) => allowedPermission(permission));
   // Block any network access: the app works 100% offline.
   session.defaultSession.webRequest.onBeforeRequest(
     { urls: ['http://*/*', 'https://*/*', 'ws://*/*', 'wss://*/*'] },
@@ -156,14 +162,32 @@ async function start() {
   });
 }
 
+/** Only the project's own page may be opened in the browser (from "About"). */
+function isAllowedExternal(url: unknown): url is string {
+  if (typeof url !== 'string') return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && u.hostname === 'github.com';
+  } catch {
+    return false;
+  }
+}
+
 app.on('web-contents-created', (_e, contents) => {
+  // No new windows: allowed links open in the normal browser instead.
   contents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https://')) void shell.openExternal(url);
+    if (isAllowedExternal(url)) void shell.openExternal(url);
     return { action: 'deny' };
   });
+  // The window can never leave the app's own pages.
   contents.on('will-navigate', (e, url) => {
-    if (!url.startsWith(APP_ORIGIN)) e.preventDefault();
+    if (!url.startsWith(`${APP_ORIGIN}/`)) e.preventDefault();
   });
+  contents.on('will-redirect', (e, url) => {
+    if (!url.startsWith(`${APP_ORIGIN}/`)) e.preventDefault();
+  });
+  // Embedded web views are never allowed.
+  contents.on('will-attach-webview', (e) => e.preventDefault());
 });
 
 app.on('window-all-closed', () => {
@@ -181,50 +205,64 @@ function checkExternal(path: string): string {
   return path;
 }
 
+/**
+ * Like ipcMain.handle, but only answers the app's own interface (never another
+ * page or frame, even if one were somehow loaded).
+ */
+function handle<A extends unknown[], R>(
+  channel: string,
+  fn: (e: Electron.IpcMainInvokeEvent, ...args: A) => R | Promise<R>,
+) {
+  ipcMain.handle(channel, (e, ...args) => {
+    const url = e.senderFrame?.url ?? '';
+    if (!url.startsWith(`${APP_ORIGIN}/`) || e.senderFrame !== mainWindow?.webContents.mainFrame) {
+      throw new Error('Access denied');
+    }
+    return fn(e, ...(args as A));
+  });
+}
+
 function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
   const root = libraryRoot();
 
-  ipcMain.handle('db:query', (_e, q: SqlQuery) => executor.query(q));
-  ipcMain.handle('db:batch', (_e, qs: SqlQuery[]) => executor.batch(qs));
-  ipcMain.handle('db:exec', (_e, script: string) => executor.exec(script));
+  handle('db:query', (_e, q: SqlQuery) => executor.query(q));
+  handle('db:batch', (_e, qs: SqlQuery[]) => executor.batch(qs));
+  handle('db:exec', (_e, script: string) => executor.exec(script));
 
-  ipcMain.handle(
-    'fs:read',
-    async (_e, rel: string) => new Uint8Array(await fsp.readFile(libraryPath(root, rel))),
-  );
-  ipcMain.handle('fs:write', async (_e, rel: string, data: Uint8Array) => {
+  handle('fs:read', async (_e, rel: string) => new Uint8Array(await fsp.readFile(libraryPath(root, rel))));
+  handle('fs:write', async (_e, rel: string, data: Uint8Array) => {
     const p = libraryPath(root, rel);
     await fsp.mkdir(join(p, '..'), { recursive: true });
     const tmp = `${p}.tmp`;
     await fsp.writeFile(tmp, data);
     await fsp.rename(tmp, p);
   });
-  ipcMain.handle('fs:exists', async (_e, rel: string) =>
+  handle('fs:exists', async (_e, rel: string) =>
     fsp
       .access(libraryPath(root, rel))
       .then(() => true)
       .catch(() => false),
   );
-  ipcMain.handle('fs:remove', async (_e, rel: string) =>
+  handle('fs:remove', async (_e, rel: string) =>
     fsp.rm(libraryPath(root, rel), { force: true, recursive: true }),
   );
-  ipcMain.handle('fs:size', async (_e, rel: string) => (await fsp.stat(libraryPath(root, rel))).size);
-  ipcMain.handle('fs:list', async (_e, rel: string) =>
+  handle('fs:size', async (_e, rel: string) => (await fsp.stat(libraryPath(root, rel))).size);
+  handle('fs:list', async (_e, rel: string) =>
     fsp.readdir(libraryPath(root, rel)).catch(() => [] as string[]),
   );
-  ipcMain.handle(
+  handle(
     'fs:readExternal',
     async (_e, abs: string) => new Uint8Array(await fsp.readFile(checkExternal(abs))),
   );
-  ipcMain.handle('fs:importExternal', async (_e, abs: string, rel: string) => {
+  handle('fs:importExternal', async (_e, abs: string, rel: string) => {
     const dest = libraryPath(root, rel);
     await fsp.mkdir(join(dest, '..'), { recursive: true });
     await fsp.copyFile(checkExternal(abs), dest);
     return (await fsp.stat(dest)).size;
   });
-  ipcMain.handle('fs:allowDropped', (_e, abs: string) => toPicked(abs));
+  handle('fs:allowDropped', (_e, abs: string) => toPicked(abs));
 
-  ipcMain.handle('dialog:openFiles', async (_e, opts: { filters: FileFilter[]; multiple: boolean }) => {
+  handle('dialog:openFiles', async (_e, opts: { filters: FileFilter[]; multiple: boolean }) => {
     if (!mainWindow) return [];
     const r = await dialog.showOpenDialog(mainWindow, {
       properties: opts.multiple ? ['openFile', 'multiSelections'] : ['openFile'],
@@ -233,7 +271,7 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
     if (r.canceled) return [];
     return r.filePaths.map(toPicked).filter((f): f is PickedFile => f !== null);
   });
-  ipcMain.handle(
+  handle(
     'dialog:saveFile',
     async (_e, opts: { defaultName: string; filters: FileFilter[]; data: Uint8Array }) => {
       if (!mainWindow) return null;
@@ -247,25 +285,22 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
     },
   );
   const allowedDirs = new Set<string>();
-  ipcMain.handle('dialog:chooseDirectory', async () => {
+  handle('dialog:chooseDirectory', async () => {
     if (!mainWindow) return null;
     const r = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory', 'createDirectory'] });
     if (r.canceled || !r.filePaths[0]) return null;
     allowedDirs.add(r.filePaths[0]);
     return r.filePaths[0];
   });
-  ipcMain.handle(
-    'dialog:writeFilesTo',
-    async (_e, dir: string, files: { name: string; data: Uint8Array }[]) => {
-      if (!allowedDirs.has(dir)) throw new Error('Access denied');
-      for (const f of files) await fsp.writeFile(join(dir, basename(f.name)), f.data);
-    },
-  );
+  handle('dialog:writeFilesTo', async (_e, dir: string, files: { name: string; data: Uint8Array }[]) => {
+    if (!allowedDirs.has(dir)) throw new Error('Access denied');
+    for (const f of files) await fsp.writeFile(join(dir, basename(f.name)), f.data);
+  });
 
-  ipcMain.handle('window:setFullScreen', (_e, on: boolean) => mainWindow?.setFullScreen(Boolean(on)));
-  ipcMain.handle('window:isFullScreen', () => mainWindow?.isFullScreen() ?? false);
+  handle('window:setFullScreen', (_e, on: boolean) => mainWindow?.setFullScreen(Boolean(on)));
+  handle('window:isFullScreen', () => mainWindow?.isFullScreen() ?? false);
 
-  ipcMain.handle('power:keepScreenOn', (_e, on: boolean) => {
+  handle('power:keepScreenOn', (_e, on: boolean) => {
     if (on && blockerId === null) blockerId = powerSaveBlocker.start('prevent-display-sleep');
     if (!on && blockerId !== null) {
       powerSaveBlocker.stop(blockerId);
@@ -273,15 +308,15 @@ function registerIpc(executor: ReturnType<typeof createNodeSqliteExecutor>) {
     }
   });
 
-  ipcMain.handle('files:takePending', () => {
+  handle('files:takePending', () => {
     const files = pendingFiles;
     pendingFiles = [];
     return files;
   });
 
-  ipcMain.handle('print:pdf', async () => false);
+  handle('print:pdf', async () => false);
 
-  ipcMain.handle('shell:openExternal', async (_e, url: string) => {
-    if (typeof url === 'string' && url.startsWith('https://')) await shell.openExternal(url);
+  handle('shell:openExternal', async (_e, url: string) => {
+    if (isAllowedExternal(url)) await shell.openExternal(url);
   });
 }
