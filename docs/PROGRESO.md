@@ -40,7 +40,7 @@ Este archivo permite retomar el trabajo exactamente donde se dejó. Leyenda: ✅
 ## Fase 0 — Entorno ✅
 
 - ✅ Proyecto Expo SDK 58 / React Native 0.88 creado con `create-expo-app`, TypeScript estricto.
-- ✅ Git con autoría de Marcos Hernández Párraga, sin firmas ni líneas de coautoría. Archivos del asistente (`CLAUDE.md`, `.claude/`, `AGENTS.md`…) en `.gitignore`.
+- ✅ Git con autoría de Marcos Hernández Párraga, sin firmas ni líneas de coautoría. Archivos de configuración local de herramientas de desarrollo excluidos en `.gitignore`.
 - ⏳ **Repositorio en GitHub**: lo tiene que crear Marcos (ver `GUIA_PARA_MARCOS.md`, paso 1). Hasta entonces el código solo está en el entorno de desarrollo y en el ZIP de respaldo.
 
 ## Fase 1 — Base ✅
